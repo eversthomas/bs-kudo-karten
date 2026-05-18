@@ -1,0 +1,406 @@
+/**
+ * BS Kudo Karten – Wizard (Phase 3)
+ */
+
+.bskudo-wizard {
+	--bskudo-accent: #c45c3e;
+	--bskudo-radius: 12px;
+	--bskudo-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+	max-width: 960px;
+	margin: 0 auto;
+	font-family: inherit;
+	color: inherit;
+}
+
+.bskudo-wizard__steps {
+	display: flex;
+	gap: 0.5rem;
+	list-style: none;
+	margin: 0 0 1.5rem;
+	padding: 0;
+	counter-reset: bskudo-step;
+}
+
+.bskudo-wizard__step-label {
+	flex: 1;
+	text-align: center;
+	padding: 0.5rem 0.75rem;
+	border-radius: 999px;
+	font-size: 0.875rem;
+	background: #f3f3f3;
+	color: #666;
+}
+
+.bskudo-wizard__step-label--active {
+	background: var(--bskudo-accent);
+	color: #fff;
+	font-weight: 600;
+}
+
+.bskudo-wizard__step-label--disabled {
+	opacity: 0.55;
+}
+
+.bskudo-step--hidden {
+	display: none !important;
+}
+
+.bskudo-wizard__nav {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 1rem;
+	margin-top: 1.5rem;
+}
+
+.bskudo-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.65rem 1.25rem;
+	border-radius: 999px;
+	border: 1px solid transparent;
+	font: inherit;
+	font-size: 0.95rem;
+	cursor: pointer;
+	transition: background 0.2s ease, opacity 0.2s ease;
+}
+
+.bskudo-btn:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+
+.bskudo-btn--primary {
+	background: var(--bskudo-accent);
+	color: #fff;
+}
+
+.bskudo-btn--primary:not(:disabled):hover {
+	filter: brightness(1.05);
+}
+
+.bskudo-btn--back {
+	background: transparent;
+	border-color: #ccc;
+	color: inherit;
+}
+
+.bskudo-step__heading {
+	margin: 0 0 1rem;
+	font-size: 1.5rem;
+	line-height: 1.3;
+}
+
+.bskudo-empty,
+.bskudo-selection-status {
+	margin: 1rem 0 0;
+	font-size: 0.95rem;
+}
+
+.bskudo-selection-status {
+	min-height: 1.25em;
+	color: var(--bskudo-accent);
+	font-weight: 600;
+}
+
+/* Karten-Grid */
+.bskudo-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+	gap: 1.25rem;
+}
+
+/* Einzelne Karte mit Flip */
+.bskudo-card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0;
+	border: none;
+	background: transparent;
+	cursor: pointer;
+	text-align: center;
+	font: inherit;
+	color: inherit;
+	-webkit-tap-highlight-color: transparent;
+}
+
+.bskudo-card:focus-visible {
+	outline: 2px solid var(--bskudo-accent);
+	outline-offset: 4px;
+	border-radius: var(--bskudo-radius);
+}
+
+.bskudo-card__inner {
+	position: relative;
+	display: block;
+	width: 100%;
+	aspect-ratio: 3 / 4;
+	transform-style: preserve-3d;
+	transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+	border-radius: var(--bskudo-radius);
+	box-shadow: var(--bskudo-shadow);
+}
+
+.bskudo-card--selected .bskudo-card__inner,
+.bskudo-card.is-flipped .bskudo-card__inner {
+	transform: rotateY(180deg);
+}
+
+.bskudo-card__face {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	backface-visibility: hidden;
+	border-radius: var(--bskudo-radius);
+	overflow: hidden;
+}
+
+.bskudo-card__face--front {
+	background: #f8f8f8;
+}
+
+.bskudo-card__face--back {
+	flex-direction: column;
+	gap: 0.75rem;
+	padding: 1rem;
+	background: var(--bskudo-accent);
+	color: #fff;
+	transform: rotateY(180deg);
+	text-align: center;
+}
+
+.bskudo-card--icon-left .bskudo-card__face--back {
+	align-items: flex-start;
+	text-align: left;
+}
+
+.bskudo-card--icon-right .bskudo-card__face--back {
+	align-items: flex-end;
+	text-align: right;
+}
+
+.bskudo-card__image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+.bskudo-card__placeholder {
+	padding: 1rem;
+	font-weight: 600;
+	color: #444;
+}
+
+.bskudo-card__icon {
+	font-size: 1.75rem;
+	line-height: 1;
+}
+
+.bskudo-card__back-text {
+	font-size: 0.9rem;
+	line-height: 1.4;
+}
+
+.bskudo-card__title {
+	font-size: 0.875rem;
+	font-weight: 600;
+}
+
+.bskudo-card--selected .bskudo-card__title {
+	color: var(--bskudo-accent);
+}
+
+.bskudo-card--selected .bskudo-card__inner {
+	box-shadow: 0 0 0 3px var(--bskudo-accent), var(--bskudo-shadow);
+}
+
+/* Schritt 2: Text & Vorschau */
+.bskudo-step2-layout {
+	display: grid;
+	grid-template-columns: minmax(140px, 220px) 1fr;
+	gap: 1.5rem;
+	align-items: start;
+}
+
+.bskudo-preview-label {
+	margin: 0 0 0.5rem;
+	font-size: 0.875rem;
+	font-weight: 600;
+}
+
+.bskudo-preview .bskudo-card--preview {
+	width: 100%;
+	max-width: 220px;
+	pointer-events: none;
+}
+
+.bskudo-preview .bskudo-card--preview .bskudo-card__inner {
+	transform: rotateY(180deg);
+}
+
+.bskudo-preview__message {
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	word-break: break-word;
+}
+
+.bskudo-text-panel {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.bskudo-field-label {
+	font-weight: 600;
+	font-size: 0.95rem;
+}
+
+.bskudo-message {
+	width: 100%;
+	resize: vertical;
+	min-height: 3.2em;
+	max-height: 4.5em;
+	padding: 0.65rem 0.75rem;
+	border: 1px solid #ccc;
+	border-radius: 8px;
+	font: inherit;
+	line-height: 1.4;
+	box-sizing: border-box;
+}
+
+.bskudo-message:focus {
+	outline: 2px solid var(--bskudo-accent);
+	outline-offset: 2px;
+	border-color: var(--bskudo-accent);
+}
+
+.bskudo-char-count {
+	margin: 0;
+	font-size: 0.85rem;
+	color: #666;
+	text-align: right;
+}
+
+.bskudo-char-count--limit {
+	color: var(--bskudo-accent);
+	font-weight: 600;
+}
+
+.bskudo-impulses__label {
+	margin: 0 0 0.5rem;
+	font-size: 0.875rem;
+	font-weight: 600;
+}
+
+.bskudo-impulses__list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.bskudo-impulses__empty {
+	margin: 0;
+	font-size: 0.875rem;
+	color: #666;
+	font-style: italic;
+}
+
+.bskudo-impulse {
+	padding: 0.4rem 0.75rem;
+	border-radius: 999px;
+	border: 1px solid var(--bskudo-accent);
+	background: #fff;
+	color: var(--bskudo-accent);
+	font: inherit;
+	font-size: 0.85rem;
+	cursor: pointer;
+	line-height: 1.3;
+	max-width: 100%;
+	text-align: left;
+}
+
+.bskudo-impulse:hover {
+	background: var(--bskudo-accent);
+	color: #fff;
+}
+
+/* Schritt 3: Formular */
+.bskudo-fields {
+	display: grid;
+	gap: 1rem;
+}
+
+.bskudo-field {
+	margin: 0;
+}
+
+.bskudo-field label {
+	display: block;
+	margin-bottom: 0.35rem;
+	font-weight: 600;
+	font-size: 0.9rem;
+}
+
+.bskudo-input {
+	width: 100%;
+	padding: 0.6rem 0.75rem;
+	border: 1px solid #ccc;
+	border-radius: 8px;
+	font: inherit;
+	box-sizing: border-box;
+}
+
+.bskudo-input:focus {
+	outline: 2px solid var(--bskudo-accent);
+	outline-offset: 2px;
+	border-color: var(--bskudo-accent);
+}
+
+.bskudo-privacy {
+	margin: 1rem 0;
+	padding: 0.75rem 1rem;
+	background: #f7f7f7;
+	border-radius: 8px;
+	font-size: 0.875rem;
+	line-height: 1.5;
+}
+
+.bskudo-send-notice {
+	margin: 0 0 1rem;
+	font-size: 0.9rem;
+	color: #666;
+}
+
+.bskudo-honeypot {
+	position: absolute;
+	left: -9999px;
+	width: 1px;
+	height: 1px;
+	opacity: 0;
+	pointer-events: none;
+}
+
+@media (max-width: 640px) {
+	.bskudo-step2-layout {
+		grid-template-columns: 1fr;
+	}
+
+	.bskudo-preview .bskudo-card--preview {
+		max-width: 180px;
+		margin: 0 auto;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.bskudo-card__inner {
+		transition: none;
+	}
+}
