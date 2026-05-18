@@ -61,15 +61,6 @@ class BSKudo_Mailer {
 
 		$card_title = get_the_title( $card );
 
-		$branding = get_post_meta( $card->ID, '_bskudo_back_branding', true );
-		if ( ! is_string( $branding ) || '' === trim( $branding ) ) {
-			$legacy = get_post_meta( $card->ID, '_bskudo_impulse_text', true );
-			$branding = is_string( $legacy ) ? $legacy : '';
-		}
-		if ( ! is_string( $branding ) || '' === trim( $branding ) ) {
-			$branding = (string) BSKudo_Settings::get( 'branding', 'branding_text', '' );
-		}
-
 		$subject  = $this->build_subject( $data, $card_title );
 		$view_url = '';
 		$token    = BSKudo_Token::create( (int) $data['card_id'], (string) $data['message'] );
@@ -79,23 +70,22 @@ class BSKudo_Mailer {
 		}
 
 		$card_image_id = (int) get_post_thumbnail_id( $card->ID );
-		$card_img_src  = '';
+		$img_src       = $card_image_id ? (string) wp_get_attachment_image_url( $card_image_id, 'large' ) : '';
 
-		$card_images = BSKudo_Card_Renderer::render_for_mail( (int) $data['card_id'], (string) $data['message'], $branding );
-
-		if ( $card_images && ! empty( $card_images['front'] ) ) {
-			// Gerenderte Vorderseite (Text eingebrannt) als data-URI.
-			$card_img_src = 'data:image/jpeg;base64,' . $card_images['front'];
-		} elseif ( $card_image_id ) {
-			$card_img_src = $this->get_attachment_data_uri( $card_image_id );
+		if ( ! $img_src ) {
+			$img_src = '';
 		}
 
 		$logo_id  = (int) BSKudo_Settings::get( 'branding', 'logo_id', 0 );
-		$logo_src = $logo_id ? $this->get_attachment_data_uri( $logo_id ) : '';
+		$logo_src = $logo_id ? (string) wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
 
-		$qr_data_uri = '';
+		if ( ! $logo_src ) {
+			$logo_src = '';
+		}
+
+		$qr_src = '';
 		if ( $view_url && BSKudo_Settings::is_feature_enabled( 'show_qr_in_mail' ) ) {
-			$qr_data_uri = BSKudo_QR::get_data_uri( $view_url );
+			$qr_src = $this->save_qr_png_url( $view_url );
 		}
 
 		$body = $this->build_body(
@@ -104,10 +94,11 @@ class BSKudo_Mailer {
 				'sender_name'      => $data['sender_name'],
 				'sender_display'   => (string) BSKudo_Settings::get( 'general', 'sender_name', get_bloginfo( 'name' ) ),
 				'view_url'         => $view_url,
-				'card_img_src'     => $card_img_src,
+				'card_title'       => $card_title,
+				'img_src'          => $img_src,
 				'logo_src'         => $logo_src,
 				'mail_footer_text' => (string) BSKudo_Settings::get( 'branding', 'mail_footer_text', '' ),
-				'qr_data_uri'      => $qr_data_uri,
+				'qr_src'           => $qr_src,
 				'token_ttl_days'   => (string) BSKudo_Settings::get_token_ttl_days(),
 			)
 		);
@@ -399,38 +390,49 @@ class BSKudo_Mailer {
 	}
 
 	/**
-	 * Medien-Anhang als data-URI (inline, keine externe Bild-URL).
+	 * QR-Code als PNG im Uploads-Ordner speichern und öffentliche URL zurückgeben.
 	 *
-	 * @param int $attachment_id Attachment-ID.
-	 * @return string data-URI oder leer.
+	 * @param string $view_url Ziel-URL für den QR-Code.
+	 * @return string Öffentliche Bild-URL oder leer.
 	 */
-	private function get_attachment_data_uri( $attachment_id ) {
-		$attachment_id = absint( $attachment_id );
+	private function save_qr_png_url( $view_url ) {
+		$data_uri = BSKudo_QR::get_data_uri( $view_url );
 
-		if ( $attachment_id < 1 ) {
+		if ( '' === $data_uri || ! preg_match( '/^data:image\/png;base64,(.+)$/i', $data_uri, $matches ) ) {
 			return '';
 		}
 
-		$img_path = get_attached_file( $attachment_id );
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
+		$png = base64_decode( $matches[1], true );
 
-		if ( ! $img_path || ! is_readable( $img_path ) ) {
+		if ( false === $png || strlen( $png ) < 100 ) {
 			return '';
 		}
 
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-		$img_data = file_get_contents( $img_path );
+		$upload = wp_upload_dir();
 
-		if ( false === $img_data ) {
+		if ( ! empty( $upload['error'] ) ) {
 			return '';
 		}
 
-		$img_mime = get_post_mime_type( $attachment_id );
+		$subdir = trailingslashit( $upload['basedir'] ) . 'bskudo-mail-qr';
 
-		if ( ! is_string( $img_mime ) || '' === $img_mime ) {
-			$img_mime = 'image/jpeg';
+		if ( ! wp_mkdir_p( $subdir ) ) {
+			return '';
 		}
 
-		return 'data:' . $img_mime . ';base64,' . base64_encode( $img_data );
+		$filename = 'qr-' . md5( $view_url ) . '.png';
+		$filepath = trailingslashit( $subdir ) . $filename;
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+		if ( false === file_put_contents( $filepath, $png ) ) {
+			return '';
+		}
+
+		$ttl = BSKudo_Settings::get_token_ttl_days() * DAY_IN_SECONDS;
+		wp_schedule_single_event( time() + $ttl, 'bskudo_delete_mail_qr_file', array( $filepath ) );
+
+		return trailingslashit( $upload['baseurl'] ) . 'bskudo-mail-qr/' . $filename;
 	}
 
 	/**
@@ -506,3 +508,34 @@ class BSKudo_Mailer {
 		return sprintf( '%s <%s>', $name, $email );
 	}
 }
+
+/**
+ * Temporäre QR-PNGs aus dem Mail-Upload-Ordner entfernen (TTL wie Token-Transient).
+ *
+ * @param string $file_path Absoluter Dateipfad.
+ */
+function bskudo_delete_mail_qr_file( $file_path ) {
+	$file_path = (string) $file_path;
+
+	if ( '' === $file_path || ! is_file( $file_path ) ) {
+		return;
+	}
+
+	$upload = wp_upload_dir();
+
+	if ( ! empty( $upload['error'] ) ) {
+		return;
+	}
+
+	$allowed_dir = trailingslashit( wp_normalize_path( $upload['basedir'] ) ) . 'bskudo-mail-qr';
+	$normalized  = wp_normalize_path( $file_path );
+
+	if ( 0 !== strpos( $normalized, $allowed_dir ) ) {
+		return;
+	}
+
+	// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+	unlink( $normalized );
+}
+
+add_action( 'bskudo_delete_mail_qr_file', 'bskudo_delete_mail_qr_file' );

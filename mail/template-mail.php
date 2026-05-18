@@ -1,6 +1,6 @@
 <?php
 /**
- * HTML-Mail-Template (table-basiert, inline data-URIs).
+ * HTML-Mail-Template (table-basiert, öffentliche Bild-URLs).
  *
  * @package BSKudo
  *
@@ -11,10 +11,11 @@
  * @var string $show_powered
  * @var string $powered_text
  * @var string $view_url
- * @var string $card_img_src
+ * @var string $card_title
+ * @var string $img_src
  * @var string $logo_src
  * @var string $mail_footer_text
- * @var string $qr_data_uri
+ * @var string $qr_src
  * @var string $token_ttl_days
  */
 
@@ -27,10 +28,11 @@ $sender_name      = isset( $sender_name ) ? $sender_name : '';
 $sender_display   = isset( $sender_display ) ? $sender_display : '';
 $site_name        = isset( $site_name ) ? $site_name : '';
 $view_url         = isset( $view_url ) ? $view_url : '';
-$card_img_src     = isset( $card_img_src ) ? $card_img_src : '';
+$card_title       = isset( $card_title ) ? $card_title : '';
+$img_src          = isset( $img_src ) ? $img_src : '';
 $logo_src         = isset( $logo_src ) ? $logo_src : '';
 $mail_footer_text = isset( $mail_footer_text ) ? $mail_footer_text : '';
-$qr_data_uri      = isset( $qr_data_uri ) ? $qr_data_uri : '';
+$qr_src           = isset( $qr_src ) ? $qr_src : '';
 $show_powered     = isset( $show_powered ) ? $show_powered : '';
 $powered_text     = isset( $powered_text ) ? $powered_text : '';
 $token_ttl_days   = isset( $token_ttl_days ) ? max( 1, (int) $token_ttl_days ) : 30;
@@ -53,7 +55,7 @@ $header_label = '' !== trim( $sender_display ) ? $sender_display : $site_name;
 					<tr>
 						<td style="background:#335C70;padding:24px;text-align:center;">
 							<?php if ( '' !== $logo_src ) : ?>
-								<img src="<?php echo esc_attr( $logo_src ); ?>" alt="<?php echo esc_attr( $site_name ); ?>" width="160" style="max-width:160px;height:auto;display:inline-block;border:0;">
+								<img src="<?php echo esc_url( $logo_src ); ?>" alt="<?php echo esc_attr( $site_name ); ?>" width="160" style="max-width:160px;height:auto;display:inline-block;border:0;">
 							<?php else : ?>
 								<p style="margin:0;font-size:20px;font-weight:bold;color:#ffffff;line-height:1.3;">
 									<?php echo esc_html( $header_label ); ?>
@@ -82,13 +84,13 @@ $header_label = '' !== trim( $sender_display ) ? $sender_display : $site_name;
 								);
 								?>
 							</p>
-							<?php if ( '' !== $card_img_src ) : ?>
+							<?php if ( $img_src ) : ?>
 							<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:24px 0;">
 								<tr>
 									<td align="center">
 										<img
-											src="<?php echo esc_attr( $card_img_src ); ?>"
-											alt="<?php esc_attr_e( 'Deine Kudo-Karte', 'bs-kudo-karten' ); ?>"
+											src="<?php echo esc_url( $img_src ); ?>"
+											alt="<?php echo esc_attr( '' !== $card_title ? $card_title : __( 'Deine Kudo-Karte', 'bs-kudo-karten' ) ); ?>"
 											width="480"
 											style="width:100%;max-width:480px;height:auto;border-radius:12px;display:block;margin:0 auto;border:0;"
 										>
@@ -121,11 +123,11 @@ $header_label = '' !== trim( $sender_display ) ? $sender_display : $site_name;
 										</p>
 									</td>
 								</tr>
-								<?php if ( '' !== $qr_data_uri ) : ?>
+								<?php if ( $qr_src ) : ?>
 								<tr>
 									<td align="center" style="padding-top:24px;">
 										<img
-											src="<?php echo esc_attr( $qr_data_uri ); ?>"
+											src="<?php echo esc_url( $qr_src ); ?>"
 											alt="<?php esc_attr_e( 'QR-Code zur Kudo-Karte', 'bs-kudo-karten' ); ?>"
 											width="120"
 											height="120"
