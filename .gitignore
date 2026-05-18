@@ -1,0 +1,36 @@
+# Claude Code
+.claude/
+.claudeignore
+claude.md
+CLAUDE.md
+
+# Cursor
+.cursor/
+.cursorignore
+.cursorules
+
+# Node (falls mal genutzt)
+node_modules/
+npm-debug.log
+
+# macOS
+.DS_Store
+.AppleDouble
+
+# WordPress
+*.log
+error_log
+
+# Build-Artefakte
+*.map
+dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Lokale Konfiguration
+.env
+.env.local
