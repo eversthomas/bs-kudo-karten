@@ -143,6 +143,8 @@ class BSKudo_Shortcode {
 					'previewFront'     => __( 'Vorderseite', 'bs-kudo-karten' ),
 					'previewBack'      => __( 'Rückseite (Branding)', 'bs-kudo-karten' ),
 					'flipHint'         => __( 'Umdrehen zeigt das Branding auf der Rückseite.', 'bs-kudo-karten' ),
+					'showCardBack'     => __( 'Rückseite anzeigen', 'bs-kudo-karten' ),
+					'showCardFront'    => __( 'Vorderseite anzeigen', 'bs-kudo-karten' ),
 					'selectCard'       => __( 'Bitte wähle eine Karte aus.', 'bs-kudo-karten' ),
 					'cardSelected'     => __( 'Karte ausgewählt', 'bs-kudo-karten' ),
 					'enterMessage'     => __( 'Bitte schreibe einen kurzen Text für deine Karte.', 'bs-kudo-karten' ),
@@ -154,6 +156,7 @@ class BSKudo_Shortcode {
 					'sendSoon'         => __( 'Versand wird in der nächsten Version freigeschaltet.', 'bs-kudo-karten' ),
 					'noTextbausteine'  => __( 'Keine Textbausteine für diese Karte – schreib deinen eigenen Text.', 'bs-kudo-karten' ),
 					'previewLabel'     => __( 'Live-Vorschau deiner Karte', 'bs-kudo-karten' ),
+					'largePreview'     => __( 'Große Vorschau', 'bs-kudo-karten' ),
 					'impulsesLabel'    => __( 'Textimpulse', 'bs-kudo-karten' ),
 				),
 			)
@@ -247,7 +250,18 @@ class BSKudo_Shortcode {
 	 * @return array<string, mixed>
 	 */
 	private function map_card( WP_Post $post ) {
-		$image_id = get_post_thumbnail_id( $post->ID );
+		$image_id    = get_post_thumbnail_id( $post->ID );
+		$image_width = 0;
+		$image_height = 0;
+
+		if ( $image_id ) {
+			$image_meta = wp_get_attachment_metadata( $image_id );
+			if ( is_array( $image_meta ) ) {
+				$image_width  = isset( $image_meta['width'] ) ? (int) $image_meta['width'] : 0;
+				$image_height = isset( $image_meta['height'] ) ? (int) $image_meta['height'] : 0;
+			}
+		}
+
 		$accent   = get_post_meta( $post->ID, '_bskudo_accent_color', true );
 		$icon_pos = get_post_meta( $post->ID, '_bskudo_icon_position', true );
 		$impulse  = get_post_meta( $post->ID, '_bskudo_impulse_text', true );
@@ -275,6 +289,8 @@ class BSKudo_Shortcode {
 			'id'            => $post->ID,
 			'title'         => get_the_title( $post ),
 			'image_url'     => $image_id ? (string) wp_get_attachment_image_url( $image_id, 'medium_large' ) : '',
+			'image_width'   => $image_width,
+			'image_height'  => $image_height,
 			'image_alt'     => $image_id ? (string) get_post_meta( $image_id, '_wp_attachment_image_alt', true ) : '',
 			'impulse'        => is_string( $impulse ) ? $impulse : '',
 			'back_branding'  => is_string( $impulse ) ? trim( $impulse ) : '',
@@ -298,6 +314,8 @@ class BSKudo_Shortcode {
 				'id'            => (int) $card['id'],
 				'title'         => (string) $card['title'],
 				'imageUrl'      => (string) $card['image_url'],
+				'imageWidth'    => (int) ( $card['image_width'] ?? 0 ),
+				'imageHeight'   => (int) ( $card['image_height'] ?? 0 ),
 				'imageAlt'      => (string) $card['image_alt'],
 				'accentColor'   => (string) $card['accent_color'],
 				'iconPosition'  => (string) $card['icon_position'],

@@ -85,7 +85,7 @@ class BSKudo_Card_Meta {
 			>
 		</p>
 		<p>
-			<label for="bskudo_icon_position"><strong><?php esc_html_e( 'Icon-Position', 'bs-kudo-karten' ); ?></strong></label><br>
+			<label for="bskudo_icon_position"><strong><?php esc_html_e( 'Textausrichtung (Vorderseite)', 'bs-kudo-karten' ); ?></strong></label><br>
 			<select id="bskudo_icon_position" name="bskudo_icon_position">
 				<option value="left" <?php selected( $icon_pos, 'left' ); ?>><?php esc_html_e( 'Links', 'bs-kudo-karten' ); ?></option>
 				<option value="center" <?php selected( $icon_pos, 'center' ); ?>><?php esc_html_e( 'Mitte', 'bs-kudo-karten' ); ?></option>

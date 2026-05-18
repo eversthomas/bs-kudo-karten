@@ -54,14 +54,48 @@ $has_cards     = ! empty( $cards );
 			<h2 id="bskudo-step-1-heading" class="bskudo-step__heading">
 				<?php esc_html_e( 'Wähle deine Kudo-Karte', 'bs-kudo-karten' ); ?>
 			</h2>
-			<p class="bskudo-step__hint"><?php esc_html_e( 'Tipp: Karte antippen, um die Rückseite mit Branding zu sehen.', 'bs-kudo-karten' ); ?></p>
-
 			<?php if ( ! $has_cards ) : ?>
 				<p class="bskudo-empty">
 					<?php esc_html_e( 'Aktuell sind keine Karten verfügbar. Bitte lege im Backend Kudo-Karten an und veröffentliche sie.', 'bs-kudo-karten' ); ?>
 				</p>
 			<?php else : ?>
-				<div class="bskudo-grid" role="list">
+				<div class="bskudo-step1-layout">
+					<aside class="bskudo-step1-aside" aria-label="<?php esc_attr_e( 'Vorschau der gewählten Karte', 'bs-kudo-karten' ); ?>">
+						<div class="bskudo-step1-preview">
+							<div class="bskudo-step1-preview__empty">
+								<span class="bskudo-step1-preview__empty-icon" aria-hidden="true">♥</span>
+								<p><?php esc_html_e( 'Wähle eine Karte aus – sie erscheint hier in großer Ansicht.', 'bs-kudo-karten' ); ?></p>
+							</div>
+							<div class="bskudo-step1-preview__active" hidden>
+								<div class="bskudo-card bskudo-card--hero bskudo-card--natural bskudo-card--msg-center">
+									<span class="bskudo-card__inner">
+										<span class="bskudo-card__face bskudo-card__face--front">
+											<span class="bskudo-card__canvas">
+												<img class="bskudo-step1-preview__image bskudo-card__image" src="" alt="" hidden>
+												<span class="bskudo-step1-preview__placeholder bskudo-card__placeholder" hidden></span>
+											</span>
+										</span>
+										<span class="bskudo-card__face bskudo-card__face--back">
+											<span class="bskudo-card__branding bskudo-step1-preview__branding"></span>
+										</span>
+									</span>
+								</div>
+								<button type="button" class="bskudo-step1-preview__flip">
+									<?php esc_html_e( 'Rückseite anzeigen', 'bs-kudo-karten' ); ?>
+								</button>
+							</div>
+						</div>
+						<p class="bskudo-step1-preview__title" aria-live="polite"></p>
+						<p class="bskudo-selection-status" aria-live="polite"></p>
+						<button type="button" class="bskudo-btn bskudo-btn--primary bskudo-btn--next bskudo-btn--block" data-goto="2" disabled>
+							<?php esc_html_e( 'Weiter zum Text', 'bs-kudo-karten' ); ?>
+						</button>
+					</aside>
+
+					<div class="bskudo-step1-picker">
+						<p class="bskudo-step1-picker__label"><?php esc_html_e( 'Karten zur Auswahl', 'bs-kudo-karten' ); ?></p>
+						<p class="bskudo-step__hint bskudo-step1-picker__hint"><?php esc_html_e( 'Tippe eine Karte an – die große Vorschau aktualisiert sich sofort.', 'bs-kudo-karten' ); ?></p>
+						<div class="bskudo-grid bskudo-grid--thumbs" role="list">
 					<?php foreach ( $cards as $card ) : ?>
 						<?php
 						$card_id         = (int) $card['id'];
@@ -87,6 +121,8 @@ $has_cards     = ! empty( $cards );
 							data-image-url="<?php echo $image_url; ?>"
 							data-image-alt="<?php echo $image_alt; ?>"
 							data-back-branding="<?php echo esc_attr( $card_branding ); ?>"
+							data-image-width="<?php echo esc_attr( (string) (int) ( $card['image_width'] ?? 0 ) ); ?>"
+							data-image-height="<?php echo esc_attr( (string) (int) ( $card['image_height'] ?? 0 ) ); ?>"
 							aria-pressed="false"
 							aria-label="<?php echo esc_attr( sprintf( /* translators: %s: card title */ __( 'Karte: %s', 'bs-kudo-karten' ), (string) $card['title'] ) ); ?>"
 							style="--bskudo-accent: <?php echo $accent_color; ?>;"
@@ -111,18 +147,11 @@ $has_cards     = ! empty( $cards );
 									<span class="bskudo-card__branding"><?php echo esc_html( $card_branding ); ?></span>
 								</span>
 							</span>
-							<span class="bskudo-card__title"><?php echo esc_html( (string) $card['title'] ); ?></span>
+							<span class="bskudo-card__title bskudo-sr-only"><?php echo esc_html( (string) $card['title'] ); ?></span>
 						</button>
 					<?php endforeach; ?>
-				</div>
-
-				<p class="bskudo-selection-status" aria-live="polite"></p>
-
-				<div class="bskudo-wizard__nav">
-					<span></span>
-					<button type="button" class="bskudo-btn bskudo-btn--primary bskudo-btn--next" data-goto="2" disabled>
-						<?php esc_html_e( 'Weiter', 'bs-kudo-karten' ); ?>
-					</button>
+						</div>
+					</div>
 				</div>
 			<?php endif; ?>
 		</section>
@@ -148,20 +177,24 @@ $has_cards     = ! empty( $cards );
 						<div class="bskudo-preview-duo" aria-live="polite">
 							<div class="bskudo-preview-side">
 								<p class="bskudo-preview-side__label"><?php esc_html_e( 'Vorderseite', 'bs-kudo-karten' ); ?></p>
-								<div class="bskudo-preview__card bskudo-card bskudo-card--preview bskudo-card--msg-center">
-									<span class="bskudo-card__inner bskudo-card__inner--static">
+								<div class="bskudo-preview__card bskudo-card bskudo-card--preview bskudo-card--natural bskudo-card--msg-center">
+									<span class="bskudo-card__inner bskudo-card__inner--static bskudo-card__inner--fit">
 										<span class="bskudo-card__face bskudo-card__face--front">
-											<img class="bskudo-preview__image bskudo-card__image" src="" alt="" hidden>
-											<span class="bskudo-preview__placeholder bskudo-card__placeholder" hidden></span>
-											<span class="bskudo-card__message bskudo-preview__message"></span>
+											<span class="bskudo-card__canvas">
+												<img class="bskudo-preview__image bskudo-card__image" src="" alt="" hidden>
+												<span class="bskudo-preview__placeholder bskudo-card__placeholder" hidden></span>
+												<span class="bskudo-card__message-zone">
+													<span class="bskudo-card__message bskudo-preview__message"></span>
+												</span>
+											</span>
 										</span>
 									</span>
 								</div>
 							</div>
 							<div class="bskudo-preview-side">
 								<p class="bskudo-preview-side__label"><?php esc_html_e( 'Rückseite (Branding)', 'bs-kudo-karten' ); ?></p>
-								<div class="bskudo-preview__card bskudo-card bskudo-card--preview bskudo-card--back-only">
-									<span class="bskudo-card__inner bskudo-card__inner--static">
+								<div class="bskudo-preview__card bskudo-card bskudo-card--preview bskudo-card--natural bskudo-card--back-only">
+									<span class="bskudo-card__inner bskudo-card__inner--static bskudo-card__inner--fit">
 										<span class="bskudo-card__face bskudo-card__face--back">
 											<span class="bskudo-card__branding bskudo-preview__branding"><?php echo esc_html( $branding_back ); ?></span>
 										</span>
@@ -169,6 +202,9 @@ $has_cards     = ! empty( $cards );
 								</div>
 							</div>
 						</div>
+						<button type="button" class="bskudo-btn bskudo-btn--secondary bskudo-btn--preview-large" disabled>
+							<?php esc_html_e( 'Große Vorschau', 'bs-kudo-karten' ); ?>
+						</button>
 					</div>
 
 					<div class="bskudo-text-panel">
@@ -197,13 +233,18 @@ $has_cards     = ! empty( $cards );
 					</div>
 				</div>
 
-				<div class="bskudo-wizard__nav">
+				<div class="bskudo-wizard__nav bskudo-wizard__nav--split">
 					<button type="button" class="bskudo-btn bskudo-btn--back" data-goto="1">
 						<?php esc_html_e( 'Zurück', 'bs-kudo-karten' ); ?>
 					</button>
-					<button type="button" class="bskudo-btn bskudo-btn--primary bskudo-btn--next" data-goto="3" disabled>
-						<?php esc_html_e( 'Weiter', 'bs-kudo-karten' ); ?>
-					</button>
+					<div class="bskudo-wizard__nav-group">
+						<button type="button" class="bskudo-btn bskudo-btn--secondary bskudo-btn--preview-large bskudo-btn--preview-large-nav" disabled>
+							<?php esc_html_e( 'Große Vorschau', 'bs-kudo-karten' ); ?>
+						</button>
+						<button type="button" class="bskudo-btn bskudo-btn--primary bskudo-btn--next" data-goto="3" disabled>
+							<?php esc_html_e( 'Weiter', 'bs-kudo-karten' ); ?>
+						</button>
+					</div>
 				</div>
 			</section>
 
@@ -264,5 +305,48 @@ $has_cards     = ! empty( $cards );
 				</div>
 			</section>
 		<?php endif; ?>
+
+		<dialog class="bskudo-lightbox" aria-labelledby="bskudo-lightbox-title">
+			<div class="bskudo-lightbox__panel">
+				<header class="bskudo-lightbox__header">
+					<h3 id="bskudo-lightbox-title" class="bskudo-lightbox__title">
+						<?php esc_html_e( 'Große Vorschau deiner Kudo-Karte', 'bs-kudo-karten' ); ?>
+					</h3>
+					<button type="button" class="bskudo-lightbox__close">
+						<?php esc_html_e( 'Schließen', 'bs-kudo-karten' ); ?>
+					</button>
+				</header>
+				<div class="bskudo-lightbox__body">
+					<div class="bskudo-preview-duo bskudo-preview-duo--large" aria-live="polite">
+						<div class="bskudo-preview-side">
+							<p class="bskudo-preview-side__label"><?php esc_html_e( 'Vorderseite', 'bs-kudo-karten' ); ?></p>
+							<div class="bskudo-lightbox__card bskudo-card bskudo-card--natural bskudo-card--msg-center">
+								<span class="bskudo-card__inner bskudo-card__inner--static bskudo-card__inner--fit">
+									<span class="bskudo-card__face bskudo-card__face--front">
+										<span class="bskudo-card__canvas">
+											<img class="bskudo-lightbox__image bskudo-card__image" src="" alt="" hidden>
+											<span class="bskudo-lightbox__placeholder bskudo-card__placeholder" hidden></span>
+											<span class="bskudo-card__message-zone">
+												<span class="bskudo-card__message bskudo-lightbox__message"></span>
+											</span>
+										</span>
+									</span>
+								</span>
+							</div>
+						</div>
+						<div class="bskudo-preview-side">
+							<p class="bskudo-preview-side__label"><?php esc_html_e( 'Rückseite (Branding)', 'bs-kudo-karten' ); ?></p>
+							<div class="bskudo-lightbox__card bskudo-card bskudo-card--natural bskudo-card--back-only">
+								<span class="bskudo-card__inner bskudo-card__inner--static bskudo-card__inner--fit">
+									<span class="bskudo-card__face bskudo-card__face--back">
+										<span class="bskudo-card__branding bskudo-lightbox__branding"></span>
+									</span>
+								</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</dialog>
 	</form>
 </div>
