@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * {
  *   "version": "0.1.0",
- *   "download_url": "https://github.com/USER/REPO/archive/refs/heads/main.zip",
+ *   "download_url": "https://github.com/USER/REPO/archive/refs/heads/master.zip",
  *   "details_url": "https://github.com/USER/REPO"
  * }
  */
@@ -80,7 +80,7 @@ class BSKudo_Updater {
 		$this->github_repo      = sanitize_text_field( $github_repo );
 		$this->current_version  = (string) $current_version;
 		$this->github_url       = sprintf(
-			'https://raw.githubusercontent.com/%s/%s/main/release.json',
+			'https://raw.githubusercontent.com/%s/%s/master/release.json',
 			$this->github_user,
 			$this->github_repo
 		);
