@@ -101,6 +101,9 @@ class BSKudo_Updater {
 	 * @return array{version: string, download_url: string, details_url: string}|false
 	 */
 	private function get_remote_version() {
+		error_log( 'BSKUDO Updater: get_remote_version() aufgerufen' );
+		error_log( 'BSKUDO Updater: URL = ' . $this->github_url );
+
 		$cached = get_transient( BSKUDO_UPDATE_CACHE_KEY );
 
 		if ( is_array( $cached ) && isset( $cached['version'] ) ) {
@@ -114,6 +117,9 @@ class BSKudo_Updater {
 				'sslverify' => true,
 			)
 		);
+
+		error_log( 'BSKUDO Updater: HTTP Status = ' . wp_remote_retrieve_response_code( $response ) );
+		error_log( 'BSKUDO Updater: Body = ' . wp_remote_retrieve_body( $response ) );
 
 		if ( is_wp_error( $response ) ) {
 			return false;
@@ -155,11 +161,14 @@ class BSKudo_Updater {
 	 * @return object|false
 	 */
 	public function check_for_update( $transient ) {
+		error_log( 'BSKUDO Updater: check_for_update() aufgerufen' );
+		error_log( 'BSKUDO Updater: current = ' . $this->current_version );
+		$remote = $this->get_remote_version();
+		error_log( 'BSKUDO Updater: remote = ' . $remote );
+
 		if ( ! is_object( $transient ) ) {
 			return $transient;
 		}
-
-		$remote = $this->get_remote_version();
 
 		if ( false === $remote || '' === $remote['version'] ) {
 			return $transient;
