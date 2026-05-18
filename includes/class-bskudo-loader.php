@@ -22,9 +22,9 @@ class BSKudo_Loader {
 	private $cpt;
 
 	/**
-	 * Admin-Handler.
+	 * Admin-Handler (nur im Backend).
 	 *
-	 * @var BSKudo_Admin
+	 * @var BSKudo_Admin|null
 	 */
 	private $admin;
 
@@ -34,6 +34,20 @@ class BSKudo_Loader {
 	 * @var BSKudo_Shortcode
 	 */
 	private $shortcode;
+
+	/**
+	 * AJAX-Versand.
+	 *
+	 * @var BSKudo_Send
+	 */
+	private $send;
+
+	/**
+	 * Token-Webansicht.
+	 *
+	 * @var BSKudo_Card_View
+	 */
+	private $card_view;
 
 	/**
 	 * Meta-Boxen für Kudo-Karten.
@@ -62,18 +76,30 @@ class BSKudo_Loader {
 	 */
 	private function load_dependencies() {
 		require_once BSKUDO_PATH . 'includes/class-bskudo-cpt.php';
+		require_once BSKUDO_PATH . 'includes/class-bskudo-debug.php';
+		require_once BSKUDO_PATH . 'includes/class-bskudo-settings.php';
+		require_once BSKUDO_PATH . 'includes/class-bskudo-security.php';
+		require_once BSKUDO_PATH . 'includes/class-bskudo-token.php';
+		require_once BSKUDO_PATH . 'includes/class-bskudo-card-renderer.php';
+		require_once BSKUDO_PATH . 'includes/class-bskudo-mailer.php';
+		require_once BSKUDO_PATH . 'includes/class-bskudo-qr.php';
+		require_once BSKUDO_PATH . 'includes/class-bskudo-scheduler.php';
+		require_once BSKUDO_PATH . 'includes/class-bskudo-send.php';
+		require_once BSKUDO_PATH . 'includes/class-bskudo-card-view.php';
 		require_once BSKUDO_PATH . 'includes/class-bskudo-shortcode.php';
-		require_once BSKUDO_PATH . 'admin/class-bskudo-admin.php';
 
 		$this->cpt       = new BSKudo_CPT();
 		$this->shortcode = new BSKudo_Shortcode();
-		$this->admin     = new BSKudo_Admin();
+		$this->send      = new BSKudo_Send();
+		$this->card_view = new BSKudo_Card_View();
 
 		if ( is_admin() ) {
+			require_once BSKUDO_PATH . 'admin/class-bskudo-admin.php';
 			require_once BSKUDO_PATH . 'admin/class-bskudo-card-meta.php';
 			require_once BSKUDO_PATH . 'admin/class-bskudo-textbaustein-meta.php';
-			$this->card_meta          = new BSKudo_Card_Meta();
-			$this->textbaustein_meta  = new BSKudo_Textbaustein_Meta();
+			$this->admin             = new BSKudo_Admin();
+			$this->card_meta         = new BSKudo_Card_Meta();
+			$this->textbaustein_meta = new BSKudo_Textbaustein_Meta();
 		}
 	}
 
@@ -85,8 +111,13 @@ class BSKudo_Loader {
 		add_action( 'init', array( $this->cpt, 'register_post_types' ) );
 		add_action( 'init', array( $this->cpt, 'register_taxonomies' ) );
 		add_action( 'init', array( $this->shortcode, 'register' ) );
-		add_action( 'admin_menu', array( $this->admin, 'register_menu' ) );
-		add_action( 'admin_init', array( $this->admin, 'register_settings' ) );
+		$this->send->register();
+		$this->card_view->register();
+
+		if ( $this->admin ) {
+			add_action( 'admin_menu', array( $this->admin, 'register_menu' ) );
+			add_action( 'admin_init', array( $this->admin, 'register_settings' ) );
+		}
 
 		if ( $this->card_meta ) {
 			$this->card_meta->register();

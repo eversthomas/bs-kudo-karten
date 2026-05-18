@@ -1,0 +1,110 @@
+/**
+ * BS Kudo Karten – Webansicht (Phase 5)
+ */
+
+.bskudo-card-view-page {
+	margin: 0;
+	min-height: 100vh;
+	background: #f4f4f4;
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	color: #2a2a2a;
+}
+
+.bskudo-card-view {
+	max-width: 920px;
+	margin: 0 auto;
+	padding: 2rem 1.25rem 3rem;
+	box-sizing: border-box;
+}
+
+.bskudo-card-view__header {
+	text-align: center;
+	margin-bottom: 1.75rem;
+}
+
+.bskudo-card-view__eyebrow {
+	margin: 0 0 0.35rem;
+	font-size: 0.875rem;
+	color: #888;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+}
+
+.bskudo-card-view__title {
+	margin: 0;
+	font-size: 1.35rem;
+	font-weight: 600;
+	color: var(--bskudo-accent, #c45c3e);
+}
+
+.bskudo-card-view__hint {
+	text-align: center;
+	margin: 0 0 1rem;
+	font-size: 0.9rem;
+	color: #666;
+}
+
+.bskudo-card-view__layout {
+	margin-bottom: 1.25rem;
+}
+
+.bskudo-preview-duo--view {
+	max-width: 720px;
+	margin: 0 auto;
+}
+
+.bskudo-card-view__flip-wrap {
+	max-width: 360px;
+	margin: 0 auto;
+	text-align: center;
+}
+
+.bskudo-card-view__flip-card {
+	margin: 0 auto 1rem;
+	cursor: pointer;
+}
+
+.bskudo-card-view__flip-btn {
+	margin: 0 auto;
+}
+
+.bskudo-card-view__tabs {
+	display: flex;
+	justify-content: center;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+}
+
+.bskudo-card-view__tab {
+	padding: 0.5rem 1rem;
+	border-radius: 999px;
+	border: 1px solid #ccc;
+	background: #fff;
+	font: inherit;
+	font-size: 0.9rem;
+	cursor: pointer;
+	color: #444;
+}
+
+.bskudo-card-view__tab--active {
+	background: var(--bskudo-accent, #c45c3e);
+	border-color: var(--bskudo-accent, #c45c3e);
+	color: #fff;
+}
+
+.bskudo-card-view__footer {
+	margin-top: 2rem;
+	text-align: center;
+	font-size: 0.75rem;
+	color: #aaa;
+}
+
+.bskudo-card-view__footer p {
+	margin: 0;
+}
+
+@media (max-width: 640px) {
+	.bskudo-card-view {
+		padding: 1.25rem 1rem 2rem;
+	}
+}

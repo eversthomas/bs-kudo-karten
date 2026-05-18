@@ -135,7 +135,7 @@ Phase 3: Wizard – alle 3 Schritte, Live-Vorschau (Vorderseite Text, Rückseite
 Phase 4: Versand – wp_mail(), Sicherheit
 Phase 5: Webansicht – Token, card-view.php
 Phase 6: Branding – HTML-Mail, Logo, Farbe, JPG-Rendering Vorder-/Rückseite
-Phase 7: Polish – QR-Code, verzögerter Versand, "An mich selbst"
+Phase 7: Polish – QR-Code, verzögerter Versand, „An mich selbst“ (umgesetzt)
 
 ## Branding
 Entwickelt von: Tom Evers – bezugssysteme.de

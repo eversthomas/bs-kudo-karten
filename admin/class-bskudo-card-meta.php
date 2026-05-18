@@ -10,16 +10,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Impuls-Text, Akzentfarbe und Icon-Position im Karten-Editor.
+ * Rückseiten-Branding, Akzentfarbe und Icon-Position im Karten-Editor.
  */
 class BSKudo_Card_Meta {
 
 	/**
 	 * Meta-Keys mit Prefix.
 	 */
-	const META_IMPULSE = '_bskudo_impulse_text';
-	const META_ACCENT  = '_bskudo_accent_color';
-	const META_ICON    = '_bskudo_icon_position';
+	const META_BACK_BRANDING = '_bskudo_back_branding';
+	const META_ACCENT        = '_bskudo_accent_color';
+	const META_ICON            = '_bskudo_icon_position';
 
 	/**
 	 * Hooks registrieren.
@@ -51,12 +51,13 @@ class BSKudo_Card_Meta {
 	public function render_meta_box( WP_Post $post ) {
 		wp_nonce_field( 'bskudo_save_card_meta', 'bskudo_card_meta_nonce' );
 
-		$impulse  = get_post_meta( $post->ID, self::META_IMPULSE, true );
-		$accent   = get_post_meta( $post->ID, self::META_ACCENT, true );
-		$icon_pos = get_post_meta( $post->ID, self::META_ICON, true );
+		$back_branding = get_post_meta( $post->ID, self::META_BACK_BRANDING, true );
+		$accent        = get_post_meta( $post->ID, self::META_ACCENT, true );
+		$icon_pos      = get_post_meta( $post->ID, self::META_ICON, true );
 
-		if ( ! is_string( $impulse ) ) {
-			$impulse = '';
+		if ( ! is_string( $back_branding ) || '' === trim( $back_branding ) ) {
+			$legacy = get_post_meta( $post->ID, '_bskudo_impulse_text', true );
+			$back_branding = is_string( $legacy ) ? $legacy : '';
 		}
 		if ( ! is_string( $accent ) || '' === $accent ) {
 			$accent = '#c45c3e';
@@ -66,13 +67,13 @@ class BSKudo_Card_Meta {
 		}
 		?>
 		<p>
-			<label for="bskudo_impulse_text"><strong><?php esc_html_e( 'Rückseiten-Branding (optional)', 'bs-kudo-karten' ); ?></strong></label><br>
+			<label for="bskudo_back_branding"><strong><?php esc_html_e( 'Rückseiten-Branding (optional)', 'bs-kudo-karten' ); ?></strong></label><br>
 			<textarea
-				id="bskudo_impulse_text"
-				name="bskudo_impulse_text"
+				id="bskudo_back_branding"
+				name="bskudo_back_branding"
 				rows="3"
 				class="large-text"
-			><?php echo esc_textarea( $impulse ); ?></textarea>
+			><?php echo esc_textarea( $back_branding ); ?></textarea>
 			<span class="description"><?php esc_html_e( 'Überschreibt das globale Branding aus den Plugin-Einstellungen. Leer = Standard-Branding.', 'bs-kudo-karten' ); ?></span>
 		</p>
 		<p>
@@ -118,8 +119,8 @@ class BSKudo_Card_Meta {
 			return;
 		}
 
-		$impulse = isset( $_POST['bskudo_impulse_text'] )
-			? sanitize_textarea_field( wp_unslash( $_POST['bskudo_impulse_text'] ) )
+		$back_branding = isset( $_POST['bskudo_back_branding'] )
+			? sanitize_textarea_field( wp_unslash( $_POST['bskudo_back_branding'] ) )
 			: '';
 
 		$accent = isset( $_POST['bskudo_accent_color'] )
@@ -138,7 +139,7 @@ class BSKudo_Card_Meta {
 			$accent = '#c45c3e';
 		}
 
-		update_post_meta( $post_id, self::META_IMPULSE, $impulse );
+		update_post_meta( $post_id, self::META_BACK_BRANDING, $back_branding );
 		update_post_meta( $post_id, self::META_ACCENT, $accent );
 		update_post_meta( $post_id, self::META_ICON, $icon_pos );
 	}

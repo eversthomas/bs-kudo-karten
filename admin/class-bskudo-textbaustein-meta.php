@@ -18,11 +18,6 @@ class BSKudo_Textbaustein_Meta {
 	const META_SETS = '_bskudo_linked_sets';
 
 	/**
-	 * Maximale Textlänge laut Architektur.
-	 */
-	const CHAR_LIMIT = 160;
-
-	/**
 	 * Hooks registrieren.
 	 */
 	public function register() {
@@ -158,9 +153,9 @@ class BSKudo_Textbaustein_Meta {
 		// Text im Editor auf Zeichenlimit kürzen.
 		$content = wp_strip_all_tags( $post->post_content );
 		if ( function_exists( 'mb_substr' ) ) {
-			$content = mb_substr( $content, 0, self::CHAR_LIMIT );
+			$content = mb_substr( $content, 0, BSKUDO_CHAR_LIMIT );
 		} else {
-			$content = substr( $content, 0, self::CHAR_LIMIT );
+			$content = substr( $content, 0, BSKUDO_CHAR_LIMIT );
 		}
 
 		if ( $content !== wp_strip_all_tags( $post->post_content ) ) {

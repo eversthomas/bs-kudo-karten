@@ -20,11 +20,6 @@ class BSKudo_Shortcode {
 	const TAG = 'kudo_karten';
 
 	/**
-	 * Standard-Zeichenlimit für Karten-Text.
-	 */
-	const CHAR_LIMIT = 160;
-
-	/**
 	 * Ob der Footer-Hook für verspätetes CSS bereits gesetzt wurde.
 	 *
 	 * @var bool
@@ -44,6 +39,20 @@ class BSKudo_Shortcode {
 	 * @var string
 	 */
 	private $set_slug = '';
+
+	/**
+	 * Gecachte Karten pro Set-Slug (Instance-Cache).
+	 *
+	 * @var array<string, array<int, array<string, mixed>>>
+	 */
+	private $cards_cache = array();
+
+	/**
+	 * Gecachte Textbausteine für JavaScript.
+	 *
+	 * @var array<int, array<string, mixed>>|null
+	 */
+	private $textbausteine_cache = null;
 
 	/**
 	 * Hooks registrieren.
@@ -73,11 +82,14 @@ class BSKudo_Shortcode {
 
 		// Shortcode läuft nach wp_enqueue_scripts – Assets hier nachladen.
 		$this->enqueue_assets();
+		$this->localize_wizard_script();
 
-		$cards          = $this->get_cards( $this->set_slug );
-		$char_limit     = self::CHAR_LIMIT;
-		$privacy_text   = $this->get_privacy_text();
-		$branding_back  = $this->get_default_branding_text();
+		$cards               = $this->get_cards( $this->set_slug );
+		$char_limit          = BSKudo_Settings::get_char_limit();
+		$privacy_text        = $this->get_privacy_text();
+		$branding_back       = $this->get_default_branding_text();
+		$enable_send_to_self = BSKudo_Settings::is_feature_enabled( 'enable_send_to_self' );
+		$enable_delayed_send = BSKudo_Settings::is_feature_enabled( 'enable_delayed_send' );
 
 		ob_start();
 		include BSKUDO_PATH . 'public/templates/wizard.php';
@@ -114,7 +126,7 @@ class BSKudo_Shortcode {
 	}
 
 	/**
-	 * CSS und JS laden (idempotent).
+	 * CSS und JS laden (idempotent, ohne wp_localize_script).
 	 */
 	public function enqueue_assets() {
 		if ( self::$assets_enqueued ) {
@@ -131,38 +143,59 @@ class BSKudo_Shortcode {
 		wp_enqueue_style( 'bskudo-wizard' );
 		wp_enqueue_script( 'bskudo-wizard' );
 
+		$this->maybe_hook_footer_styles();
+	}
+
+	/**
+	 * Wizard-Daten für JavaScript (nur aus render() aufrufen).
+	 */
+	private function localize_wizard_script() {
+		if ( ! wp_script_is( 'bskudo-wizard', 'enqueued' ) ) {
+			return;
+		}
+
 		wp_localize_script(
 			'bskudo-wizard',
 			'bskudoWizard',
 			array(
-				'maxChars'      => self::CHAR_LIMIT,
-				'brandingBack'  => $this->get_default_branding_text(),
-				'cards'         => $this->get_cards_for_js(),
-				'textbausteine' => $this->get_textbausteine_for_js(),
-				'i18n'          => array(
-					'previewFront'     => __( 'Vorderseite', 'bs-kudo-karten' ),
-					'previewBack'      => __( 'Rückseite (Branding)', 'bs-kudo-karten' ),
-					'flipHint'         => __( 'Umdrehen zeigt das Branding auf der Rückseite.', 'bs-kudo-karten' ),
-					'showCardBack'     => __( 'Rückseite anzeigen', 'bs-kudo-karten' ),
-					'showCardFront'    => __( 'Vorderseite anzeigen', 'bs-kudo-karten' ),
-					'selectCard'       => __( 'Bitte wähle eine Karte aus.', 'bs-kudo-karten' ),
-					'cardSelected'     => __( 'Karte ausgewählt', 'bs-kudo-karten' ),
-					'enterMessage'     => __( 'Bitte schreibe einen kurzen Text für deine Karte.', 'bs-kudo-karten' ),
-					'charLimit'        => __( 'Maximal %d Zeichen.', 'bs-kudo-karten' ),
-					'fillAllFields'    => __( 'Bitte fülle alle Pflichtfelder aus.', 'bs-kudo-karten' ),
-					'invalidEmail'     => __( 'Bitte gib eine gültige E-Mail-Adresse ein.', 'bs-kudo-karten' ),
-					'next'             => __( 'Weiter', 'bs-kudo-karten' ),
-					'back'             => __( 'Zurück', 'bs-kudo-karten' ),
-					'sendSoon'         => __( 'Versand wird in der nächsten Version freigeschaltet.', 'bs-kudo-karten' ),
-					'noTextbausteine'  => __( 'Keine Textbausteine für diese Karte – schreib deinen eigenen Text.', 'bs-kudo-karten' ),
-					'previewLabel'     => __( 'Live-Vorschau deiner Karte', 'bs-kudo-karten' ),
-					'largePreview'     => __( 'Große Vorschau', 'bs-kudo-karten' ),
-					'impulsesLabel'    => __( 'Textimpulse', 'bs-kudo-karten' ),
+				'ajaxUrl'            => admin_url( 'admin-ajax.php' ),
+				'ajaxAction'         => BSKudo_Send::AJAX_ACTION,
+				'nonce'              => wp_create_nonce( BSKudo_Security::NONCE_ACTION ),
+				'maxChars'           => BSKudo_Settings::get_char_limit(),
+				'brandingBack'       => $this->get_default_branding_text(),
+				'enableSendToSelf'   => BSKudo_Settings::is_feature_enabled( 'enable_send_to_self' ),
+				'enableDelayedSend'  => BSKudo_Settings::is_feature_enabled( 'enable_delayed_send' ),
+				'scheduleMinMinutes' => 5,
+				'cards'              => $this->get_cards_for_js(),
+				'textbausteine'      => $this->get_textbausteine_for_js(),
+				'i18n'               => array(
+					'previewFront'    => __( 'Vorderseite', 'bs-kudo-karten' ),
+					'previewBack'     => __( 'Rückseite (Branding)', 'bs-kudo-karten' ),
+					'flipHint'        => __( 'Umdrehen zeigt das Branding auf der Rückseite.', 'bs-kudo-karten' ),
+					'showCardBack'    => __( 'Rückseite anzeigen', 'bs-kudo-karten' ),
+					'showCardFront'   => __( 'Vorderseite anzeigen', 'bs-kudo-karten' ),
+					'selectCard'      => __( 'Bitte wähle eine Karte aus.', 'bs-kudo-karten' ),
+					'cardSelected'    => __( 'Karte ausgewählt', 'bs-kudo-karten' ),
+					'enterMessage'    => __( 'Bitte schreibe einen kurzen Text für deine Karte.', 'bs-kudo-karten' ),
+					'charLimit'       => __( 'Maximal %d Zeichen.', 'bs-kudo-karten' ),
+					'fillAllFields'   => __( 'Bitte fülle alle Pflichtfelder aus.', 'bs-kudo-karten' ),
+					'invalidEmail'    => __( 'Bitte gib eine gültige E-Mail-Adresse ein.', 'bs-kudo-karten' ),
+					'next'            => __( 'Weiter', 'bs-kudo-karten' ),
+					'back'            => __( 'Zurück', 'bs-kudo-karten' ),
+					'send'            => __( 'Kudo-Karte senden', 'bs-kudo-karten' ),
+					'sending'         => __( 'Wird gesendet …', 'bs-kudo-karten' ),
+					'sendError'       => __( 'Beim Versand ist ein Fehler aufgetreten. Bitte versuche es erneut.', 'bs-kudo-karten' ),
+					'sendAnother'     => __( 'Weitere Kudo-Karte senden', 'bs-kudo-karten' ),
+					'sendToSelf'      => __( 'Karte an mich selbst senden', 'bs-kudo-karten' ),
+					'scheduleLater'   => __( 'Später senden', 'bs-kudo-karten' ),
+					'scheduleInvalid' => __( 'Bitte wähle ein gültiges Datum in der Zukunft (mindestens 5 Minuten).', 'bs-kudo-karten' ),
+					'noTextbausteine' => __( 'Keine Textbausteine für diese Karte – schreib deinen eigenen Text.', 'bs-kudo-karten' ),
+					'previewLabel'    => __( 'Live-Vorschau deiner Karte', 'bs-kudo-karten' ),
+					'largePreview'    => __( 'Große Vorschau', 'bs-kudo-karten' ),
+					'impulsesLabel'   => __( 'Textimpulse', 'bs-kudo-karten' ),
 				),
 			)
 		);
-
-		$this->maybe_hook_footer_styles();
 	}
 
 	/**
@@ -203,12 +236,18 @@ class BSKudo_Shortcode {
 	}
 
 	/**
-	 * Veröffentlichte Kudo-Karten laden.
+	 * Veröffentlichte Kudo-Karten laden (mit Instance-Cache).
 	 *
 	 * @param string $set_slug Optional: Kudo-Set (Taxonomie-Slug) filtern.
 	 * @return array<int, array<string, mixed>>
 	 */
 	public function get_cards( $set_slug = '' ) {
+		$cache_key = $set_slug;
+
+		if ( isset( $this->cards_cache[ $cache_key ] ) ) {
+			return $this->cards_cache[ $cache_key ];
+		}
+
 		$query_args = array(
 			'post_type'      => 'kudo_card',
 			'post_status'    => 'publish',
@@ -230,15 +269,15 @@ class BSKudo_Shortcode {
 		$query = new WP_Query( $query_args );
 		$cards = array();
 
-		if ( ! $query->have_posts() ) {
-			return $cards;
-		}
-
-		foreach ( $query->posts as $post ) {
-			$cards[] = $this->map_card( $post );
+		if ( $query->have_posts() ) {
+			foreach ( $query->posts as $post ) {
+				$cards[] = $this->map_card( $post );
+			}
 		}
 
 		wp_reset_postdata();
+
+		$this->cards_cache[ $cache_key ] = $cards;
 
 		return $cards;
 	}
@@ -250,8 +289,8 @@ class BSKudo_Shortcode {
 	 * @return array<string, mixed>
 	 */
 	private function map_card( WP_Post $post ) {
-		$image_id    = get_post_thumbnail_id( $post->ID );
-		$image_width = 0;
+		$image_id     = get_post_thumbnail_id( $post->ID );
+		$image_width  = 0;
 		$image_height = 0;
 
 		if ( $image_id ) {
@@ -262,9 +301,14 @@ class BSKudo_Shortcode {
 			}
 		}
 
-		$accent   = get_post_meta( $post->ID, '_bskudo_accent_color', true );
-		$icon_pos = get_post_meta( $post->ID, '_bskudo_icon_position', true );
-		$impulse  = get_post_meta( $post->ID, '_bskudo_impulse_text', true );
+		$accent       = get_post_meta( $post->ID, '_bskudo_accent_color', true );
+		$icon_pos     = get_post_meta( $post->ID, '_bskudo_icon_position', true );
+		$back_branding = get_post_meta( $post->ID, '_bskudo_back_branding', true );
+
+		if ( ! is_string( $back_branding ) || '' === trim( $back_branding ) ) {
+			$legacy = get_post_meta( $post->ID, '_bskudo_impulse_text', true );
+			$back_branding = is_string( $legacy ) ? $legacy : '';
+		}
 
 		if ( ! is_string( $accent ) || '' === $accent ) {
 			$accent = '#c45c3e';
@@ -292,11 +336,10 @@ class BSKudo_Shortcode {
 			'image_width'   => $image_width,
 			'image_height'  => $image_height,
 			'image_alt'     => $image_id ? (string) get_post_meta( $image_id, '_wp_attachment_image_alt', true ) : '',
-			'impulse'        => is_string( $impulse ) ? $impulse : '',
-			'back_branding'  => is_string( $impulse ) ? trim( $impulse ) : '',
-			'accent_color'   => $accent,
-			'icon_position'  => $icon_pos,
-			'set_ids'        => array_map( 'intval', $set_ids ),
+			'back_branding' => trim( (string) $back_branding ),
+			'accent_color'  => $accent,
+			'icon_position' => $icon_pos,
+			'set_ids'       => array_map( 'intval', $set_ids ),
 		);
 	}
 
@@ -311,16 +354,16 @@ class BSKudo_Shortcode {
 
 		foreach ( $cards as $card ) {
 			$payload[] = array(
-				'id'            => (int) $card['id'],
-				'title'         => (string) $card['title'],
-				'imageUrl'      => (string) $card['image_url'],
-				'imageWidth'    => (int) ( $card['image_width'] ?? 0 ),
-				'imageHeight'   => (int) ( $card['image_height'] ?? 0 ),
-				'imageAlt'      => (string) $card['image_alt'],
-				'accentColor'   => (string) $card['accent_color'],
-				'iconPosition'  => (string) $card['icon_position'],
-				'backBranding'  => (string) ( $card['back_branding'] ?? '' ),
-				'setIds'        => isset( $card['set_ids'] ) ? $card['set_ids'] : array(),
+				'id'           => (int) $card['id'],
+				'title'        => (string) $card['title'],
+				'imageUrl'     => (string) $card['image_url'],
+				'imageWidth'   => (int) ( $card['image_width'] ?? 0 ),
+				'imageHeight'  => (int) ( $card['image_height'] ?? 0 ),
+				'imageAlt'     => (string) $card['image_alt'],
+				'accentColor'  => (string) $card['accent_color'],
+				'iconPosition' => (string) $card['icon_position'],
+				'backBranding' => (string) ( $card['back_branding'] ?? '' ),
+				'setIds'       => isset( $card['set_ids'] ) ? $card['set_ids'] : array(),
 			);
 		}
 
@@ -328,11 +371,15 @@ class BSKudo_Shortcode {
 	}
 
 	/**
-	 * Textbausteine für JavaScript laden.
+	 * Textbausteine für JavaScript laden (mit Instance-Cache).
 	 *
 	 * @return array<int, array<string, mixed>>
 	 */
 	private function get_textbausteine_for_js() {
+		if ( null !== $this->textbausteine_cache ) {
+			return $this->textbausteine_cache;
+		}
+
 		$query = new WP_Query(
 			array(
 				'post_type'      => 'kudo_textbaustein',
@@ -343,43 +390,44 @@ class BSKudo_Shortcode {
 			)
 		);
 
-		$items = array();
+		$items      = array();
+		$char_limit = BSKudo_Settings::get_char_limit();
 
-		if ( ! $query->have_posts() ) {
-			return $items;
-		}
+		if ( $query->have_posts() ) {
+			foreach ( $query->posts as $post ) {
+				$text = wp_strip_all_tags( $post->post_content );
+				if ( function_exists( 'mb_substr' ) ) {
+					$text = mb_substr( $text, 0, $char_limit );
+				} else {
+					$text = substr( $text, 0, $char_limit );
+				}
 
-		foreach ( $query->posts as $post ) {
-			$text = wp_strip_all_tags( $post->post_content );
-			if ( function_exists( 'mb_substr' ) ) {
-				$text = mb_substr( $text, 0, self::CHAR_LIMIT );
-			} else {
-				$text = substr( $text, 0, self::CHAR_LIMIT );
+				$text = trim( $text );
+				if ( '' === $text ) {
+					continue;
+				}
+
+				$card_id = (int) get_post_meta( $post->ID, '_bskudo_linked_card', true );
+				$set_ids = get_post_meta( $post->ID, '_bskudo_linked_sets', true );
+
+				if ( ! is_array( $set_ids ) ) {
+					$set_ids = array();
+				}
+
+				$items[] = array(
+					'id'     => $post->ID,
+					'text'   => $text,
+					'cardId' => $card_id,
+					'setIds' => array_map( 'intval', $set_ids ),
+				);
 			}
-
-			$text = trim( $text );
-			if ( '' === $text ) {
-				continue;
-			}
-
-			$card_id = (int) get_post_meta( $post->ID, '_bskudo_linked_card', true );
-			$set_ids = get_post_meta( $post->ID, '_bskudo_linked_sets', true );
-
-			if ( ! is_array( $set_ids ) ) {
-				$set_ids = array();
-			}
-
-			$items[] = array(
-				'id'     => $post->ID,
-				'text'   => $text,
-				'cardId' => $card_id,
-				'setIds' => array_map( 'intval', $set_ids ),
-			);
 		}
 
 		wp_reset_postdata();
 
-		return $items;
+		$this->textbausteine_cache = $items;
+
+		return $this->textbausteine_cache;
 	}
 
 	/**
@@ -388,16 +436,26 @@ class BSKudo_Shortcode {
 	 * @return string
 	 */
 	private function get_privacy_text() {
-		return __( 'Deine Angaben werden nur zum Versand dieser Kudo-Karte verwendet und nicht gespeichert.', 'bs-kudo-karten' );
+		$text = (string) BSKudo_Settings::get( 'security', 'privacy_text', '' );
+
+		if ( '' === trim( $text ) ) {
+			$text = __( 'Deine Angaben werden nur zum Versand dieser Kudo-Karte verwendet und nicht gespeichert.', 'bs-kudo-karten' );
+		}
+
+		return $text;
 	}
 
 	/**
-	 * Standard-Text für die Karten-Rückseite (Branding-Tab in späterer Phase).
+	 * Standard-Text für die Karten-Rückseite.
 	 *
 	 * @return string
 	 */
 	private function get_default_branding_text() {
-		$default = __( 'Mit Herz · Systemische Beratung', 'bs-kudo-karten' );
+		$default = (string) BSKudo_Settings::get( 'branding', 'branding_text', '' );
+
+		if ( '' === trim( $default ) ) {
+			$default = __( 'Mit Herz · Systemische Beratung', 'bs-kudo-karten' );
+		}
 
 		/**
 		 * Standard-Branding auf der Karten-Rückseite anpassen.
