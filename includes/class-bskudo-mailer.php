@@ -78,15 +78,20 @@ class BSKudo_Mailer {
 			$view_url = BSKudo_Token::get_url( $token );
 		}
 
+		$card_image_id = (int) get_post_thumbnail_id( $card->ID );
+		$card_img_src  = '';
+
 		$card_images = BSKudo_Card_Renderer::render_for_mail( (int) $data['card_id'], (string) $data['message'], $branding );
 
-		$logo_id  = (int) BSKudo_Settings::get( 'branding', 'logo_id', 0 );
-		$logo_url = $logo_id ? (string) wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
-
-		$accent = get_post_meta( $card->ID, '_bskudo_accent_color', true );
-		if ( ! is_string( $accent ) || ! sanitize_hex_color( $accent ) ) {
-			$accent = (string) BSKudo_Settings::get( 'branding', 'primary_color', '#c45c3e' );
+		if ( $card_images && ! empty( $card_images['front'] ) ) {
+			// Gerenderte Vorderseite (Text eingebrannt) als data-URI.
+			$card_img_src = 'data:image/jpeg;base64,' . $card_images['front'];
+		} elseif ( $card_image_id ) {
+			$card_img_src = $this->get_attachment_data_uri( $card_image_id );
 		}
+
+		$logo_id  = (int) BSKudo_Settings::get( 'branding', 'logo_id', 0 );
+		$logo_src = $logo_id ? $this->get_attachment_data_uri( $logo_id ) : '';
 
 		$qr_data_uri = '';
 		if ( $view_url && BSKudo_Settings::is_feature_enabled( 'show_qr_in_mail' ) ) {
@@ -95,19 +100,15 @@ class BSKudo_Mailer {
 
 		$body = $this->build_body(
 			array(
-				'recipient_name'    => $data['recipient_name'],
-				'sender_name'       => $data['sender_name'],
-				'message'           => $data['message'],
-				'card_title'        => $card_title,
-				'branding_text'     => $branding,
-				'view_url'          => $view_url,
-				'logo_url'          => $logo_url,
-				'accent_color'      => $accent,
-				'mail_footer_text'  => (string) BSKudo_Settings::get( 'branding', 'mail_footer_text', '' ),
-				'front_jpg_base64'  => $card_images ? $card_images['front'] : '',
-				'back_jpg_base64'   => $card_images ? $card_images['back'] : '',
-				'has_card_images'   => (bool) $card_images,
-				'qr_data_uri'       => $qr_data_uri,
+				'recipient_name'   => $data['recipient_name'],
+				'sender_name'      => $data['sender_name'],
+				'sender_display'   => (string) BSKudo_Settings::get( 'general', 'sender_name', get_bloginfo( 'name' ) ),
+				'view_url'         => $view_url,
+				'card_img_src'     => $card_img_src,
+				'logo_src'         => $logo_src,
+				'mail_footer_text' => (string) BSKudo_Settings::get( 'branding', 'mail_footer_text', '' ),
+				'qr_data_uri'      => $qr_data_uri,
+				'token_ttl_days'   => (string) BSKudo_Settings::get_token_ttl_days(),
 			)
 		);
 
@@ -395,6 +396,41 @@ class BSKudo_Mailer {
 		);
 
 		return sanitize_text_field( $subject );
+	}
+
+	/**
+	 * Medien-Anhang als data-URI (inline, keine externe Bild-URL).
+	 *
+	 * @param int $attachment_id Attachment-ID.
+	 * @return string data-URI oder leer.
+	 */
+	private function get_attachment_data_uri( $attachment_id ) {
+		$attachment_id = absint( $attachment_id );
+
+		if ( $attachment_id < 1 ) {
+			return '';
+		}
+
+		$img_path = get_attached_file( $attachment_id );
+
+		if ( ! $img_path || ! is_readable( $img_path ) ) {
+			return '';
+		}
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		$img_data = file_get_contents( $img_path );
+
+		if ( false === $img_data ) {
+			return '';
+		}
+
+		$img_mime = get_post_mime_type( $attachment_id );
+
+		if ( ! is_string( $img_mime ) || '' === $img_mime ) {
+			$img_mime = 'image/jpeg';
+		}
+
+		return 'data:' . $img_mime . ';base64,' . base64_encode( $img_data );
 	}
 
 	/**

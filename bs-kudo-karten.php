@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:  BS Kudo Karten
- * Plugin URI:   https://bezugssysteme.de
+ * Plugin URI:   https://github.com/eversthomas/bs-kudo-karten
  * Description:  Digitale Kudo-Karten – entwickelt für Marcus Rosik, Systemische Beratung.
  * Version:      0.1.0
  * Author:       Tom Evers – bezugssysteme.de
@@ -14,11 +14,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BSKUDO_VERSION', '0.2.0' );
+define( 'BSKUDO_VERSION', '0.3.0' );
 define( 'BSKUDO_CHAR_LIMIT', 160 );
 define( 'BSKUDO_PATH', plugin_dir_path( __FILE__ ) );
 define( 'BSKUDO_URL', plugin_dir_url( __FILE__ ) );
 define( 'BSKUDO_BASENAME', plugin_basename( __FILE__ ) );
+define( 'BSKUDO_UPDATE_CACHE_KEY', 'bskudo_github_version' );
 
 /**
  * Optional in wp-config.php: define( 'BSKUDO_MAIL_DEBUG', true );
@@ -26,6 +27,18 @@ define( 'BSKUDO_BASENAME', plugin_basename( __FILE__ ) );
  */
 
 require_once BSKUDO_PATH . 'includes/class-bskudo-loader.php';
+
+if ( is_admin() ) {
+	require_once BSKUDO_PATH . 'includes/class-bskudo-updater.php';
+
+	$bskudo_updater = new BSKudo_Updater(
+		__FILE__,
+		'DEIN-GITHUB-USERNAME',
+		'bs-kudo-karten',
+		BSKUDO_VERSION
+	);
+	$bskudo_updater->init();
+}
 
 /**
  * Rewrite-Regeln für /kudo-karte/{token}/ registrieren.

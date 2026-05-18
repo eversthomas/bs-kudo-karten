@@ -1,33 +1,32 @@
 <?php
 /**
- * Webansicht für Empfänger (Phase 5, tokenbasiert).
+ * Webansicht für Empfänger (tokenbasiert) – Vorder-/Rückseite per Toggle.
  *
  * @package BSKudo
  *
  * @var array<string, mixed> $card               Karten-Daten.
  * @var string               $message            Nutzer-Text.
- * @var string               $message_position   CSS-Klasse Textposition.
+ * @var string               $message_position   CSS-Klasse Textposition (legacy).
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$card             = isset( $card ) && is_array( $card ) ? $card : array();
-$message          = isset( $message ) ? (string) $message : '';
-$message_position = isset( $message_position ) ? (string) $message_position : 'bskudo-card--msg-center';
-$accent_color     = esc_attr( (string) ( $card['accent_color'] ?? '#c45c3e' ) );
-$image_url        = esc_url( (string) ( $card['image_url'] ?? '' ) );
-$image_alt        = '' !== (string) ( $card['image_alt'] ?? '' )
+$card         = isset( $card ) && is_array( $card ) ? $card : array();
+$message      = isset( $message ) ? (string) $message : '';
+$accent_color = sanitize_hex_color( (string) ( $card['accent_color'] ?? '#335C70' ) );
+if ( ! $accent_color ) {
+	$accent_color = '#335C70';
+}
+$image_url  = esc_url( (string) ( $card['image_url'] ?? '' ) );
+$image_alt  = '' !== (string) ( $card['image_alt'] ?? '' )
 	? esc_attr( (string) $card['image_alt'] )
-	: esc_attr( (string) ( $card['title'] ?? '' ) );
-$card_title       = esc_html( (string) ( $card['title'] ?? '' ) );
-$branding         = esc_html( (string) ( $card['back_branding'] ?? '' ) );
-$aspect_w         = (int) ( $card['image_width'] ?? 0 );
-$aspect_h         = (int) ( $card['image_height'] ?? 0 );
-$aspect_style     = ( $aspect_w > 0 && $aspect_h > 0 )
-	? ' style="--bskudo-aspect-ratio: ' . esc_attr( (string) $aspect_w ) . ' / ' . esc_attr( (string) $aspect_h ) . ';"'
-	: '';
+	: esc_attr( (string) ( $card['title'] ?? __( 'Kudo-Karte', 'bs-kudo-karten' ) ) );
+$card_title = esc_html( (string) ( $card['title'] ?? '' ) );
+$branding   = esc_html( (string) ( $card['back_branding'] ?? '' ) );
+$icon_pos   = isset( $card['icon_position'] ) ? (string) $card['icon_position'] : 'center';
+$msg_align  = in_array( $icon_pos, array( 'left', 'right' ), true ) ? $icon_pos : 'center';
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -36,107 +35,207 @@ $aspect_style     = ( $aspect_w > 0 && $aspect_h > 0 )
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="robots" content="noindex,nofollow">
 	<title><?php echo esc_html( sprintf( /* translators: %s: site name */ __( 'Deine Kudo-Karte · %s', 'bs-kudo-karten' ), get_bloginfo( 'name' ) ) ); ?></title>
+	<style>
+		body.bskudo-card-view-page {
+			margin: 0;
+			min-height: 100vh;
+			background: #f0f0f0;
+			font-family: "Brandon Grotesque", "Nunito", Arial, Helvetica, sans-serif;
+			color: #212121;
+		}
+		.bskudo-card-view-page__wrap {
+			max-width: 520px;
+			margin: 0 auto;
+			padding: 2rem 1.25rem 3rem;
+			text-align: center;
+		}
+		.bskudo-card-view-page__header {
+			margin-bottom: 1.5rem;
+		}
+		.bskudo-card-view-page__eyebrow {
+			margin: 0 0 0.35rem;
+			font-size: 0.875rem;
+			color: rgba(0, 0, 0, 0.45);
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+		}
+		.bskudo-card-view-page__title {
+			margin: 0;
+			font-size: 1.35rem;
+			font-weight: 700;
+			color: #335C70;
+		}
+		.bskudo-cardview__side {
+			display: none;
+			opacity: 0;
+			transition: opacity 0.4s ease;
+		}
+		.bskudo-cardview__side--active {
+			display: block;
+			opacity: 1;
+		}
+		.bskudo-cardview__label {
+			font-size: 11px;
+			font-weight: 500;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+			color: #335C70;
+			margin: 0 0 8px;
+		}
+		.bskudo-cardview__media {
+			position: relative;
+			display: inline-block;
+			max-width: 100%;
+			line-height: 0;
+		}
+		.bskudo-cardview__media img {
+			width: 100%;
+			max-width: 480px;
+			height: auto;
+			border-radius: 12px;
+			display: block;
+			margin: 0 auto;
+			box-shadow: 0 8px 32px rgba(51, 92, 112, 0.15);
+		}
+		.bskudo-cardview__message {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 68%;
+			max-height: 38%;
+			overflow: hidden;
+			margin: 0;
+			padding: 0;
+			color: #2a2a2a;
+			font-family: Georgia, "Times New Roman", serif;
+			font-size: clamp(12px, 3.5vw, 18px);
+			font-style: italic;
+			font-weight: 600;
+			line-height: 1.25;
+			text-align: center;
+			word-break: break-word;
+			text-shadow: 0 0 10px rgba(255, 255, 255, 0.95), 0 0 4px rgba(255, 255, 255, 0.85);
+		}
+		.bskudo-cardview__message--left { text-align: left; }
+		.bskudo-cardview__message--right { text-align: right; }
+		.bskudo-cardview__back-panel {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 100%;
+			max-width: 480px;
+			min-height: 280px;
+			margin: 0 auto;
+			padding: 2rem 1.5rem;
+			box-sizing: border-box;
+			border-radius: 12px;
+			background: <?php echo esc_attr( $accent_color ); ?>;
+			color: #ffffff;
+			font-size: 1rem;
+			font-weight: 600;
+			line-height: 1.45;
+			box-shadow: 0 8px 32px rgba(51, 92, 112, 0.15);
+		}
+		.bskudo-cardview__toggle {
+			background: #FF664D;
+			color: #ffffff;
+			border-radius: 100px;
+			padding: 12px 28px;
+			font-size: 15px;
+			font-weight: 700;
+			border: none;
+			cursor: pointer;
+			margin-top: 1.5rem;
+			transition: background 0.2s ease;
+			font-family: inherit;
+		}
+		.bskudo-cardview__toggle:hover {
+			background: #335C70;
+		}
+		.bskudo-card-view-page__footer {
+			margin-top: 2rem;
+			font-size: 0.75rem;
+			color: #888888;
+		}
+		.bskudo-card-view-page__footer p {
+			margin: 0;
+		}
+	</style>
 </head>
 <body class="bskudo-card-view-page">
-	<main class="bskudo-card-view" style="--bskudo-accent: <?php echo $accent_color; ?>;">
-		<header class="bskudo-card-view__header">
-			<p class="bskudo-card-view__eyebrow"><?php esc_html_e( 'Kudo-Karte für dich', 'bs-kudo-karten' ); ?></p>
+	<div class="bskudo-card-view-page__wrap">
+		<header class="bskudo-card-view-page__header">
+			<p class="bskudo-card-view-page__eyebrow"><?php esc_html_e( 'Kudo-Karte für dich', 'bs-kudo-karten' ); ?></p>
 			<?php if ( $card_title ) : ?>
-				<h1 class="bskudo-card-view__title"><?php echo $card_title; ?></h1>
+				<h1 class="bskudo-card-view-page__title"><?php echo $card_title; ?></h1>
 			<?php endif; ?>
 		</header>
 
-		<div class="bskudo-card-view__layout">
-			<div class="bskudo-card-view__mode bskudo-card-view__mode--duo" data-view-mode="duo">
-				<p class="bskudo-card-view__hint"><?php esc_html_e( 'Vorder- und Rückseite deiner Kudo-Karte', 'bs-kudo-karten' ); ?></p>
-				<div class="bskudo-preview-duo bskudo-preview-duo--view">
-					<div class="bskudo-preview-side">
-						<p class="bskudo-preview-side__label"><?php esc_html_e( 'Vorderseite', 'bs-kudo-karten' ); ?></p>
-						<div class="bskudo-card bskudo-card--preview bskudo-card--natural <?php echo esc_attr( $message_position ); ?>"<?php echo $aspect_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-							<span class="bskudo-card__inner bskudo-card__inner--static bskudo-card__inner--fit">
-								<span class="bskudo-card__face bskudo-card__face--front">
-									<span class="bskudo-card__canvas">
-										<?php if ( $image_url ) : ?>
-											<img
-												class="bskudo-card__image bskudo-card-view__image"
-												src="<?php echo $image_url; ?>"
-												alt="<?php echo $image_alt; ?>"
-												data-width="<?php echo esc_attr( (string) $aspect_w ); ?>"
-												data-height="<?php echo esc_attr( (string) $aspect_h ); ?>"
-											>
-										<?php else : ?>
-											<span class="bskudo-card__placeholder"><?php echo $card_title; ?></span>
-										<?php endif; ?>
-										<span class="bskudo-card__message-zone">
-											<span class="bskudo-card__message bskudo-card-view__message"><?php echo esc_html( $message ); ?></span>
-										</span>
-									</span>
-								</span>
-							</span>
+		<div class="bskudo-cardview">
+			<!-- Vorderseite (initial sichtbar) -->
+			<div class="bskudo-cardview__side bskudo-cardview__side--front bskudo-cardview__side--active">
+				<p class="bskudo-cardview__label"><?php esc_html_e( 'Vorderseite', 'bs-kudo-karten' ); ?></p>
+				<div class="bskudo-cardview__media">
+					<?php if ( $image_url ) : ?>
+						<img src="<?php echo $image_url; ?>" alt="<?php echo esc_attr( sprintf( /* translators: %s: card title */ __( 'Kudo-Karte Vorderseite: %s', 'bs-kudo-karten' ), (string) ( $card['title'] ?? '' ) ) ); ?>">
+					<?php else : ?>
+						<div class="bskudo-cardview__back-panel" style="background:#f8f8f8;color:#333;">
+							<?php echo $card_title; ?>
 						</div>
-					</div>
-					<div class="bskudo-preview-side">
-						<p class="bskudo-preview-side__label"><?php esc_html_e( 'Rückseite (Branding)', 'bs-kudo-karten' ); ?></p>
-						<div class="bskudo-card bskudo-card--preview bskudo-card--natural bskudo-card--back-only"<?php echo $aspect_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-							<span class="bskudo-card__inner bskudo-card__inner--static bskudo-card__inner--fit">
-								<span class="bskudo-card__face bskudo-card__face--back">
-									<span class="bskudo-card__branding"><?php echo $branding; ?></span>
-								</span>
-							</span>
-						</div>
-					</div>
+					<?php endif; ?>
+					<?php if ( '' !== $message && $image_url ) : ?>
+						<p class="bskudo-cardview__message bskudo-cardview__message--<?php echo esc_attr( $msg_align ); ?>"><?php echo esc_html( $message ); ?></p>
+					<?php endif; ?>
 				</div>
 			</div>
 
-			<div class="bskudo-card-view__mode bskudo-card-view__mode--flip" data-view-mode="flip" hidden>
-				<p class="bskudo-card-view__hint"><?php esc_html_e( 'Tippe die Karte an oder nutze den Button zum Umdrehen.', 'bs-kudo-karten' ); ?></p>
-				<div class="bskudo-card-view__flip-wrap">
-					<div class="bskudo-card bskudo-card--hero bskudo-card--natural <?php echo esc_attr( $message_position ); ?> bskudo-card-view__flip-card"<?php echo $aspect_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-						<span class="bskudo-card__inner">
-							<span class="bskudo-card__face bskudo-card__face--front">
-								<span class="bskudo-card__canvas">
-									<?php if ( $image_url ) : ?>
-										<img
-											class="bskudo-card__image bskudo-card-view__flip-image"
-											src="<?php echo $image_url; ?>"
-											alt="<?php echo $image_alt; ?>"
-											data-width="<?php echo esc_attr( (string) $aspect_w ); ?>"
-											data-height="<?php echo esc_attr( (string) $aspect_h ); ?>"
-										>
-									<?php else : ?>
-										<span class="bskudo-card__placeholder"><?php echo $card_title; ?></span>
-									<?php endif; ?>
-									<span class="bskudo-card__message-zone">
-										<span class="bskudo-card__message bskudo-card-view__flip-message"><?php echo esc_html( $message ); ?></span>
-									</span>
-								</span>
-							</span>
-							<span class="bskudo-card__face bskudo-card__face--back">
-								<span class="bskudo-card__branding"><?php echo $branding; ?></span>
-							</span>
-						</span>
-					</div>
-					<button type="button" class="bskudo-btn bskudo-btn--secondary bskudo-card-view__flip-btn">
-						<?php esc_html_e( 'Rückseite anzeigen', 'bs-kudo-karten' ); ?>
-					</button>
+			<!-- Rückseite (Branding) -->
+			<div class="bskudo-cardview__side bskudo-cardview__side--back">
+				<p class="bskudo-cardview__label"><?php esc_html_e( 'Rückseite', 'bs-kudo-karten' ); ?></p>
+				<div
+					class="bskudo-cardview__back-panel"
+					role="img"
+					aria-label="<?php esc_attr_e( 'Kudo-Karte Rückseite', 'bs-kudo-karten' ); ?>"
+				>
+					<?php echo $branding; ?>
 				</div>
 			</div>
+
+			<button type="button" class="bskudo-cardview__toggle" id="bskudo-toggle">
+				<?php esc_html_e( 'Rückseite ansehen', 'bs-kudo-karten' ); ?>
+			</button>
 		</div>
 
-		<nav class="bskudo-card-view__tabs" aria-label="<?php esc_attr_e( 'Ansicht wechseln', 'bs-kudo-karten' ); ?>">
-			<button type="button" class="bskudo-card-view__tab bskudo-card-view__tab--active" data-view-target="duo">
-				<?php esc_html_e( 'Beide Seiten', 'bs-kudo-karten' ); ?>
-			</button>
-			<button type="button" class="bskudo-card-view__tab" data-view-target="flip">
-				<?php esc_html_e( 'Karte umdrehen', 'bs-kudo-karten' ); ?>
-			</button>
-		</nav>
-
 		<?php if ( BSKudo_Settings::get( 'branding', 'footer_powered', true ) ) : ?>
-			<footer class="bskudo-card-view__footer">
-				<p>Powered by BS Kudo Karten · bezugssysteme.de</p>
+			<footer class="bskudo-card-view-page__footer">
+				<p><?php esc_html_e( 'Powered by BS Kudo Karten · bezugssysteme.de', 'bs-kudo-karten' ); ?></p>
 			</footer>
 		<?php endif; ?>
-	</main>
+	</div>
+
+	<script>
+		var toggle = document.getElementById('bskudo-toggle');
+		var front = document.querySelector('.bskudo-cardview__side--front');
+		var back = document.querySelector('.bskudo-cardview__side--back');
+		var showingFront = true;
+		var labelShowBack = <?php echo wp_json_encode( __( 'Rückseite ansehen', 'bs-kudo-karten' ) ); ?>;
+		var labelShowFront = <?php echo wp_json_encode( __( 'Vorderseite ansehen', 'bs-kudo-karten' ) ); ?>;
+
+		if (toggle && front && back) {
+			toggle.addEventListener('click', function () {
+				if (showingFront) {
+					front.classList.remove('bskudo-cardview__side--active');
+					back.classList.add('bskudo-cardview__side--active');
+					toggle.textContent = labelShowFront;
+				} else {
+					back.classList.remove('bskudo-cardview__side--active');
+					front.classList.add('bskudo-cardview__side--active');
+					toggle.textContent = labelShowBack;
+				}
+				showingFront = !showingFront;
+			});
+		}
+	</script>
 </body>
 </html>
