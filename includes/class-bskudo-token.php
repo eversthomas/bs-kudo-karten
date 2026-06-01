@@ -23,11 +23,12 @@ class BSKudo_Token {
 	/**
 	 * Token erzeugen und Payload speichern.
 	 *
-	 * @param int    $card_id Kudo-Karten-Post-ID.
-	 * @param string $message Karten-Text.
+	 * @param int    $card_id     Kudo-Karten-Post-ID.
+	 * @param string $message     Karten-Text.
+	 * @param string $sender_name Name des Versenders (für Webansicht).
 	 * @return string|false Token oder false bei Fehler.
 	 */
-	public static function create( $card_id, $message ) {
+	public static function create( $card_id, $message, $sender_name = '' ) {
 		$card_id = absint( $card_id );
 		$message = trim( (string) $message );
 
@@ -46,9 +47,10 @@ class BSKudo_Token {
 		}
 
 		$payload = array(
-			'card_id' => $card_id,
-			'message' => $message,
-			'created' => time(),
+			'card_id'     => $card_id,
+			'message'     => $message,
+			'created'     => time(),
+			'sender_name' => sanitize_text_field( (string) $sender_name ),
 		);
 
 		$ttl = BSKudo_Settings::get_token_ttl_days() * DAY_IN_SECONDS;
@@ -81,7 +83,7 @@ class BSKudo_Token {
 	 * Token auflösen (Transient laden und Karte prüfen).
 	 *
 	 * @param string $token Token aus URL.
-	 * @return array<string, mixed>|null card_id, message, created.
+	 * @return array<string, mixed>|null card_id, message, created, sender_name.
 	 */
 	public static function resolve( $token ) {
 		$token = self::sanitize_token( $token );
@@ -108,9 +110,10 @@ class BSKudo_Token {
 		}
 
 		return array(
-			'card_id' => $card_id,
-			'message' => $message,
-			'created' => isset( $payload['created'] ) ? (int) $payload['created'] : 0,
+			'card_id'     => $card_id,
+			'message'     => $message,
+			'created'     => isset( $payload['created'] ) ? (int) $payload['created'] : 0,
+			'sender_name' => isset( $payload['sender_name'] ) ? sanitize_text_field( (string) $payload['sender_name'] ) : '',
 		);
 	}
 

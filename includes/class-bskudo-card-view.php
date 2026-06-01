@@ -82,7 +82,9 @@ class BSKudo_Card_View {
 			exit;
 		}
 
-		$this->render_card_page( $card, (string) $payload['message'] );
+		$sender_name = isset( $payload['sender_name'] ) ? (string) $payload['sender_name'] : '';
+
+		$this->render_card_page( $card, (string) $payload['message'], $sender_name );
 		exit;
 	}
 
@@ -154,13 +156,12 @@ class BSKudo_Card_View {
 	/**
 	 * Webansicht rendern.
 	 *
-	 * @param array<string, mixed> $card    Karten-Daten.
-	 * @param string               $message Nutzer-Text.
+	 * @param array<string, mixed> $card        Karten-Daten.
+	 * @param string               $message     Nutzer-Text.
+	 * @param string               $sender_name Name des Versenders.
 	 */
-	private function render_card_page( $card, $message ) {
+	private function render_card_page( $card, $message, $sender_name = '' ) {
 		$this->enqueue_assets( $card );
-
-		$message_position = 'bskudo-card--msg-' . (string) $card['icon_position'];
 
 		status_header( 200 );
 		nocache_headers();

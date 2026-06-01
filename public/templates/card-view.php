@@ -4,9 +4,9 @@
  *
  * @package BSKudo
  *
- * @var array<string, mixed> $card               Karten-Daten.
- * @var string               $message            Nutzer-Text.
- * @var string               $message_position   CSS-Klasse Textposition (legacy).
+ * @var array<string, mixed> $card         Karten-Daten.
+ * @var string               $message      Nutzer-Text.
+ * @var string               $sender_name  Name des Versenders.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,6 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $card         = isset( $card ) && is_array( $card ) ? $card : array();
 $message      = isset( $message ) ? (string) $message : '';
+$sender_name  = isset( $sender_name ) ? (string) $sender_name : '';
 $accent_color = sanitize_hex_color( (string) ( $card['accent_color'] ?? '#335C70' ) );
 if ( ! $accent_color ) {
 	$accent_color = '#335C70';
@@ -44,7 +45,7 @@ $msg_align  = in_array( $icon_pos, array( 'left', 'right' ), true ) ? $icon_pos 
 			color: #212121;
 		}
 		.bskudo-card-view-page__wrap {
-			max-width: 520px;
+			max-width: 800px;
 			margin: 0 auto;
 			padding: 2rem 1.25rem 3rem;
 			text-align: center;
@@ -90,7 +91,7 @@ $msg_align  = in_array( $icon_pos, array( 'left', 'right' ), true ) ? $icon_pos 
 		}
 		.bskudo-cardview__media img {
 			width: 100%;
-			max-width: 480px;
+			max-width: 800px;
 			height: auto;
 			border-radius: 12px;
 			display: block;
@@ -109,7 +110,7 @@ $msg_align  = in_array( $icon_pos, array( 'left', 'right' ), true ) ? $icon_pos 
 			padding: 0;
 			color: #2a2a2a;
 			font-family: Georgia, "Times New Roman", serif;
-			font-size: clamp(12px, 3.5vw, 18px);
+			font-size: clamp(14px, 2.2vw, 24px);
 			font-style: italic;
 			font-weight: 600;
 			line-height: 1.25;
@@ -124,8 +125,8 @@ $msg_align  = in_array( $icon_pos, array( 'left', 'right' ), true ) ? $icon_pos 
 			align-items: center;
 			justify-content: center;
 			width: 100%;
-			max-width: 480px;
-			min-height: 280px;
+			max-width: 800px;
+			min-height: 460px;
 			margin: 0 auto;
 			padding: 2rem 1.5rem;
 			box-sizing: border-box;
@@ -166,9 +167,20 @@ $msg_align  = in_array( $icon_pos, array( 'left', 'right' ), true ) ? $icon_pos 
 <body class="bskudo-card-view-page">
 	<div class="bskudo-card-view-page__wrap">
 		<header class="bskudo-card-view-page__header">
-			<p class="bskudo-card-view-page__eyebrow"><?php esc_html_e( 'Kudo-Karte für dich', 'bs-kudo-karten' ); ?></p>
-			<?php if ( $card_title ) : ?>
-				<h1 class="bskudo-card-view-page__title"><?php echo $card_title; ?></h1>
+			<?php if ( '' !== $sender_name ) : ?>
+				<h1 class="bskudo-card-view-page__title">
+					<?php
+					printf(
+						/* translators: %s: sender name */
+						esc_html__( '%s hat dir etwas Besonderes geschickt – eine persönliche Kudo-Karte', 'bs-kudo-karten' ),
+						esc_html( $sender_name )
+					);
+					?>
+				</h1>
+			<?php else : ?>
+				<h1 class="bskudo-card-view-page__title">
+					<?php esc_html_e( 'Du hast eine persönliche Kudo-Karte erhalten', 'bs-kudo-karten' ); ?>
+				</h1>
 			<?php endif; ?>
 		</header>
 

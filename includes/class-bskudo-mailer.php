@@ -63,7 +63,7 @@ class BSKudo_Mailer {
 
 		$subject  = $this->build_subject( $data, $card_title );
 		$view_url = '';
-		$token    = BSKudo_Token::create( (int) $data['card_id'], (string) $data['message'] );
+		$token    = BSKudo_Token::create( (int) $data['card_id'], (string) $data['message'], (string) $data['sender_name'] );
 
 		if ( $token ) {
 			$view_url = BSKudo_Token::get_url( $token );
@@ -92,6 +92,7 @@ class BSKudo_Mailer {
 			array(
 				'recipient_name'   => $data['recipient_name'],
 				'sender_name'      => $data['sender_name'],
+                'message'          => $data['message'],
 				'sender_display'   => (string) BSKudo_Settings::get( 'general', 'sender_name', get_bloginfo( 'name' ) ),
 				'view_url'         => $view_url,
 				'card_title'       => $card_title,
