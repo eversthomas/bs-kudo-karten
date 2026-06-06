@@ -36,6 +36,19 @@ $logo_url = $logo_id ? wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
 $token = get_query_var( BSKudo_Token::QUERY_VAR );
 $current_url = BSKudo_Token::get_url( $token );
 $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
+
+// Dynamic font scaling for screen and print based on character count
+$char_count = mb_strlen( $message );
+if ( $char_count > 200 ) {
+	$text_size_class = 'bskudo-cardview__message--long';
+	$print_font_size = '9pt';
+} elseif ( $char_count > 120 ) {
+	$text_size_class = 'bskudo-cardview__message--medium';
+	$print_font_size = '11pt';
+} else {
+	$text_size_class = 'bskudo-cardview__message--short';
+	$print_font_size = '14pt';
+}
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -118,13 +131,21 @@ $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
 			padding: 0;
 			color: #2a2a2a;
 			font-family: Georgia, "Times New Roman", serif;
-			font-size: clamp(14px, 2.2vw, 24px);
 			font-style: italic;
 			font-weight: 600;
 			line-height: 1.25;
 			text-align: center;
 			word-break: break-word;
 			text-shadow: 0 0 10px rgba(255, 255, 255, 0.95), 0 0 4px rgba(255, 255, 255, 0.85);
+		}
+		.bskudo-cardview__message--short {
+			font-size: clamp(16px, 2.5vw, 24px);
+		}
+		.bskudo-cardview__message--medium {
+			font-size: clamp(13px, 2.0vw, 18px);
+		}
+		.bskudo-cardview__message--long {
+			font-size: clamp(10px, 1.5vw, 13px);
 		}
 		.bskudo-cardview__message--left { text-align: left; }
 		.bskudo-cardview__message--right { text-align: right; }
@@ -273,8 +294,8 @@ $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
 				top: 1.0cm !important;
 				left: 50% !important;
 				transform: translateX(-50%) !important;
-				width: 10.5cm !important;
-				height: 28.0cm !important;
+				width: 14.8cm !important;
+				height: 22.2cm !important;
 				box-shadow: none !important;
 				border: none !important;
 				margin: 0 !important;
@@ -284,8 +305,8 @@ $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
 			.bskudo-cardview__side {
 				display: block !important;
 				opacity: 1 !important;
-				width: 10.5cm !important;
-				height: 14.0cm !important;
+				width: 14.8cm !important;
+				height: 11.1cm !important;
 				position: absolute !important;
 				left: 0 !important;
 				box-sizing: border-box !important;
@@ -299,13 +320,13 @@ $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
 				transform: rotate(180deg) !important;
 			}
 			.bskudo-cardview__side--front {
-				top: 14.0cm !important;
+				top: 11.1cm !important;
 			}
 
 			.bskudo-cardview__media img,
 			.bskudo-cardview__back-panel {
-				width: 10.5cm !important;
-				height: 14.0cm !important;
+				width: 14.8cm !important;
+				height: 11.1cm !important;
 				border-radius: 0 !important;
 				box-shadow: none !important;
 				border: 1px solid #ddd !important; /* light guidelines for cutting */
@@ -313,7 +334,7 @@ $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
 			}
 			
 			.bskudo-cardview__message {
-				font-size: 15pt !important;
+				font-size: <?php echo $print_font_size; ?> !important;
 				text-shadow: none !important;
 				color: #000000 !important;
 			}
@@ -321,9 +342,9 @@ $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
 			.bskudo-cardview__back-panel {
 				background: <?php echo esc_attr( $accent_color ); ?> !important;
 				color: #ffffff !important;
-				min-height: 14.0cm !important;
-				max-height: 14.0cm !important;
-				height: 14.0cm !important;
+				min-height: 11.1cm !important;
+				max-height: 11.1cm !important;
+				height: 11.1cm !important;
 				padding: 1.0cm !important;
 				-webkit-print-color-adjust: exact !important;
 				print-color-adjust: exact !important;
@@ -357,8 +378,8 @@ $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
 				top: 1.0cm !important;
 				left: 50% !important;
 				transform: translateX(-50%) !important;
-				width: 10.5cm !important;
-				height: 28.0cm !important;
+				width: 14.8cm !important;
+				height: 22.2cm !important;
 				pointer-events: none !important;
 				z-index: 99 !important;
 			}
@@ -398,7 +419,7 @@ $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
 			}
 			/* Middle-Left (Faltpfalz) Helper Mark */
 			.bskudo-print-mark--ml {
-				top: 14.0cm !important;
+				top: 11.1cm !important;
 				left: -15px !important;
 				width: 10px !important;
 				height: 0 !important;
@@ -406,7 +427,7 @@ $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
 			}
 			/* Middle-Right (Faltpfalz) Helper Mark */
 			.bskudo-print-mark--mr {
-				top: 14.0cm !important;
+				top: 11.1cm !important;
 				right: -15px !important;
 				width: 10px !important;
 				height: 0 !important;
@@ -448,7 +469,7 @@ $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
 						</div>
 					<?php endif; ?>
 					<?php if ( '' !== $message && $image_url ) : ?>
-						<p class="bskudo-cardview__message bskudo-cardview__message--<?php echo esc_attr( $msg_align ); ?>"><?php echo esc_html( $message ); ?></p>
+						<p class="bskudo-cardview__message bskudo-cardview__message--<?php echo esc_attr( $msg_align ); ?> <?php echo esc_attr( $text_size_class ); ?>"><?php echo esc_html( $message ); ?></p>
 					<?php endif; ?>
 				</div>
 			</div>
