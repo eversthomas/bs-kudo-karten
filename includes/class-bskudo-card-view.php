@@ -131,25 +131,41 @@ class BSKudo_Card_View {
 			$icon_pos = 'center';
 		}
 
-		$branding = is_string( $back_branding_meta ) ? trim( $back_branding_meta ) : '';
-		if ( '' === $branding ) {
-			$legacy = get_post_meta( $post->ID, '_bskudo_impulse_text', true );
-			$branding = is_string( $legacy ) ? trim( $legacy ) : '';
+		$col1 = get_post_meta( $post->ID, '_bskudo_back_branding_col1', true );
+		$col2 = get_post_meta( $post->ID, '_bskudo_back_branding_col2', true );
+
+		$branding_col1 = is_string( $col1 ) ? trim( $col1 ) : '';
+		$branding_col2 = is_string( $col2 ) ? trim( $col2 ) : '';
+
+		if ( '' === $branding_col1 ) {
+			$branding_col1 = (string) BSKudo_Settings::get( 'branding', 'branding_text_col1', '' );
 		}
-		if ( '' === $branding ) {
-			$branding = (string) BSKudo_Settings::get( 'branding', 'branding_text', '' );
+
+		if ( '' === $branding_col2 ) {
+			$branding_col2 = (string) BSKudo_Settings::get( 'branding', 'branding_text_col2', '' );
+			if ( '' === $branding_col2 ) {
+				$branding_col2 = is_string( $back_branding_meta ) ? trim( $back_branding_meta ) : '';
+				if ( '' === $branding_col2 ) {
+					$legacy = get_post_meta( $post->ID, '_bskudo_impulse_text', true );
+					$branding_col2 = is_string( $legacy ) ? trim( $legacy ) : '';
+				}
+				if ( '' === $branding_col2 ) {
+					$branding_col2 = (string) BSKudo_Settings::get( 'branding', 'branding_text', '' );
+				}
+			}
 		}
 
 		return array(
-			'id'            => $post->ID,
-			'title'         => get_the_title( $post ),
-			'image_url'     => $image_id ? (string) wp_get_attachment_image_url( $image_id, 'large' ) : '',
-			'image_width'   => $image_width,
-			'image_height'  => $image_height,
-			'image_alt'     => $image_id ? (string) get_post_meta( $image_id, '_wp_attachment_image_alt', true ) : '',
-			'back_branding' => $branding,
-			'accent_color'  => $accent,
-			'icon_position' => $icon_pos,
+			'id'                 => $post->ID,
+			'title'              => get_the_title( $post ),
+			'image_url'          => $image_id ? (string) wp_get_attachment_image_url( $image_id, 'large' ) : '',
+			'image_width'        => $image_width,
+			'image_height'       => $image_height,
+			'image_alt'          => $image_id ? (string) get_post_meta( $image_id, '_wp_attachment_image_alt', true ) : '',
+			'back_branding_col1' => $branding_col1,
+			'back_branding_col2' => $branding_col2,
+			'accent_color'       => $accent,
+			'icon_position'      => $icon_pos,
 		);
 	}
 

@@ -43,10 +43,36 @@ $logo_url = $logo_id ? wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
 			</td>
 		</tr>
 		<tr>
-			<th scope="row"><label for="bskudo_branding_text"><?php esc_html_e( 'Standard Rückseiten-Branding', 'bs-kudo-karten' ); ?></label></th>
+			<th scope="row"><label for="bskudo_branding_text_col1"><?php esc_html_e( 'Standard Rückseite: Spalte 1 (links - neben QR-Code)', 'bs-kudo-karten' ); ?></label></th>
 			<td>
-				<textarea id="bskudo_branding_text" name="bskudo_settings[branding][branding_text]" rows="3" class="large-text"><?php echo esc_textarea( $branding['branding_text'] ); ?></textarea>
-				<p class="description"><?php esc_html_e( 'Kann pro Karte im Editor überschrieben werden.', 'bs-kudo-karten' ); ?></p>
+				<?php
+				$editor_settings = array(
+					'textarea_name' => 'bskudo_settings[branding][branding_text_col1]',
+					'media_buttons' => false,
+					'textarea_rows' => 4,
+					'teeny'         => true,
+					'quicktags'     => true,
+				);
+				wp_editor( $branding['branding_text_col1'] ? $branding['branding_text_col1'] : '', 'bskudo_branding_text_col1', $editor_settings );
+				?>
+				<p class="description"><?php esc_html_e( 'Optionaler Begleittext für die linke Spalte (neben dem QR-Code). Leer = Nur QR-Code.', 'bs-kudo-karten' ); ?></p>
+			</td>
+		</tr>
+		<tr>
+			<th scope="row"><label for="bskudo_branding_text_col2"><?php esc_html_e( 'Standard Rückseite: Spalte 2 (rechts - Branding)', 'bs-kudo-karten' ); ?></label></th>
+			<td>
+				<?php
+				$editor_settings = array(
+					'textarea_name' => 'bskudo_settings[branding][branding_text_col2]',
+					'media_buttons' => false,
+					'textarea_rows' => 4,
+					'teeny'         => true,
+					'quicktags'     => true,
+				);
+				$col2_val = $branding['branding_text_col2'] ? $branding['branding_text_col2'] : $branding['branding_text'];
+				wp_editor( $col2_val, 'bskudo_branding_text_col2', $editor_settings );
+				?>
+				<p class="description"><?php esc_html_e( 'Das Haupt-Branding in der rechten Spalte. Kann pro Karte überschrieben werden.', 'bs-kudo-karten' ); ?></p>
 			</td>
 		</tr>
 		<tr>

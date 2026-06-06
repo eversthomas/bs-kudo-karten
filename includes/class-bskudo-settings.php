@@ -34,11 +34,13 @@ class BSKudo_Settings {
 				'show_qr_in_mail'     => true,
 			),
 			'branding' => array(
-				'logo_id'         => 0,
-				'primary_color'   => '#c45c3e',
-				'branding_text'   => __( 'Mit Herz · Systemische Beratung', 'bs-kudo-karten' ),
-				'mail_footer_text' => '',
-				'footer_powered'  => true,
+				'logo_id'            => 0,
+				'primary_color'      => '#c45c3e',
+				'branding_text'      => __( 'Mit Herz · Systemische Beratung', 'bs-kudo-karten' ),
+				'branding_text_col1' => '',
+				'branding_text_col2' => '',
+				'mail_footer_text'   => '',
+				'footer_powered'     => true,
 			),
 			'security' => array(
 				'rate_limit'      => 5,
@@ -197,12 +199,14 @@ class BSKudo_Settings {
 
 		if ( isset( $input['branding'] ) && is_array( $input['branding'] ) ) {
 			$b = $input['branding'];
-			$clean['branding']['logo_id']          = isset( $b['logo_id'] ) ? absint( $b['logo_id'] ) : 0;
-			$color                                 = isset( $b['primary_color'] ) ? sanitize_hex_color( wp_unslash( $b['primary_color'] ) ) : '';
-			$clean['branding']['primary_color']    = $color ? $color : $defaults['branding']['primary_color'];
-			$clean['branding']['branding_text']    = isset( $b['branding_text'] ) ? sanitize_textarea_field( wp_unslash( $b['branding_text'] ) ) : $defaults['branding']['branding_text'];
-			$clean['branding']['mail_footer_text'] = isset( $b['mail_footer_text'] ) ? sanitize_textarea_field( wp_unslash( $b['mail_footer_text'] ) ) : '';
-			$clean['branding']['footer_powered']   = ! empty( $b['footer_powered'] );
+			$clean['branding']['logo_id']            = isset( $b['logo_id'] ) ? absint( $b['logo_id'] ) : 0;
+			$color                                   = isset( $b['primary_color'] ) ? sanitize_hex_color( wp_unslash( $b['primary_color'] ) ) : '';
+			$clean['branding']['primary_color']      = $color ? $color : $defaults['branding']['primary_color'];
+			$clean['branding']['branding_text']      = isset( $b['branding_text'] ) ? wp_kses_post( wp_unslash( $b['branding_text'] ) ) : $defaults['branding']['branding_text'];
+			$clean['branding']['branding_text_col1'] = isset( $b['branding_text_col1'] ) ? wp_kses_post( wp_unslash( $b['branding_text_col1'] ) ) : '';
+			$clean['branding']['branding_text_col2'] = isset( $b['branding_text_col2'] ) ? wp_kses_post( wp_unslash( $b['branding_text_col2'] ) ) : '';
+			$clean['branding']['mail_footer_text']   = isset( $b['mail_footer_text'] ) ? sanitize_textarea_field( wp_unslash( $b['mail_footer_text'] ) ) : '';
+			$clean['branding']['footer_powered']     = ! empty( $b['footer_powered'] );
 		}
 
 		if ( isset( $input['security'] ) && is_array( $input['security'] ) ) {

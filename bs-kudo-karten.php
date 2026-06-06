@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define( 'BSKUDO_VERSION', '0.4.0' );
-define( 'BSKUDO_CHAR_LIMIT', 160 );
+define( 'BSKUDO_CHAR_LIMIT', 240 );
 define( 'BSKUDO_PATH', plugin_dir_path( __FILE__ ) );
 define( 'BSKUDO_URL', plugin_dir_url( __FILE__ ) );
 define( 'BSKUDO_BASENAME', plugin_basename( __FILE__ ) );

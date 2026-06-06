@@ -276,7 +276,7 @@ class BSKudo_Card_Renderer {
 
 		for ( $size = 10; $size <= 36; $size++ ) {
 			$lines = self::wrap_text( $message, self::chars_per_line( $max_w, $size ) );
-			if ( count( $lines ) > 2 ) {
+			if ( count( $lines ) > 8 ) {
 				break;
 			}
 			$line_h = (int) ( $size * 1.35 );
@@ -288,7 +288,7 @@ class BSKudo_Card_Renderer {
 		}
 
 		$lines   = self::wrap_text( $message, self::chars_per_line( $max_w, $best_size ) );
-		$lines   = array_slice( $lines, 0, 2 );
+		$lines   = array_slice( $lines, 0, 8 );
 		$line_h  = (int) ( $best_size * 1.35 );
 		$total_h = count( $lines ) * $line_h;
 		$start_y = $zone_top + (int) ( ( $zone_h - $total_h ) / 2 ) + $best_size;

@@ -8,7 +8,7 @@
 		ajaxUrl: '',
 		ajaxAction: 'bskudo_send_kudo',
 		nonce: '',
-		maxChars: 160,
+		maxChars: 240,
 		brandingBack: '',
 		cards: [],
 		textbausteine: [],
@@ -122,10 +122,10 @@
 		}
 
 		var zoneW = writeW * 0.68;
-		var zoneH = writeH * 0.38;
+		var zoneH = writeH * 0.45;
 		var lineHeight = 1.25;
-		var maxLines = 2;
-		var minSize = 6;
+		var maxLines = 8;
+		var minSize = 10;
 		var maxByHeight = (zoneH / (lineHeight * maxLines)) * 0.9;
 		var maxSize = Math.max(minSize, Math.min(maxByHeight, zoneW * 0.18, 80));
 
@@ -159,7 +159,7 @@
 	}
 
 	function initWizard(root) {
-		var maxChars = parseInt(root.getAttribute('data-max-chars'), 10) || config.maxChars || 160;
+		var maxChars = parseInt(root.getAttribute('data-max-chars'), 10) || config.maxChars || 240;
 		var form = root.querySelector('.bskudo-wizard__form');
 		var sections = root.querySelectorAll('.bskudo-section');
 		var stepButtons = root.querySelectorAll('.bskudo-wizard__step-btn');
