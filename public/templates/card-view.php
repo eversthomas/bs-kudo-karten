@@ -41,13 +41,13 @@ $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
 $char_count = mb_strlen( $message );
 if ( $char_count > 200 ) {
 	$text_size_class = 'bskudo-cardview__message--long';
-	$print_font_size = '9pt';
+	$print_font_size = '12pt';
 } elseif ( $char_count > 120 ) {
 	$text_size_class = 'bskudo-cardview__message--medium';
-	$print_font_size = '11pt';
+	$print_font_size = '14pt';
 } else {
 	$text_size_class = 'bskudo-cardview__message--short';
-	$print_font_size = '14pt';
+	$print_font_size = '16pt';
 }
 ?>
 <!DOCTYPE html>
@@ -139,13 +139,13 @@ if ( $char_count > 200 ) {
 			text-shadow: 0 0 10px rgba(255, 255, 255, 0.95), 0 0 4px rgba(255, 255, 255, 0.85);
 		}
 		.bskudo-cardview__message--short {
-			font-size: clamp(16px, 2.5vw, 24px);
+			font-size: clamp(18px, 2.8vw, 26px);
 		}
 		.bskudo-cardview__message--medium {
-			font-size: clamp(13px, 2.0vw, 18px);
+			font-size: clamp(15px, 2.3vw, 21px);
 		}
 		.bskudo-cardview__message--long {
-			font-size: clamp(10px, 1.5vw, 13px);
+			font-size: clamp(13px, 1.9vw, 17px);
 		}
 		.bskudo-cardview__message--left { text-align: left; }
 		.bskudo-cardview__message--right { text-align: right; }
