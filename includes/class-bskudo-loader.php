@@ -71,6 +71,13 @@ class BSKudo_Loader {
 	private $textbaustein_meta;
 
 	/**
+	 * Karten-Liste (Übersicht, Spalten).
+	 *
+	 * @var BSKudo_Card_List|null
+	 */
+	private $card_list;
+
+	/**
 	 * Konstruktor: Abhängigkeiten laden und Hooks definieren.
 	 */
 	public function __construct() {
@@ -104,10 +111,12 @@ class BSKudo_Loader {
 			require_once BSKUDO_PATH . 'admin/class-bskudo-admin-ui.php';
 			require_once BSKUDO_PATH . 'admin/class-bskudo-card-meta.php';
 			require_once BSKUDO_PATH . 'admin/class-bskudo-textbaustein-meta.php';
+			require_once BSKUDO_PATH . 'admin/class-bskudo-card-list.php';
 			$this->admin             = new BSKudo_Admin();
 			$this->admin_ui          = new BSKudo_Admin_UI();
 			$this->card_meta         = new BSKudo_Card_Meta();
 			$this->textbaustein_meta = new BSKudo_Textbaustein_Meta();
+			$this->card_list         = new BSKudo_Card_List();
 		}
 	}
 
@@ -137,6 +146,10 @@ class BSKudo_Loader {
 
 		if ( $this->textbaustein_meta ) {
 			$this->textbaustein_meta->register();
+		}
+
+		if ( $this->card_list ) {
+			$this->card_list->register();
 		}
 	}
 

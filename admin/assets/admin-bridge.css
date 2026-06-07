@@ -294,6 +294,26 @@ body.bskudo-admin-screen .bskudo-wp-host .form-field p {
 	font-size: 12.5px;
 }
 
+/* Karten-Liste: eigenes Page-Head statt WP-Standard */
+body.bskudo-admin-screen.post-type-kudo_card.edit-php .bskudo-wp-host > .wrap > h1.wp-heading-inline,
+body.bskudo-admin-screen.post-type-kudo_card.edit-php .bskudo-wp-host > .wrap > .page-title-action,
+body.bskudo-admin-screen.post-type-kudo_card.edit-php .bskudo-wp-host > .wrap > .wp-header-end {
+	display: none !important;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .column-bskudo_thumb {
+	width: 72px;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .column-bskudo_accent {
+	width: 64px;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .column-bskudo_thumb img {
+	max-width: 52px;
+	height: auto;
+}
+
 @media (max-width: 782px) {
 	body.bskudo-admin-screen .bskudo-wp-host #post-body.columns-2 #post-body-content {
 		margin-right: 0;

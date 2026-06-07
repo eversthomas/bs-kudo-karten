@@ -19,8 +19,10 @@ Die KI entwickelt zuerst die **Funktionslogik** ohne Design. Dabei gilt:
 
 **Modus B – Retrofit (Design auf bestehendes Plugin aufsetzen)**
 - Bestehendes HTML analysieren, Struktur auf Blueprint-Klassen mappen
-- Sidebar-Shell und App-Container um bestehende Seiten wickeln
-- `tokens.css` + `styles.css` einhängen
+- App-Container `.[prefix]-app` um den bestehenden Seiteninhalt wickeln — **keine eigene Sidebar-Navigation bauen** (siehe 0.3, E.1)
+- Bei CPT/Taxonomie-Plugins: Retrofit-Pfad **F.6** bevorzugen
+- Dashboard analysieren und aufbauen (siehe 0.4) — oder CPT-Liste als Einstieg nutzen
+- `tokens.css` + `styles.css` + `admin-bridge.css` einhängen
 - WordPress-Admin-Bridge CSS ergänzen
 - Branding-Footer auf jeder Hauptseite einfügen
 
@@ -33,7 +35,55 @@ Die KI entwickelt zuerst die **Funktionslogik** ohne Design. Dabei gilt:
 - **Niemals** einen hardkodierten Präfix aus dieser Datei übernehmen
 - **Niemals** WordPress-Core-Klassen nutzen: kein `.button`, `.card`, `.notice`, `.wrap` ohne Präfix
 
-### 0.3 Kapselungsregel
+### 0.3 Navigations-Regel: WordPress-Menü vs. Plugin-intern
+
+**Das WordPress-Hauptmenü ist die primäre Navigation.** Die KI registriert Plugin-Bereiche immer als eigene WP-Admin-Seiten via `add_menu_page` / `add_submenu_page`. Eine eigene Sidebar-Navigation, die dieselben Punkte dupliziert, wird **niemals** gebaut.
+
+| Navigationsebene | Wo | Wie |
+|---|---|---|
+| Plugin-Hauptbereiche (Dashboard, Einträge, Einstellungen…) | WordPress-Hauptmenü | `add_menu_page` + `add_submenu_page` |
+| Untergliederung innerhalb einer Seite (z. B. Einstellungs-Tabs) | Innerhalb des Page-Containers | Tab-System (horizontal oder vertikal, siehe H.4) |
+| Kontextuelle Zusatzinfos auf einer Seite (Status, Metadaten) | Rechte Spalte im Editor-Layout | Card-Sidebar (kein Navigations-Element) |
+
+**Verboten:**
+- Eine eigene Sidebar-Navigation bauen, die WP-Menüpunkte wiederholt
+- Das `.side`-Sidebar-Blueprint als Haupt-Navigation einsetzen
+- Die App-Shell mit eigener Sidebar über das WP-Admin-Menü legen
+
+**Das `.side`-Blueprint** aus Abschnitt E.2 wird nur verwendet, wenn eine Seite eine *kontextuelle* Sidebar braucht (z. B. Template-Builder mit Felder-Liste links). Es ersetzt niemals das WP-Hauptmenü.
+
+---
+
+### 0.4 Dashboard-Pflicht & Analyse-Regel
+
+**Jedes Plugin bekommt ein Dashboard** als Hauptseite (erster `add_menu_page`-Eintrag). Wenn der Entwickler kein Dashboard explizit anfordert, erstellt die KI es trotzdem — automatisch, basierend auf einer Plugin-Analyse.
+
+**Analyse-Schritte (Modus B: vor dem Design-Aufbau):**
+
+1. **Datenhaltung prüfen** – Welche Tabellen, Options oder Post-Meta existieren? Was ist zählbar?
+2. **Aktionen identifizieren** – Was tut der Nutzer am häufigsten? (Erstellen, Genehmigen, Synchronisieren, Exportieren…)
+3. **Zustände erkennen** – Gibt es Status-Werte (aktiv/inaktiv, veröffentlicht/Entwurf, Fehler/OK)?
+4. **Häufigkeit ableiten** – Welche Seite/Funktion wird am öftesten aufgerufen?
+
+**Aus der Analyse entstehen automatisch:**
+
+| Analyseergebnis | Dashboard-Element |
+|---|---|
+| Zählbare Datensätze | Stat-Kacheln (`.stat-grid`) |
+| Status-Werte | Status-Badge-Übersicht in einer Card |
+| Häufigste Aktion | Primärer CTA-Button im Page-Header |
+| Letzte Änderungen / Logs | „Letzte Aktivität"-Card mit Mini-Tabelle (5 Zeilen) |
+| Konfigurationsprobleme / Warnungen | Warn-Badge-Card oben auf dem Dashboard |
+| Externe Verbindungen (API, Sync) | Verbindungs-Status-Card mit ok/danger-Badge |
+| Schnellzugriff auf Sub-Seiten | Schnellzugriff-Card mit Link-Liste |
+
+**Regel:** Das Dashboard zeigt immer **3–5 Stat-Kacheln** (nicht mehr, nicht weniger) und mindestens eine Inhalts-Card. Es ist kein Willkommens-Screen mit Marketingtext — es ist ein Arbeits-Überblick.
+
+**Ausnahme CPT/Taxonomie-Plugins:** Wenn das Plugin primär über `register_post_type` / `register_taxonomy` läuft (z. B. Kudo-Karten, WooCommerce-ähnliche Struktur), kann die **native Listenansicht** des Haupt-CPT die Dashboard-Rolle übernehmen. Ein separates Dashboard via `add_menu_page` ist dann optional. Trotzdem sollten auf der Einstiegsseite — Dashboard oder CPT-Liste — **Stat-Kacheln, Schnellzugriff oder Letzte-Aktivität** ergänzt werden, sobald die Plugin-Analyse zählbare Daten liefert. Siehe auch **F.6** (Retrofit für CPT-Plugins).
+
+---
+
+### 0.5 Kapselungsregel
 
 ```css
 /* RICHTIG – alles unter dem App-Container */
@@ -47,15 +97,17 @@ Die KI entwickelt zuerst die **Funktionslogik** ohne Design. Dabei gilt:
 
 Einzige Ausnahme: der WordPress-Admin-Bridge-Block (Abschnitt F), der gezielt WP-Core-Klassen überschreibt.
 
-### 0.4 Absolute Verbote
+### 0.6 Absolute Verbote
 
 - Keine Hex-Farben, RGB-Werte oder direkten Pixelwerte im CSS – ausschließlich Token-Variablen
 - Kein globales CSS ohne `.[prefix]-app`-Scope
 - Kein statischer Präfix aus Beispielen übernehmen
 - Branding-Footer nie weglassen
+- Dashboard nie weglassen – auch wenn nicht explizit angefordert (CPT-Ausnahme: siehe 0.4)
 - `tweaks-panel` (Prototyp-Tooling) nicht in Produktion übernehmen
 - Keine CDN-React/Babel-Script-Tags in Produktionscode
 - Keine WordPress-Core-Klassennamen
+- Keine eigene Sidebar-Navigation, die das WP-Hauptmenü dupliziert
 
 ---
 
@@ -112,7 +164,7 @@ Einzige Ausnahme: der WordPress-Admin-Bridge-Block (Abschnitt F), der gezielt WP
   --danger:     oklch(0.57 0.17 25);   /* Rot: Fehler, Löschen, Pflichtfeld */
   --danger-soft:oklch(0.95 0.04 25);   /* Badge-Hintergrund danger */
 
-  /* ─── Sidebar (Dark – Default) ───────────────────── */
+  /* ─── Sidebar (Dark – nur E.2 kontextuelle Sidebar) ─ */
   --side-bg:     oklch(0.24 0.02 265);  /* Sidebar-Hintergrund */
   --side-bg-2:   oklch(0.21 0.02 265);  /* Noch dunklerer Sidebar-Bereich */
   --side-ink:    oklch(0.95 0.01 265);  /* Primärer Text Sidebar */
@@ -263,36 +315,39 @@ Alle Blueprints verwenden `[prefix]` als Platzhalter – vor Verwendung durch de
 
 ### E.1 App-Shell (Grundstruktur jeder Plugin-Seite)
 
+> **Navigation:** Hauptbereiche liegen im **WordPress-Admin-Menü** (siehe 0.3). Die App-Shell enthält **keine** eigene Nav-Sidebar. Optional: kontextuelle Sidebar nur bei Bedarf (E.2).
+
+**Standard-Shell (Pflicht für alle Plugin-Seiten):**
+
 ```html
-<div class="[prefix]-app" data-accent="blue" data-side="dark" data-density="regular">
-
-  <!-- Sidebar -->
-  <aside class="side">
-    <!-- Inhalt: siehe E.2 -->
-  </aside>
-
-  <!-- Hauptbereich -->
-  <main class="main">
-    <div class="topbar">
-      <!-- Inhalt: siehe E.3 -->
-    </div>
-    <div class="content">
-      <div class="page">
-        <!-- Seiteninhalt -->
+<div class="[prefix]-app-shell">
+  <div class="[prefix]-app" data-accent="blue" data-density="regular">
+    <main class="main">
+      <div class="topbar">
+        <!-- Inhalt: siehe E.3 -->
       </div>
-    </div>
-  </main>
-
+      <div class="content">
+        <div class="page">
+          <!-- Seiteninhalt -->
+          <!-- Branding-Footer: siehe E.16 -->
+        </div>
+      </div>
+    </main>
+  </div>
 </div>
 ```
 
-**CSS-Grundgerüst:**
+**Retrofit (native WP-Screens):** Der Seiteninhalt liegt in `.page.[prefix]-wp-host` — WordPress rendert `.wrap`, List-Tables und Postboxes dort hinein (siehe F.6).
+
+**CSS-Grundgerüst (ohne Nav-Sidebar):**
 
 ```css
+.[prefix]-app-shell { margin: 0; }
+
 .[prefix]-app {
-  display: grid;
-  grid-template-columns: 248px 1fr;
-  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 32px); /* WP-Admin-Bar; mobil: 46px */
   overflow: hidden;
   background: var(--bg);
   color: var(--ink);
@@ -301,12 +356,13 @@ Alle Blueprints verwenden `[prefix]` als Platzhalter – vor Verwendung durch de
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
-.[prefix]-app[data-density="compact"] { grid-template-columns: 224px 1fr; }
 
 .[prefix]-app .main {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  min-width: 0;
   overflow: hidden;
 }
 .[prefix]-app .content {
@@ -318,58 +374,64 @@ Alle Blueprints verwenden `[prefix]` als Platzhalter – vor Verwendung durch de
   margin: 0 auto;
   padding: 26px 26px 80px;
 }
+.[prefix]-app .page.[prefix]-wp-host {
+  max-width: none;
+  padding-top: 18px;
+}
 ```
 
-### E.2 Sidebar
+**Variante mit kontextueller Sidebar (nur E.2):**
+
+```css
+.[prefix]-app.has-context-side {
+  display: grid;
+  grid-template-columns: 248px 1fr;
+}
+.[prefix]-app.has-context-side[data-density="compact"] {
+  grid-template-columns: 224px 1fr;
+}
+```
+
+### E.2 Kontextuelle Sidebar (optional – kein WP-Menü-Ersatz)
+
+> **Nur verwenden**, wenn eine einzelne Seite eine **seitliche Werkzeug- oder Strukturleiste** braucht (Template-Builder, Feld-Palette, Filter-Panel). **Niemals** für Dashboard / Einträge / Einstellungen — dafür gilt das WP-Hauptmenü (0.3).
 
 ```html
-<aside class="side">
+<!-- Nur innerhalb .[prefix]-app.has-context-side -->
+<aside class="side context-side" aria-label="Seiten-Werkzeuge">
 
-  <!-- Branding -->
   <div class="side-brand">
-    <div class="brand-mark"></div>
+    <div class="brand-mark" aria-hidden="true"></div>
     <div>
-      <div class="brand-name">bs<b>·</b>[Plugin-Name]</div>
-      <div class="brand-sub">v1.0.0 · [Kurzbeschreibung]</div>
+      <div class="brand-name">[Seiten-Kontext]</div>
+      <div class="brand-sub">Feld-Palette</div>
     </div>
   </div>
 
-  <!-- Navigation -->
   <nav class="side-nav">
+    <div class="nav-label">Bausteine</div>
 
-    <div class="nav-label">Hauptmenü</div>
-
-    <a class="nav-item active" href="#" data-screen="dash">
+    <button type="button" class="nav-item active">
       <span class="nav-ic"><!-- SVG Icon 16×16 --></span>
-      Dashboard
-    </a>
-    <a class="nav-item" href="#" data-screen="list">
+      Textfeld
+    </button>
+    <button type="button" class="nav-item">
       <span class="nav-ic"><!-- SVG Icon 16×16 --></span>
-      Einträge
-      <span class="nav-count">12</span>
-    </a>
-    <a class="nav-item" href="#" data-screen="settings">
+      Auswahl
+    </button>
+    <button type="button" class="nav-item">
       <span class="nav-ic"><!-- SVG Icon 16×16 --></span>
-      Einstellungen
-    </a>
+      Bild
+    </button>
 
-    <div class="nav-label" style="margin-top: 16px;">Werkzeuge</div>
+    <div class="nav-label">Vorlagen</div>
 
-    <a class="nav-item" href="#" data-screen="export">
+    <button type="button" class="nav-item">
       <span class="nav-ic"><!-- SVG Icon 16×16 --></span>
-      Export
-    </a>
-
+      Standard-Layout
+      <span class="nav-count">3</span>
+    </button>
   </nav>
-
-  <!-- Nutzer-Footer -->
-  <div class="side-foot">
-    <div class="avatar">TE</div>
-    <div>
-      <div style="font-size:13px; font-weight:600; color:var(--side-ink);">Tom Evers</div>
-      <div style="font-size:11px; color:var(--side-muted);">Administrator</div>
-    </div>
-  </div>
 
 </aside>
 ```
@@ -436,6 +498,9 @@ Alle Blueprints verwenden `[prefix]` als Platzhalter – vor Verwendung durch de
   color: var(--side-muted);
   padding: 6px 8px 4px;
 }
+.[prefix]-app .nav-label + .nav-label {
+  margin-top: 16px;
+}
 .[prefix]-app .nav-item {
   display: flex;
   align-items: center;
@@ -448,6 +513,12 @@ Alle Blueprints verwenden `[prefix]` als Platzhalter – vor Verwendung durch de
   text-decoration: none;
   transition: background 0.13s, color 0.13s;
   position: relative;
+  border: none;
+  background: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
 }
 .[prefix]-app .nav-item:hover {
   background: var(--side-active);
@@ -728,9 +799,9 @@ Alle Blueprints verwenden `[prefix]` als Platzhalter – vor Verwendung durch de
 <div class="stat-grid">
   <div class="card">
     <div class="card-body">
-      <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:var(--muted); margin-bottom:8px;">Gesamt</div>
-      <div style="font-family:var(--font-brand); font-size:32px; font-weight:600; letter-spacing:-0.02em; color:var(--ink);">247</div>
-      <div style="font-size:12px; color:var(--muted); margin-top:4px;">+12 diese Woche</div>
+      <div class="stat-label">Gesamt</div>
+      <div class="stat-value">247</div>
+      <div class="stat-sub">+12 diese Woche</div>
     </div>
   </div>
   <!-- weitere Kacheln -->
@@ -746,7 +817,32 @@ Alle Blueprints verwenden `[prefix]` als Platzhalter – vor Verwendung durch de
   gap: var(--gap);
   margin-bottom: var(--gap);
 }
+.[prefix]-app .stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.[prefix]-app .stat-value {
+  font-family: var(--font-brand);
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  line-height: 1;
+}
+.[prefix]-app .stat-value.ok { color: var(--ok); }
+.[prefix]-app .stat-value.danger { color: var(--danger); }
+.[prefix]-app .stat-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+}
 ```
+
+**Hinweis:** Vollständige Dashboard-Varianten (Warn-Banner, `.dash-grid`) siehe **H.1**.
 
 ### E.8 Tabelle
 
@@ -1337,23 +1433,33 @@ function showToast(msg, duration = 2600) {
 ```css
 /*
  * WordPress-Admin-Hintergrund auf Plugin-Seiten unterdrücken.
- * Body-Klasse: body.toplevel_page_[plugin-slug]
- * Bei Unterseiten: body.[plugin-slug]_page_[submenu-slug]
+ *
+ * Greenfield (eigene Admin-Seiten):
+ *   body.toplevel_page_[plugin-slug]
+ *   body.[plugin-slug]_page_[submenu-slug]
+ *
+ * Retrofit (CPT/Taxonomie, siehe F.6):
+ *   body.[prefix]-admin-screen
  */
 body.toplevel_page_[plugin-slug] #wpcontent,
 body.toplevel_page_[plugin-slug] #wpbody-content,
 body.[plugin-slug]_page_[submenu-slug] #wpcontent,
-body.[plugin-slug]_page_[submenu-slug] #wpbody-content {
+body.[plugin-slug]_page_[submenu-slug] #wpbody-content,
+body.[prefix]-admin-screen #wpcontent,
+body.[prefix]-admin-screen #wpbody-content {
   background: oklch(0.975 0.004 255) !important;
   padding: 0 !important;
 }
 body.toplevel_page_[plugin-slug] .wrap,
-body.[plugin-slug]_page_[submenu-slug] .wrap {
+body.[plugin-slug]_page_[submenu-slug] .wrap,
+body.[prefix]-admin-screen .[prefix]-wp-host .wrap {
   margin: 0;
   max-width: none;
   padding: 0;
 }
 ```
+
+Weitere Bridge-Regeln (List-Tables, Postboxes, Buttons) gehören in `admin-bridge.css` unter dem Scope `body.[prefix]-admin-screen .[prefix]-wp-host`.
 
 ### F.2 Admin-Enqueue
 
@@ -1393,6 +1499,8 @@ add_action('admin_enqueue_scripts', function($hook) {
 
 ### F.3 Admin-Menü-Registration
 
+> **Keine Plugin-Sidebar** für diese Menüpunkte — Navigation ausschließlich hier (0.3).
+
 ```php
 add_action('admin_menu', function() {
     add_menu_page(
@@ -1400,8 +1508,8 @@ add_action('admin_menu', function() {
         '[Plugin-Name]',          // Menübezeichnung
         'manage_options',         // Capability
         '[plugin-slug]',          // Menu-Slug
-        '[prefix]_render_page',   // Callback
-        'dashicons-layout',       // Icon
+        '[prefix]_render_dashboard', // Callback → Dashboard (H.1)
+        'dashicons-layout',       // Icon (Top-Level)
         30                        // Position
     );
     add_submenu_page('[plugin-slug]', 'Dashboard',      'Dashboard',      'manage_options', '[plugin-slug]',           '[prefix]_render_dashboard');
@@ -1409,11 +1517,53 @@ add_action('admin_menu', function() {
     add_submenu_page('[plugin-slug]', 'Einstellungen',  'Einstellungen',  'manage_options', '[plugin-slug]-settings',  '[prefix]_render_settings');
 });
 
-function [prefix]_render_page() {
-    // App-Shell ausgeben
-    echo '<div class="[prefix]-app" data-accent="blue" data-side="dark" data-density="regular">';
-    // ... Sidebar, Main, Content
-    echo '</div>';
+function [prefix]_render_dashboard() {
+    echo '<div class="[prefix]-app-shell">';
+    echo '<div class="[prefix]-app" data-accent="blue" data-density="regular">';
+    echo '<main class="main">';
+    // Topbar (E.3), Content, Page (H.1), Branding-Footer (E.16)
+    echo '</main></div></div>';
+}
+```
+
+**Optional: Dashicons für Untermenüpunkte** (empfohlen, kein Ersatz für Top-Level-`menu_icon`):
+
+```php
+add_action('admin_menu', function() {
+    global $submenu;
+    $parent = '[plugin-slug]'; // oder 'edit.php?post_type=[cpt-slug]' bei CPT-Plugins
+    if (empty($submenu[$parent])) return;
+
+    $icons = [
+        '[plugin-slug]-entries'  => 'dashicons-grid-view',
+        '[plugin-slug]-settings' => 'dashicons-admin-generic',
+        // CPT-Beispiele:
+        // 'edit.php?post_type=foo'           => 'dashicons-grid-view',
+        // 'post-new.php?post_type=foo'       => 'dashicons-plus-alt2',
+    ];
+
+    foreach ($submenu[$parent] as $key => $item) {
+        $slug = $item[2];
+        if (!isset($icons[$slug])) continue;
+        $submenu[$parent][$key][0] =
+            '<span class="[prefix]-menu-icon dashicons ' . esc_attr($icons[$slug]) . '" aria-hidden="true"></span> '
+            . $item[0];
+    }
+}, 999);
+```
+
+Kleines CSS (`admin-menu.css`, global im Backend enqueuen):
+
+```css
+#adminmenu .wp-submenu a .[prefix]-menu-icon {
+  display: inline-block;
+  font-size: 16px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  margin-right: 3px;
+  vertical-align: text-top;
+  opacity: 0.88;
 }
 ```
 
@@ -1478,6 +1628,88 @@ async function apiPost(endpoint, data) {
   return res.json();
 }
 ```
+
+### F.6 Retrofit für CPT/Taxonomie-Plugins (Modus B)
+
+Wenn das Plugin **native WordPress-Screens** nutzt (`edit.php?post_type=…`, Post-Editor, `edit-tags.php?taxonomy=…`), wird das Design per **App-Shell-Hook** um den WP-Inhalt gelegt — ohne eigene Nav-Sidebar und ohne Duplikat-Menü.
+
+**Architektur:**
+
+| Aufgabe | Umsetzung |
+|---|---|
+| Screen-Erkennung | `[prefix]_is_plugin_screen()` — CPT, Taxonomie, eigene Settings-Seite |
+| Body-Klasse | `admin_body_class` → `[prefix]-admin-screen` |
+| Assets | `tokens.css`, `styles.css`, `admin-bridge.css` nur auf Plugin-Screens |
+| Shell öffnen | `in_admin_header` (Priority 1) — App-Shell + Topbar + `.page.[prefix]-wp-host` |
+| Shell schließen | `admin_footer` (Priority 999) — Branding-Footer + schließende Tags |
+| WP-Inhalt | WordPress `.wrap`, List-Tables, Postboxes landen in `.[prefix]-wp-host` |
+| JS-Fallback | `[prefix]-admin-ui.js` verschiebt `.wrap` und Notices in den Host |
+| Eigene Seiten | Settings o. Ä. rendern die Shell **vollständig** im Page-Callback (kein Header-Hook) |
+
+**PHP-Muster (vereinfacht):**
+
+```php
+class [Prefix]_Admin_UI {
+
+    private static $shell_open = false;
+
+    public function register() {
+        add_action('admin_enqueue_scripts', [$this, 'enqueue_assets']);
+        add_action('admin_enqueue_scripts', [$this, 'enqueue_menu_styles']);
+        add_action('admin_menu', [$this, 'decorate_admin_menu'], 999);
+        add_filter('admin_body_class', [$this, 'admin_body_class']);
+        add_action('in_admin_header', [$this, 'maybe_open_shell'], 1);
+        add_action('admin_footer', [$this, 'maybe_close_shell'], 999);
+    }
+
+    public static function is_plugin_screen() {
+        $screen = get_current_screen();
+        if (!$screen) return false;
+        // CPT, Taxonomie, Settings-Screen-ID prüfen …
+        return true;
+    }
+
+    public static function is_custom_page() {
+        // Einstellungsseite o. Ä. — rendert eigene Shell, kein Header-Hook
+        return '[cpt]_page_[prefix]-settings' === get_current_screen()->id;
+    }
+
+    public function maybe_open_shell() {
+        if (!self::is_plugin_screen() || self::is_custom_page() || self::$shell_open) return;
+        self::$shell_open = true;
+        echo '<div class="[prefix]-app-shell">';
+        echo '<div class="[prefix]-app" data-accent="blue" data-density="regular">';
+        echo '<main class="main">';
+        [prefix]_render_topbar();
+        echo '<div class="content"><div class="page [prefix]-wp-host">';
+    }
+
+    public function maybe_close_shell() {
+        if (!self::$shell_open) return;
+        [prefix]_render_branding_footer();
+        echo '</div></div></main></div></div>';
+        self::$shell_open = false;
+    }
+}
+```
+
+**JS-Fallback (`assets/admin-ui.js`):**
+
+```js
+(function () {
+  var host = document.querySelector('.[prefix]-wp-host');
+  if (!host) return;
+  var wpBody = document.getElementById('wpbody-content');
+  if (!wpBody) return;
+  wpBody.querySelectorAll(':scope > .wrap').forEach(function (wrap) {
+    if (!host.contains(wrap)) host.appendChild(wrap);
+  });
+})();
+```
+
+**Menü bei CPT-Plugins:** Top-Level via `register_post_type( … 'menu_icon' => 'dashicons-…' )`. Untermenüs (weitere CPTs, Taxonomien, Einstellungen) via `show_in_menu` / `add_submenu_page`. Dashicons für Untermenüs: siehe F.3.
+
+**Referenz-Implementierung:** Plugin *bs-kudo-karten* (`class-[prefix]-admin-ui.php`, `admin-bridge.css`, `admin-menu.css`).
 
 ---
 
@@ -1607,14 +1839,160 @@ Die folgenden Screens sind Standardmuster und können für jedes Plugin angepass
 
 ### H.1 Dashboard-Screen
 
-**Struktur:**
+Das Dashboard ist die **Pflicht-Hauptseite** jedes Plugins (erster WP-Menüeintrag). Inhalt und Kacheln werden aus der Plugin-Analyse abgeleitet (siehe 0.4) — nicht generisch befüllt.
+
+**Grundstruktur:**
 ```
-Page-Header (Titel + optionaler Erstellen-Button)
-Stat-Grid (4 Kacheln: Gesamt, Veröffentlicht, Entwürfe, [Plugin-spezifisch])
-2-Spalten-Grid (1fr 1fr):
-  Links: Letzte Aktivitäten (Card + Tabelle, 5 Zeilen)
-  Rechts: Schnellzugriff (Card + vertikale Link-Liste)
+Page-Header
+  Titel: "[Plugin-Name] – Übersicht"
+  Lede: Kurzbeschreibung des Plugins (1 Zeile)
+  Primärer CTA: häufigste Aktion des Plugins (aus Analyse)
+
+[Optional] Warn-Banner (nur wenn Konfigurationsprobleme erkannt)
+
+Stat-Grid (3–5 Kacheln in `.stat-grid`, aus Analyse abgeleitet — siehe E.7)
+
+2-Spalten-Grid `.dash-grid` (1fr 1fr, gap: var(--gap)) — **zweite Zeile** unter den Stat-Kacheln:
+  Links:  Letzte Aktivität (Card + Mini-Tabelle, max. 5 Zeilen)
+  Rechts: Schnellzugriff (Card + Link-Liste) + ggf. Status-Card
+
 Branding-Footer
+```
+
+**Warn-Banner (nur bei Konfigurationsproblemen):**
+```html
+<div class="[prefix]-warn-banner">
+  <span class="badge warn dot">Konfiguration unvollständig</span>
+  <span>API-Schlüssel fehlt. <a href="?page=[plugin-slug]-settings">Jetzt einrichten →</a></span>
+</div>
+```
+```css
+.[prefix]-app .[prefix]-warn-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px var(--pad);
+  background: var(--warn-soft);
+  border: 1px solid var(--warn);
+  border-radius: var(--r);
+  font-size: 13.5px;
+  color: var(--warn-ink);
+  margin-bottom: var(--gap);
+}
+.[prefix]-app .[prefix]-warn-banner a {
+  color: inherit;
+  font-weight: 600;
+}
+```
+
+**Stat-Kachel-Varianten (je nach Analyse-Ergebnis):**
+```html
+<!-- Einfache Zahl -->
+<div class="card">
+  <div class="card-body">
+    <div class="stat-label">Gesamt</div>
+    <div class="stat-value">247</div>
+    <div class="stat-sub">+12 diese Woche</div>
+  </div>
+</div>
+
+<!-- Mit Status-Indikator -->
+<div class="card">
+  <div class="card-body">
+    <div class="stat-label">Veröffentlicht</div>
+    <div class="stat-value ok">184</div>
+    <div class="stat-sub"><span class="badge ok dot">Aktiv</span></div>
+  </div>
+</div>
+
+<!-- Mit Warn-Zustand -->
+<div class="card">
+  <div class="card-body">
+    <div class="stat-label">Fehler</div>
+    <div class="stat-value danger">3</div>
+    <div class="stat-sub"><span class="badge warn dot">Prüfung nötig</span></div>
+  </div>
+</div>
+
+<!-- Verbindungs-Status (für Plugins mit externer API) -->
+<div class="card">
+  <div class="card-body">
+    <div class="stat-label">API-Verbindung</div>
+    <div class="stat-sub"><span class="badge ok dot">Verbunden</span></div>
+    <div class="stat-sub">Letzte Sync: vor 4 Min.</div>
+  </div>
+</div>
+```
+
+Stat-Klassen (`.stat-label`, `.stat-value`, `.stat-sub`) — vollständige Definition in **E.7**.
+
+**Letzte-Aktivität-Card:**
+```html
+<div class="card">
+  <div class="card-head">
+    <h3>Letzte Aktivität</h3>
+    <div class="ca">
+      <a href="?page=[plugin-slug]-entries" class="btn subtle sm">Alle anzeigen →</a>
+    </div>
+  </div>
+  <table class="tbl">
+    <thead>
+      <tr>
+        <th>Bezeichnung</th>
+        <th>Status</th>
+        <th class="num">Datum</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="row-click">
+        <td><span class="cell-strong">Eintrag-Titel</span></td>
+        <td><span class="badge ok dot">Veröffentlicht</span></td>
+        <td class="num cell-mute">12.06.2026</td>
+      </tr>
+      <!-- max. 5 Zeilen -->
+    </tbody>
+  </table>
+</div>
+```
+
+**Schnellzugriff-Card:**
+```html
+<div class="card">
+  <div class="card-head"><h3>Schnellzugriff</h3></div>
+  <div class="card-body quick-links">
+    <a href="?page=[plugin-slug]-entries&action=new" class="btn ghost">
+      <!-- Plus-Icon --> Neuen Eintrag erstellen
+    </a>
+    <a href="?page=[plugin-slug]-settings" class="btn subtle">
+      <!-- Settings-Icon --> Einstellungen
+    </a>
+    <!-- weitere häufige Aktionen aus Plugin-Analyse -->
+  </div>
+</div>
+```
+
+**Dashboard-Layout CSS:**
+```css
+.[prefix]-app .stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--gap);
+  margin-bottom: var(--gap);
+}
+.[prefix]-app .dash-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap);
+}
+.[prefix]-app .quick-links {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px var(--pad);
+}
+.[prefix]-app .quick-links .btn {
+  justify-content: flex-start;
+}
 ```
 
 ### H.2 Listen-Screen
@@ -1647,7 +2025,7 @@ Page-Header (Zurück-Link + Titel)
   Links (Hauptinhalt):
     Card "Inhalt" – Hauptfelder (Titel, Beschreibung, Felder je nach Plugin)
     Card "Weitere Felder" – optionale Zusatzfelder
-  Rechts (Sidebar):
+  Rechts (Editor-Spalte):
     Card "Status" – Status-Radio (Entwurf / In Prüfung / Veröffentlicht) + Speichern-Button
     Card "Metadaten" – Erstellt-Datum, Autor, ID
 Branding-Footer
@@ -1703,12 +2081,18 @@ Die KI darf folgendes **niemals** tun:
 | `.card { ... }` global | `.[prefix]-app .card { ... }` |
 | Präfix aus Beispiel übernehmen (z. B. `bsf-`) | Am Gesprächsanfang nach Präfix fragen |
 | Branding-Footer weglassen | Immer auf jeder Hauptseite einbauen |
-| WP-Core-Klassen: `.button`, `.notice`, `.wrap` | Eigene Klassen mit Präfix |
+| Dashboard weglassen | Immer als erste WP-Menüseite anlegen (CPT-Ausnahme: 0.4) |
+| Eigene Sidebar-Navigation bauen | WP-Hauptmenü nutzen (`add_menu_page` / CPT `menu_icon`) |
+| `.side`-Blueprint als Haupt-Navigation einsetzen | Nur für kontextuelle Seitenleisten (E.2) |
+| WP-Menüpunkte in einer eigenen Nav-Sidebar wiederholen | Jeder Hauptbereich = eine eigene WP-Admin-Seite |
+| Dashboard mit Marketingtext / Willkommens-Nachricht füllen | Arbeits-Überblick: Stats, Aktivität, Schnellzugriff |
+| WP-Core-Klassen: `.button`, `.notice`, `.wrap` | Eigene Klassen mit Präfix; Bridge nur in `admin-bridge.css` |
 | `tweaks-panel` in Produktionscode | Nur im Prototyp, nicht in echtem Plugin |
 | CDN-React/Babel-Tags | `@wordpress/scripts` Build-Setup |
 | Animationsendstatus `opacity: 0` | `opacity: 1` als Endzustand sicherstellen |
 | Sheet ohne Escape-Taste-Listener | Immer `keydown: Escape` + Cleanup beim Schließen |
-| Inline-Styles für Farben und Abstände | Token-Variablen in externem CSS |
+| Inline-Styles mit Hardcoded-Werten (`#hex`, `22px`) | Token-Klassen in externem CSS; Inline nur in Blueprints mit `var(--*)` vermeiden |
+| E.1 mit Nav-Sidebar als Standard | E.1 ohne Sidebar; E.2 nur kontextuell |
 
 ---
 
@@ -1724,14 +2108,16 @@ Die KI darf folgendes **niemals** tun:
 ├── assets/
 │   ├── tokens.css             # Nur CSS Custom Properties (diese Datei)
 │   ├── styles.css             # Alle Komponenten-Klassen
-│   ├── admin-bridge.css       # WP-Admin-Override-CSS
+│   ├── admin-bridge.css       # WP-Admin-Override-CSS (Retrofit: F.6)
+│   ├── admin-menu.css         # Dashicons für WP-Untermenüs (F.3)
+│   ├── admin-ui.js            # Retrofit: WP-Inhalt in Shell verschieben (F.6)
 │   └── app.js                 # Plugin-JavaScript
 ├── templates/
 │   ├── page-dashboard.php     # Dashboard-Screen
 │   ├── page-list.php          # Listen-Screen
 │   ├── page-editor.php        # Editor/Formular-Screen
 │   └── page-settings.php      # Einstellungen-Screen
-└── BS-PluginDesignSystem.md   # Diese Datei
+└── WordpressPluginDesign.md   # Diese Datei
 ```
 
 ---

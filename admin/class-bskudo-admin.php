@@ -126,7 +126,6 @@ class BSKudo_Admin {
 								</div>
 							<?php endif; ?>
 
-							<?php $this->render_shortcode_panel(); ?>
 							<?php $this->maybe_render_mail_debug_panel(); ?>
 
 							<div class="settings-layout">
@@ -159,7 +158,7 @@ class BSKudo_Admin {
 	/**
 	 * Hinweis zum Frontend-Shortcode.
 	 */
-	private function render_shortcode_panel() {
+	public static function render_shortcode_panel() {
 		?>
 		<div class="alert info">
 			<p class="alert-title"><?php esc_html_e( 'Kudo-Karten im Frontend anzeigen', 'bs-kudo-karten' ); ?></p>
@@ -173,7 +172,7 @@ class BSKudo_Admin {
 	}
 
 	/**
-	 * Mail-Debug-Panel (nur wenn Logging aktiv).
+	 * Mail-Debug-Panel (nur wenn Logging aktiv), eingeklappt per Accordion.
 	 */
 	private function maybe_render_mail_debug_panel() {
 		if ( ! class_exists( 'BSKudo_Debug', false ) || ! BSKudo_Debug::is_enabled() ) {
@@ -185,23 +184,28 @@ class BSKudo_Admin {
 		$tail      = BSKudo_Debug::tail_log( 8 );
 		$env       = BSKudo_Debug::get_environment_snapshot();
 		?>
-		<div class="alert warn">
-			<p class="alert-title"><?php esc_html_e( 'Mail-Debug aktiv', 'bs-kudo-karten' ); ?></p>
-			<p><?php esc_html_e( 'Jeder Versand wird protokolliert. Auf lokalen Systemen kommt oft keine E-Mail im Postfach an – das Log zeigt, ob WordPress den Versand dennoch als erfolgreich meldet.', 'bs-kudo-karten' ); ?></p>
-			<ul>
-				<li><code class="key"><?php echo esc_html( $log_path ); ?></code></li>
-				<li><code class="key"><?php echo esc_html( $html_path ); ?></code> <?php esc_html_e( '(zuletzt erzeugte HTML-Mail)', 'bs-kudo-karten' ); ?></li>
-			</ul>
-			<?php if ( ! empty( $env['local_note'] ) ) : ?>
-				<p><em><?php echo esc_html( (string) $env['local_note'] ); ?></em></p>
-			<?php endif; ?>
-			<?php if ( '' !== $tail ) : ?>
-				<p><strong><?php esc_html_e( 'Letzte Log-Einträge:', 'bs-kudo-karten' ); ?></strong></p>
-				<pre class="log-pre"><?php echo esc_html( $tail ); ?></pre>
-			<?php else : ?>
-				<p><?php esc_html_e( 'Noch keine Einträge – bitte einmal eine Kudo-Karte im Frontend senden.', 'bs-kudo-karten' ); ?></p>
-			<?php endif; ?>
-		</div>
+		<details class="accordion">
+			<summary class="accordion-sum">
+				<span class="accordion-sum-label"><?php esc_html_e( 'Mail-Debug & Protokoll', 'bs-kudo-karten' ); ?></span>
+				<span class="badge warn dot"><?php esc_html_e( 'Aktiv', 'bs-kudo-karten' ); ?></span>
+			</summary>
+			<div class="accordion-body alert warn">
+				<p><?php esc_html_e( 'Jeder Versand wird protokolliert. Auf lokalen Systemen kommt oft keine E-Mail im Postfach an – das Log zeigt, ob WordPress den Versand dennoch als erfolgreich meldet.', 'bs-kudo-karten' ); ?></p>
+				<ul>
+					<li><code class="key"><?php echo esc_html( $log_path ); ?></code></li>
+					<li><code class="key"><?php echo esc_html( $html_path ); ?></code> <?php esc_html_e( '(zuletzt erzeugte HTML-Mail)', 'bs-kudo-karten' ); ?></li>
+				</ul>
+				<?php if ( ! empty( $env['local_note'] ) ) : ?>
+					<p><em><?php echo esc_html( (string) $env['local_note'] ); ?></em></p>
+				<?php endif; ?>
+				<?php if ( '' !== $tail ) : ?>
+					<p><strong><?php esc_html_e( 'Letzte Log-Einträge:', 'bs-kudo-karten' ); ?></strong></p>
+					<pre class="log-pre"><?php echo esc_html( $tail ); ?></pre>
+				<?php else : ?>
+					<p><?php esc_html_e( 'Noch keine Einträge – bitte einmal eine Kudo-Karte im Frontend senden.', 'bs-kudo-karten' ); ?></p>
+				<?php endif; ?>
+			</div>
+		</details>
 		<?php
 	}
 
