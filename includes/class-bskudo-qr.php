@@ -1,6 +1,6 @@
 <?php
 /**
- * QR-Code für E-Mails (Link zur Webansicht).
+ * QR-Code für E-Mails und Webansicht (lokal generiert).
  *
  * @package BSKudo
  */
@@ -40,7 +40,7 @@ class BSKudo_QR {
 	}
 
 	/**
-	 * PNG-Binary vom QR-Dienst laden (gecacht pro URL).
+	 * PNG-Binary lokal erzeugen (gecacht pro URL).
 	 *
 	 * @param string $url  Ziel-URL.
 	 * @param int    $size Größe.
@@ -54,47 +54,48 @@ class BSKudo_QR {
 			return $cached;
 		}
 
-		$api_url = add_query_arg(
-			array(
-				'size'   => $size . 'x' . $size,
-				'format' => 'png',
-				'data'   => $url,
-			),
-			'https://api.qrserver.com/v1/create-qr-code/'
-		);
+		$png = self::generate_png( $url, $size );
 
-		/**
-		 * QR-API-URL anpassen (eigener Dienst möglich).
-		 *
-		 * @param string $api_url API-URL.
-		 * @param string $url     Ziel-URL.
-		 * @param int    $size    Größe.
-		 */
-		$api_url = apply_filters( 'bskudo_qr_api_url', $api_url, $url, $size );
-
-		$response = wp_remote_get(
-			$api_url,
-			array(
-				'timeout' => 12,
-			)
-		);
-
-		if ( is_wp_error( $response ) ) {
+		if ( '' === $png ) {
 			return '';
 		}
 
-		$code = wp_remote_retrieve_response_code( $response );
-		if ( 200 !== $code ) {
+		set_transient( $cache_key, $png, DAY_IN_SECONDS );
+
+		return $png;
+	}
+
+	/**
+	 * PNG per chillerlan/php-qrcode erzeugen.
+	 *
+	 * @param string $url  Ziel-URL.
+	 * @param int    $size Kantenlänge in Pixel.
+	 * @return string
+	 */
+	private static function generate_png( $url, $size ) {
+		if ( ! class_exists( '\chillerlan\QRCode\QRCode' ) ) {
 			return '';
 		}
 
-		$body = wp_remote_retrieve_body( $response );
-		if ( '' === $body || strlen( $body ) < 100 ) {
+		try {
+			$options = new \chillerlan\QRCode\QROptions(
+				array(
+					'outputInterface'  => \chillerlan\QRCode\Output\QRGdImagePNG::class,
+					'outputBase64'     => false,
+					'scale'            => max( 1, (int) round( $size / 25 ) ),
+					'imageTransparent' => false,
+				)
+			);
+
+			$png = ( new \chillerlan\QRCode\QRCode( $options ) )->render( $url );
+
+			if ( ! is_string( $png ) || strlen( $png ) < 100 ) {
+				return '';
+			}
+
+			return $png;
+		} catch ( Exception $e ) {
 			return '';
 		}
-
-		set_transient( $cache_key, $body, DAY_IN_SECONDS );
-
-		return $body;
 	}
 }

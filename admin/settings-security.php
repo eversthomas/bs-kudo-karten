@@ -40,7 +40,7 @@ $security = $settings['security'];
 			<th scope="row"><label for="bskudo_privacy_text"><?php esc_html_e( 'Datenschutzhinweis', 'bs-kudo-karten' ); ?></label></th>
 			<td>
 				<textarea id="bskudo_privacy_text" name="bskudo_settings[security][privacy_text]" rows="4" class="large-text"><?php echo esc_textarea( $security['privacy_text'] ); ?></textarea>
-				<p class="description"><?php esc_html_e( 'Wird im Wizard bei Schritt 3 angezeigt.', 'bs-kudo-karten' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Wird im Wizard bei Schritt 3 angezeigt. Bereits gespeicherte Installationen behalten ihren bisherigen Text – bitte bei Bedarf manuell anpassen.', 'bs-kudo-karten' ); ?></p>
 			</td>
 		</tr>
 	</table>

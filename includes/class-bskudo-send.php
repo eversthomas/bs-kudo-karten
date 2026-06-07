@@ -129,8 +129,6 @@ class BSKudo_Send {
 			);
 		}
 
-		$this->security->record_send();
-
 		$message = sprintf(
 			/* translators: %s: date/time */
 			__( 'Deine Kudo-Karte wird am %s versendet.', 'bs-kudo-karten' ),

@@ -23,7 +23,6 @@ class BSKudo_Debug {
 	 *
 	 * Aktivierung (erste zutreffende Regel):
 	 * - define( 'BSKUDO_MAIL_DEBUG', true ); in wp-config.php
-	 * - WP_DEBUG = true
 	 * - lokale Hostnamen (.local, .test, localhost, 127.0.0.1)
 	 *
 	 * @return bool
@@ -31,10 +30,6 @@ class BSKudo_Debug {
 	public static function is_enabled() {
 		if ( defined( 'BSKUDO_MAIL_DEBUG' ) ) {
 			return (bool) BSKUDO_MAIL_DEBUG;
-		}
-
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			return true;
 		}
 
 		return self::is_local_site();

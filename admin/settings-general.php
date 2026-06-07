@@ -64,7 +64,7 @@ $general  = $settings['general'];
 					<label for="bskudo_schedule_max_days"><?php esc_html_e( 'Maximaler Vorlauf (Tage):', 'bs-kudo-karten' ); ?></label>
 					<input type="number" id="bskudo_schedule_max_days" name="bskudo_settings[general][schedule_max_days]" value="<?php echo esc_attr( (string) $general['schedule_max_days'] ); ?>" min="1" max="90" class="small-text">
 				</p>
-				<p class="description"><?php esc_html_e( 'Geplante Aufträge werden nur bis zum Versandzeitpunkt zwischengespeichert (keine dauerhafte Speicherung).', 'bs-kudo-karten' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Geplante Aufträge werden nur bis zum Versandzeitpunkt zwischengespeichert (keine dauerhafte Speicherung). Für zuverlässigen verzögerten Versand sollte ein echter System-Cron eingerichtet werden (WP-Cron alle 5–15 Minuten auslösen), da WordPress-Cron sonst erst bei Seitenaufrufen startet.', 'bs-kudo-karten' ); ?></p>
 			</td>
 		</tr>
 		<tr>

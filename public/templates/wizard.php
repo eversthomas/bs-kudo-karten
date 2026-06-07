@@ -255,7 +255,7 @@ $enable_delayed_send = ! empty( $enable_delayed_send );
 					<span class="bskudo-privacy__text"><?php echo esc_html( $privacy_text ); ?></span>
 				</p>
 
-				<?php // Honeypot – Phase 4 (immer aktiv, für Bots unsichtbar). ?>
+				<?php // Honeypot – für Bots unsichtbar. ?>
 				<input
 					type="text"
 					name="bskudo_hp"
@@ -265,6 +265,7 @@ $enable_delayed_send = ! empty( $enable_delayed_send );
 					autocomplete="off"
 					aria-hidden="true"
 				>
+				<input type="hidden" name="bskudo_form_ts" class="bskudo-wizard__form-ts" value="">
 
 				<div class="bskudo-feedback" hidden aria-live="polite"></div>
 

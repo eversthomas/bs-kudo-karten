@@ -45,7 +45,7 @@ class BSKudo_Settings {
 			'security' => array(
 				'rate_limit'      => 5,
 				'char_limit'      => BSKUDO_CHAR_LIMIT,
-				'privacy_text'    => __( 'Deine Angaben werden nur zum Versand dieser Kudo-Karte verwendet und nicht gespeichert.', 'bs-kudo-karten' ),
+				'privacy_text'    => __( 'Deine Angaben werden ausschließlich zum Versand dieser Kudo-Karte verwendet. Bei Sofortversand werden sie nicht dauerhaft gespeichert. Bei geplantem Versand werden sie bis zum Versandzeitpunkt temporär auf dem Server zwischengespeichert. Der Link zur Webansicht ist für eine begrenzte Zeit gültig und enthält deinen Karten-Text sowie deinen Namen als Absender.', 'bs-kudo-karten' ),
 				'token_ttl_days'  => 30,
 			),
 		);

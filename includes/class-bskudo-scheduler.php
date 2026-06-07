@@ -50,6 +50,10 @@ class BSKudo_Scheduler {
 
 		wp_schedule_single_event( $send_at, self::CRON_HOOK, array( $job_id ) );
 
+		if ( function_exists( 'spawn_cron' ) ) {
+			spawn_cron();
+		}
+
 		return $job_id;
 	}
 

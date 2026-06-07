@@ -19,9 +19,19 @@ class BSKudo_Security {
 	const TRANSIENT_PREFIX = 'bskudo_limit_';
 
 	/**
+	 * Mindestzeit zwischen Formular-Laden und Absenden (Sekunden).
+	 */
+	const MIN_FORM_SECONDS = 3;
+
+	/**
+	 * Maximales Alter des Formular-Zeitstempels (Sekunden).
+	 */
+	const MAX_FORM_AGE_SECONDS = DAY_IN_SECONDS;
+
+	/**
 	 * AJAX-Anfrage validieren.
 	 *
-	 * @param array<string, mixed> $data POST-Daten.
+	 * @param array<string, mixed> $data POST-Daten (bereits via wp_unslash).
 	 * @return array<string, mixed>|WP_Error Bereinigte Daten oder Fehler.
 	 */
 	public function validate_request( $data ) {
@@ -34,6 +44,10 @@ class BSKudo_Security {
 		}
 
 		if ( $this->is_honeypot_filled( $data ) ) {
+			return new WP_Error( 'bskudo_spam', __( 'Die Anfrage konnte nicht verarbeitet werden.', 'bs-kudo-karten' ) );
+		}
+
+		if ( $this->is_form_submitted_too_fast( $data ) ) {
 			return new WP_Error( 'bskudo_spam', __( 'Die Anfrage konnte nicht verarbeitet werden.', 'bs-kudo-karten' ) );
 		}
 
@@ -58,7 +72,7 @@ class BSKudo_Security {
 	 * @return bool
 	 */
 	public function verify_nonce( $data ) {
-		$nonce = isset( $data['bskudo_nonce'] ) ? sanitize_text_field( wp_unslash( $data['bskudo_nonce'] ) ) : '';
+		$nonce = isset( $data['bskudo_nonce'] ) ? sanitize_text_field( (string) $data['bskudo_nonce'] ) : '';
 
 		return (bool) wp_verify_nonce( $nonce, self::NONCE_ACTION );
 	}
@@ -70,9 +84,27 @@ class BSKudo_Security {
 	 * @return bool True wenn Bot-Verdacht.
 	 */
 	public function is_honeypot_filled( $data ) {
-		$hp = isset( $data['bskudo_hp'] ) ? trim( (string) wp_unslash( $data['bskudo_hp'] ) ) : '';
+		$hp = isset( $data['bskudo_hp'] ) ? trim( (string) $data['bskudo_hp'] ) : '';
 
 		return '' !== $hp;
+	}
+
+	/**
+	 * Formular-Zeitstempel prüfen (Bot-Schutz).
+	 *
+	 * @param array<string, mixed> $data POST-Daten.
+	 * @return bool True wenn verdächtig.
+	 */
+	public function is_form_submitted_too_fast( $data ) {
+		$ts = isset( $data['bskudo_form_ts'] ) ? absint( $data['bskudo_form_ts'] ) : 0;
+
+		if ( $ts < 1 ) {
+			return true;
+		}
+
+		$age = time() - $ts;
+
+		return $age < self::MIN_FORM_SECONDS || $age > self::MAX_FORM_AGE_SECONDS;
 	}
 
 	/**
@@ -131,12 +163,12 @@ class BSKudo_Security {
 	 */
 	private function sanitize_submission( $data ) {
 		$card_id = isset( $data['bskudo_card_id'] ) ? absint( $data['bskudo_card_id'] ) : 0;
-		$message = isset( $data['bskudo_message'] ) ? sanitize_textarea_field( wp_unslash( $data['bskudo_message'] ) ) : '';
+		$message = isset( $data['bskudo_message'] ) ? sanitize_textarea_field( (string) $data['bskudo_message'] ) : '';
 
-		$sender_name  = isset( $data['bskudo_sender_name'] ) ? sanitize_text_field( wp_unslash( $data['bskudo_sender_name'] ) ) : '';
-		$sender_email = isset( $data['bskudo_sender_email'] ) ? sanitize_email( wp_unslash( $data['bskudo_sender_email'] ) ) : '';
-		$recipient_name  = isset( $data['bskudo_recipient_name'] ) ? sanitize_text_field( wp_unslash( $data['bskudo_recipient_name'] ) ) : '';
-		$recipient_email = isset( $data['bskudo_recipient_email'] ) ? sanitize_email( wp_unslash( $data['bskudo_recipient_email'] ) ) : '';
+		$sender_name     = isset( $data['bskudo_sender_name'] ) ? sanitize_text_field( (string) $data['bskudo_sender_name'] ) : '';
+		$sender_email    = isset( $data['bskudo_sender_email'] ) ? sanitize_email( (string) $data['bskudo_sender_email'] ) : '';
+		$recipient_name  = isset( $data['bskudo_recipient_name'] ) ? sanitize_text_field( (string) $data['bskudo_recipient_name'] ) : '';
+		$recipient_email = isset( $data['bskudo_recipient_email'] ) ? sanitize_email( (string) $data['bskudo_recipient_email'] ) : '';
 
 		$char_limit = BSKudo_Settings::get_char_limit();
 
@@ -182,7 +214,7 @@ class BSKudo_Security {
 		}
 
 		$send_at = 0;
-		$mode    = isset( $data['bskudo_send_mode'] ) ? sanitize_key( wp_unslash( $data['bskudo_send_mode'] ) ) : 'now';
+		$mode    = isset( $data['bskudo_send_mode'] ) ? sanitize_key( (string) $data['bskudo_send_mode'] ) : 'now';
 
 		if ( 'later' === $mode && BSKudo_Settings::is_feature_enabled( 'enable_delayed_send' ) ) {
 			$send_at = self::parse_send_at( $data );
@@ -210,7 +242,7 @@ class BSKudo_Security {
 	 * @return int|WP_Error Unix-Zeitstempel oder Fehler.
 	 */
 	private static function parse_send_at( $data ) {
-		$raw = isset( $data['bskudo_send_at'] ) ? sanitize_text_field( wp_unslash( $data['bskudo_send_at'] ) ) : '';
+		$raw = isset( $data['bskudo_send_at'] ) ? sanitize_text_field( (string) $data['bskudo_send_at'] ) : '';
 
 		if ( '' === $raw ) {
 			return new WP_Error( 'bskudo_schedule_empty', __( 'Bitte wähle Datum und Uhrzeit für den Versand.', 'bs-kudo-karten' ) );

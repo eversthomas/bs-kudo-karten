@@ -190,6 +190,7 @@
 		var sendModeRadios = root.querySelectorAll('.bskudo-send-mode');
 		var scheduleFieldWrap = root.querySelector('.bskudo-schedule-field');
 		var sendAtField = root.querySelector('#bskudo-send-at');
+		var formTsField = root.querySelector('.bskudo-wizard__form-ts');
 
 		/* ─── Teil 2: State ───────────────────────────────────────── */
 
@@ -448,6 +449,12 @@
 			return valid;
 		}
 
+		function setFormTimestamp() {
+			if (formTsField) {
+				formTsField.value = String(Math.floor(Date.now() / 1000));
+			}
+		}
+
 		function resetWizardAfterSend() {
 			state.sent = false;
 			state.sending = false;
@@ -502,6 +509,8 @@
 				submitBtn.textContent = config.i18n.send || 'Kudo-Karte senden';
 				submitBtn.disabled = true;
 			}
+
+			setFormTimestamp();
 		}
 
 		function sendKudo() {
@@ -977,6 +986,7 @@
 
 		updateSendTimingUi();
 		updateSectionNav();
+		setFormTimestamp();
 	}
 
 	function initAll() {

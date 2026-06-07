@@ -3,17 +3,16 @@
 ## Projektkontext
 WordPress-Plugin für digitale Kudo-Karten.
 Entwickelt von Tom Evers (bezugssysteme.de) für Marcus Rosik (Systemische Beratung).
-Ziel: Nutzer wählen eine Kudo-Karte, schreiben einen kurzen Text (max. 160 Zeichen, 2 Zeilen),
+Ziel: Nutzer wählen eine Kudo-Karte, schreiben einen kurzen Text (Standard max. 240 Zeichen, konfigurierbar),
 geben Absender und Empfänger an und verschicken die Karte per E-Mail.
 
 ## Prinzipien
-- Kein Framework, kein jQuery (außer WP-Standard) – Vanilla JS
-- Kein unnötiger Datenbankschreibvorgang (keine personenbezogenen Daten speichern)
+- Kein Framework, kein jQuery im Frontend – Vanilla JS
+- Minimale Datenspeicherung – Transients statt dauerhafter personenbezogener Datensätze
 - Jede Klasse hat genau eine Verantwortung
 - CSS-Prefix: .bskudo- (keine Konflikte mit Divi oder anderen Themes)
 - PHP-Prefix: bskudo_ / BSKUDO_ / BSKudo_
 - Deutsche Kommentare im Code
-- Testbare Phasen: jede Phase ist einzeln aktivierbar und prüfbar
 
 ## Plugin-Prefix
 Slug:       bs-kudo-karten
@@ -24,120 +23,85 @@ JS:         window.bskudo
 
 ## Dateistruktur
 bs-kudo-karten/
-├── bs-kudo-karten.php          # Hauptdatei, nur Konstanten + Loader-Aufruf
-├── ARCHITECTURE.md
+├── bs-kudo-karten.php          # Konstanten, Composer-Autoload, Loader
+├── composer.json               # chillerlan/php-qrcode (QR lokal)
+├── vendor/                     # Composer-Abhängigkeiten (mit deployen)
+├── languages/                  # Übersetzungen (Textdomain bs-kudo-karten)
 ├── includes/
-│   ├── class-bskudo-loader.php      # Alle add_action / add_filter zentral
-│   ├── class-bskudo-cpt.php         # CPT: kudo_card, kudo_set, kudo_textbaustein
-│   ├── class-bskudo-shortcode.php   # [kudo_karten] Shortcode
-│   ├── class-bskudo-mailer.php      # Versand via wp_mail()
-│   ├── class-bskudo-security.php    # Honeypot, Rate Limiting, Sanitizing
-│   └── class-bskudo-token.php       # Temporäre URLs für Kartenansicht
+│   ├── class-bskudo-loader.php
+│   ├── class-bskudo-cpt.php
+│   ├── class-bskudo-shortcode.php
+│   ├── class-bskudo-send.php          # AJAX-Versand
+│   ├── class-bskudo-mailer.php
+│   ├── class-bskudo-security.php      # Nonce, Honeypot, Zeitstempel, Rate Limit
+│   ├── class-bskudo-token.php
+│   ├── class-bskudo-card-view.php
+│   ├── class-bskudo-scheduler.php     # WP-Cron für geplanten Versand
+│   ├── class-bskudo-qr.php            # Lokale QR-Generierung
+│   ├── class-bskudo-settings.php
+│   └── class-bskudo-debug.php
 ├── admin/
-│   ├── class-bskudo-admin.php       # Admin-Seite mit Tabs
-│   ├── class-bskudo-card-meta.php   # Karten: Akzentfarbe, optionales Rückseiten-Branding
+│   ├── class-bskudo-admin.php
+│   ├── class-bskudo-card-meta.php
 │   ├── class-bskudo-textbaustein-meta.php
-│   ├── settings-general.php         # Tab: Allgemein (Absender, Betreff)
-│   ├── settings-branding.php        # Tab: Branding (Logo, Farbe, Mail-Template)
-│   └── settings-security.php        # Tab: Sicherheit (Rate Limit, Zeichenlimit)
+│   ├── settings-general.php
+│   ├── settings-branding.php
+│   └── settings-security.php
 ├── public/
-│   ├── css/bskudo-wizard.css
-│   ├── js/bskudo-wizard.js
+│   ├── css/
+│   ├── js/
 │   └── templates/
-│       ├── wizard.php               # 3-Schritt-Wizard HTML
-│       └── card-view.php            # Webansicht für Empfänger (Token-basiert)
+│       ├── wizard.php
+│       └── card-view.php
 ├── mail/
-│   └── template-mail.php            # HTML-Mail mit Karte + Branding
-└── assets/
-    └── cards/                       # Karten als WebP (Web) + JPG (Mail)
+│   └── template-mail.php
+└── debug/                      # Mail-Debug (nur lokal / BSKUDO_MAIL_DEBUG)
 
-## Karten-Layout (Vorder- und Rückseite)
+## E-Mail-Strategie
 
-**Vorderseite:** Kartenbild in Originalproportionen (`object-fit: contain`) + Nutzertext zentriert
-auf dem vorgesehenen Notizfeld (max. 160 Zeichen, 2 Zeilen, Schrift skaliert automatisch).
-**Große Vorschau:** Dialog in Schritt 2 vor dem Versand – Karte in voller Größe mit komplettem Text.
+Die HTML-Mail ist ein **Türöffner**: Begrüßung, Teaser, CTA-Button zur tokenbasierten Webansicht.
+Optional QR-Code (lokal generiert, PNG in Uploads-Ordner für Mail-Kompatibilität).
+Kein Kartenbild direkt in der Mail – der Wow-Effekt liegt in der Webansicht.
 
-**Rückseite:** Branding (Logo, Text, Farbe) – konfigurierbar im Backend-Tab „Branding“.
-Optional pro Karte überschreibbar (Meta-Feld „Rückseiten-Branding“ am CPT `kudo_card`).
+Plain-Text-Alternative via PHPMailer `AltBody`.
 
-Kein CSS-Flip in E-Mails – Flip nur im Web-Wizard als Interaktion (Schritt 1: Branding ansehen).
+## Webansicht (Token)
 
-## Custom Post Types
-kudo_card
-  - Felder: Titel, Bild (Medienmanager), Akzentfarbe, Icon-Position (Textausrichtung Vorderseite)
-  - Optional: Rückseiten-Branding (überschreibt globalen Standard)
-  - Gehört zu: kudo_set (Taxonomie)
+URL: `/kudo-karte/{token}/` (Pretty Permalinks) oder `?bskudo_kudo={token}`
 
-kudo_set
-  - Taxonomie für kudo_card
-  - Felder: Titel, Beschreibung, Preis (für spätere Vermarktung)
-
-kudo_textbaustein
-  - Felder: Text (max. 160Z), zugeordnete kudo_card oder kudo_set
-
-## Wizard – 3 Schritte
-
-**Navigation:** Die Schritt-Labels („Karte wählen“, „Text“, „Versenden“) sind klickbar.
-Bereits besuchte Schritte können jederzeit angesprungen werden (z. B. Text oder Karte vor dem Versand ändern).
-Vorwärts nur mit gültigen Eingaben (Karte gewählt, Text nicht leer).
-
-**Schritt 1 – Kartenauswahl:** Split-Layout – große sticky Vorschau (links/oben) mit „Weiter“-Button,
-kompaktes scrollbares Karten-Grid zur Auswahl (rechts/unten). Flip nur in der großen Vorschau (Branding).
-
-**Schritt 2 – Text:** Textbausteine als Impulse + Freitext, Live-Vorschau mit **Vorder- und Rückseite nebeneinander**
-(wie später in der E-Mail). Text erscheint auf der Vorderseite.
-
-**Schritt 3 – Versenden:** Absender/Empfänger + Datenschutzhinweis + Senden.
-
-## E-Mail-Darstellung (kein Flip)
-
-E-Mail-Clients unterstützen kein zuverlässiges 3D-Flip. Strategie:
-
-1. **HTML-Mail:** Zwei statische Bilder nebeneinander (Desktop) bzw. untereinander (Mobile):
-   - Links/oben: Vorderseite als **fertiges JPG** (Bild + Nutzertext bereits eingebrannt)
-   - Rechts/unten: Rückseite als **JPG** (Branding)
-2. **Plain-Text-Alternative** (`multipart/alternative`): Nachrichtentext + kurzer Hinweis ohne Layout –
-   für Clients ohne HTML (z. B. ältere Outlook-Konfigurationen).
-3. **Webansicht (Token, Phase 5):** Optional Flip oder ebenfalls Duo-Ansicht – konsistent zur Mail.
-
-Bilder werden serverseitig als JPG gerendert (Phase 6), nicht als HTML/CSS-Flip versendet.
+Transient-Payload: `card_id`, `message`, `sender_name`, `created`
+Keine Empfänger-E-Mail im Token.
 
 ## Sicherheit
-- Honeypot-Feld (immer aktiv, kein Toggle)
-- Rate Limiting: X Versendungen pro IP/Stunde (konfigurierbar, Default: 5)
-  Implementierung: WP Transients, key = 'bskudo_limit_' . md5(IP)
-- Textlänge: max. 160 Zeichen, serverseitig validiert
-- Nonce: wp_nonce_field() für AJAX-Formular
-- Keine Speicherung personenbezogener Daten
+- Nonce für AJAX
+- Honeypot-Feld (immer aktiv)
+- Formular-Zeitstempel (min. 3 Sekunden zwischen Laden und Absenden)
+- Rate Limiting: X Versendungen pro IP/Stunde (WP Transient, Key = `bskudo_limit_` + md5(IP))
+- Zeichenlimit serverseitig validiert
+- Karten-ID muss veröffentlichte `kudo_card` sein
 
 ## Datenschutz
-- Kein Logging von Namen oder E-Mail-Adressen
-- Hinweistext im Formular (konfigurierbar im Backend)
-- Token für Webansicht: nur Karten-ID + Text + Ablaufdatum, gespeichert als WP Transient
+- Sofortversand: keine dauerhafte Speicherung personenbezogener Daten
+- Geplanter Versand: Versanddaten als Transient bis zum Versandzeitpunkt
+- Token: Nachricht + Absendername temporär (TTL konfigurierbar)
+- Debug-Logging nur bei `BSKUDO_MAIL_DEBUG` oder lokaler URL – nicht automatisch bei `WP_DEBUG`
+- QR-Codes werden lokal erzeugt (kein externer API-Dienst)
 
 ## Mail-Versand
 - wp_mail() – kein eigenes SMTP
-- Empfehlung an Admin: WP Mail SMTP Plugin nutzen
+- Empfehlung: WP Mail SMTP Plugin
 - HTML-Template: mail/template-mail.php
-- Karte als inline base64-Bild (JPG) – Vorder- und Rückseite getrennt
+- Reply-To: Absender aus Formular
+- From: konfigurierbar im Backend
 - Optionale Kopie an Absender
-- "Powered by BS Kudo Karten · bezugssysteme.de" im Footer (abschaltbar)
 
-## Admin-Backend (Tabs)
-Tab 1 – Allgemein: Absender-Name, Absender-Mail, Betreff-Template, Kopie an Absender
-Tab 2 – Branding: Logo (Medienmanager), Primärfarbe, Rückseiten-Text, Footer-Text Mail
-Tab 3 – Sicherheit: Rate-Limit-Zahl, Zeichenlimit, Datenschutzhinweis-Text
-
-## Phasen
-Phase 1: Grundgerüst – Plugin aktivierbar, CPTs, Admin-Menü
-Phase 2: Kartenanzeige – Shortcode, Grid, Karte wählbar
-Phase 3: Wizard – alle 3 Schritte, Live-Vorschau (Vorderseite Text, Rückseite Branding), klickbare Schritte
-Phase 4: Versand – wp_mail(), Sicherheit
-Phase 5: Webansicht – Token, card-view.php
-Phase 6: Branding – HTML-Mail, Logo, Farbe, JPG-Rendering Vorder-/Rückseite
-Phase 7: Polish – QR-Code, verzögerter Versand, „An mich selbst“ (umgesetzt)
+## Phasen (Stand 0.4.1)
+Phase 1–3: ✅ Grundgerüst, Shortcode, Wizard
+Phase 4: ✅ Versand, Sicherheit
+Phase 5: ✅ Token-Webansicht
+Phase 6: ✅ HTML-Mail, Branding
+Phase 7: ✅ QR-Code (lokal), verzögerter Versand, „An mich selbst“
 
 ## Branding
 Entwickelt von: Tom Evers – bezugssysteme.de
 Urheber Karten: Marcus Rosik – Systemische Beratung
-Copyright-Hinweis im Admin sichtbar, Karten-Bilder nicht direkt verlinkbar

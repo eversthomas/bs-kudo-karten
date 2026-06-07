@@ -515,7 +515,7 @@ if ( $char_count > 200 ) {
 				<button type="button" class="bskudo-cardview__toggle" id="bskudo-toggle">
 					<?php esc_html_e( 'Rückseite ansehen', 'bs-kudo-karten' ); ?>
 				</button>
-				<button type="button" class="bskudo-cardview__print-btn" onclick="window.print()">
+				<button type="button" class="bskudo-cardview__print-btn">
 					<?php esc_html_e( 'Karte drucken', 'bs-kudo-karten' ); ?>
 				</button>
 			</div>
@@ -537,29 +537,5 @@ if ( $char_count > 200 ) {
 			</footer>
 		<?php endif; ?>
 	</div>
-
-	<script>
-		var toggle = document.getElementById('bskudo-toggle');
-		var front = document.querySelector('.bskudo-cardview__side--front');
-		var back = document.querySelector('.bskudo-cardview__side--back');
-		var showingFront = true;
-		var labelShowBack = <?php echo wp_json_encode( __( 'Rückseite ansehen', 'bs-kudo-karten' ) ); ?>;
-		var labelShowFront = <?php echo wp_json_encode( __( 'Vorderseite ansehen', 'bs-kudo-karten' ) ); ?>;
-
-		if (toggle && front && back) {
-			toggle.addEventListener('click', function () {
-				if (showingFront) {
-					front.classList.remove('bskudo-cardview__side--active');
-					back.classList.add('bskudo-cardview__side--active');
-					toggle.textContent = labelShowFront;
-				} else {
-					back.classList.remove('bskudo-cardview__side--active');
-					front.classList.add('bskudo-cardview__side--active');
-					toggle.textContent = labelShowBack;
-				}
-				showingFront = !showingFront;
-			});
-		}
-	</script>
 </body>
 </html>
