@@ -1,0 +1,314 @@
+/**
+ * BS Kudo Karten – WordPress Admin Bridge
+ * @see WordpressPluginDesign.md Abschnitt F.1
+ */
+
+body.bskudo-admin-screen #wpcontent,
+body.bskudo-admin-screen #wpbody-content {
+	background: oklch(0.975 0.004 255) !important;
+	padding: 0 !important;
+}
+
+body.bskudo-admin-screen #wpbody-content > .wrap.bskudo-wrap {
+	margin: 0;
+	max-width: none;
+	padding: 0;
+}
+
+body.bskudo-admin-screen #wpbody-content > .wrap.bskudo-wrap > h1,
+body.bskudo-admin-screen #wpbody-content > .wrap.bskudo-wrap > .notice {
+	display: none !important;
+}
+
+body.bskudo-admin-screen #screen-meta,
+body.bskudo-admin-screen #screen-meta-links {
+	margin: 0;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .wrap {
+	margin: 0;
+	max-width: none;
+	padding: 0;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .wrap > h1,
+body.bskudo-admin-screen .bskudo-wp-host .wrap > .wp-header-end {
+	font-family: var(--font-brand);
+	font-size: 25px;
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	color: var(--ink);
+	margin: 0 0 22px;
+	padding: 0;
+	line-height: 1.25;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .wrap .page-title-action {
+	display: inline-flex;
+	align-items: center;
+	height: 38px;
+	padding: 0 16px;
+	margin-left: 10px;
+	border-radius: var(--r);
+	font-family: var(--font-ui);
+	font-size: 13.5px;
+	font-weight: 600;
+	background: var(--accent);
+	color: oklch(1 0 0);
+	border: 1px solid transparent;
+	box-shadow: var(--shadow-sm);
+	text-decoration: none;
+	vertical-align: middle;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .wrap .page-title-action:hover {
+	background: var(--accent-press);
+	color: oklch(1 0 0);
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .subsubsub {
+	margin: 0 0 16px;
+	font-size: 13px;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .subsubsub a {
+	color: var(--muted);
+	text-decoration: none;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .subsubsub a.current {
+	color: var(--ink);
+	font-weight: 600;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .tablenav {
+	margin: 12px 0 16px;
+	height: auto;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .tablenav .button,
+body.bskudo-admin-screen .bskudo-wp-host .tablenav .button-secondary {
+	border-radius: var(--r);
+	font-family: var(--font-ui);
+	font-size: 13px;
+	font-weight: 600;
+	border-color: var(--border-strong);
+	box-shadow: var(--shadow-sm);
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .search-box input[type="search"],
+body.bskudo-admin-screen .bskudo-wp-host .tablenav-pages input,
+body.bskudo-admin-screen .bskudo-wp-host input[type="text"],
+body.bskudo-admin-screen .bskudo-wp-host input[type="email"],
+body.bskudo-admin-screen .bskudo-wp-host input[type="url"],
+body.bskudo-admin-screen .bskudo-wp-host input[type="number"],
+body.bskudo-admin-screen .bskudo-wp-host textarea,
+body.bskudo-admin-screen .bskudo-wp-host select {
+	border: 1px solid var(--border-strong);
+	border-radius: var(--r);
+	font-family: var(--font-ui);
+	font-size: 14px;
+	color: var(--ink);
+	box-shadow: none;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host input:focus,
+body.bskudo-admin-screen .bskudo-wp-host textarea:focus,
+body.bskudo-admin-screen .bskudo-wp-host select:focus {
+	border-color: var(--accent);
+	box-shadow: 0 0 0 3px var(--accent-soft);
+	outline: none;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .wp-list-table {
+	border: 1px solid var(--border);
+	border-radius: var(--r-lg);
+	box-shadow: var(--shadow-sm);
+	background: var(--surface);
+	overflow: hidden;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .wp-list-table thead th,
+body.bskudo-admin-screen .bskudo-wp-host .wp-list-table tfoot th {
+	background: var(--surface-2);
+	border-bottom: 1px solid var(--border);
+	color: var(--ink-soft);
+	font-family: var(--font-ui);
+	font-size: 12.5px;
+	font-weight: 600;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .wp-list-table tbody tr {
+	background: var(--surface);
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .wp-list-table tbody tr:nth-child(even) {
+	background: var(--surface-2);
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .wp-list-table tbody tr:hover td,
+body.bskudo-admin-screen .bskudo-wp-host .wp-list-table tbody tr:hover th {
+	background: var(--accent-soft);
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .wp-list-table td,
+body.bskudo-admin-screen .bskudo-wp-host .wp-list-table th {
+	border-color: var(--border);
+	color: var(--ink);
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .wp-list-table .row-title {
+	font-weight: 600;
+	color: var(--ink);
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .postbox {
+	border: 1px solid var(--border);
+	border-radius: var(--r-lg);
+	box-shadow: var(--shadow-sm);
+	background: var(--surface);
+	margin-bottom: var(--gap);
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .postbox .postbox-header {
+	border-bottom: 1px solid var(--border);
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .postbox .postbox-header h2,
+body.bskudo-admin-screen .bskudo-wp-host .postbox .hndle {
+	font-family: var(--font-brand);
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--ink);
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .postbox .inside {
+	padding: var(--pad);
+	margin: 0;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .postbox .inside > p:last-child,
+body.bskudo-admin-screen .bskudo-wp-host .postbox .inside > .bskudo-meta:last-child {
+	margin-bottom: 0;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host #poststuff #post-body.columns-2 {
+	margin-right: -300px;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host #post-body-content {
+	margin-bottom: var(--gap);
+}
+
+body.bskudo-admin-screen .bskudo-wp-host #post-body.columns-2 #postbox-container-1 {
+	width: 280px;
+	margin-right: var(--gap);
+}
+
+body.bskudo-admin-screen .bskudo-wp-host #post-body.columns-2 #post-body-content {
+	margin-right: 300px;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .button-primary {
+	background: var(--accent);
+	border-color: var(--accent);
+	border-radius: var(--r);
+	font-family: var(--font-ui);
+	font-weight: 600;
+	box-shadow: var(--shadow-sm);
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .button-primary:hover,
+body.bskudo-admin-screen .bskudo-wp-host .button-primary:focus {
+	background: var(--accent-press);
+	border-color: var(--accent-press);
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .button,
+body.bskudo-admin-screen .bskudo-wp-host .button-secondary {
+	border-radius: var(--r);
+	font-family: var(--font-ui);
+	font-weight: 600;
+	border-color: var(--border-strong);
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .notice {
+	border-radius: var(--r-lg);
+	border-left-width: 4px;
+	box-shadow: var(--shadow-sm);
+	margin: 0 0 var(--gap);
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .form-table th {
+	color: var(--ink);
+	font-weight: 600;
+	padding-top: 14px;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .form-table td {
+	color: var(--ink-soft);
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .form-table .description {
+	color: var(--muted);
+	font-size: 12.5px;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host #col-left,
+body.bskudo-admin-screen .bskudo-wp-host #col-right {
+	width: calc(50% - 8px);
+}
+
+body.bskudo-admin-screen .bskudo-wp-host #col-left .col-wrap,
+body.bskudo-admin-screen .bskudo-wp-host #col-right .col-wrap {
+	padding: 0;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .form-wrap {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--r-lg);
+	box-shadow: var(--shadow-sm);
+	padding: var(--pad);
+	margin-bottom: var(--gap);
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .form-wrap h2 {
+	font-family: var(--font-brand);
+	font-size: 14px;
+	font-weight: 600;
+	margin-top: 0;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .form-field input,
+body.bskudo-admin-screen .bskudo-wp-host .form-field textarea,
+body.bskudo-admin-screen .bskudo-wp-host .form-field select {
+	width: 100%;
+	max-width: none;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .form-field p {
+	color: var(--muted);
+	font-size: 12.5px;
+}
+
+@media (max-width: 782px) {
+	body.bskudo-admin-screen .bskudo-wp-host #post-body.columns-2 #post-body-content {
+		margin-right: 0;
+	}
+
+	body.bskudo-admin-screen .bskudo-wp-host #col-left,
+	body.bskudo-admin-screen .bskudo-wp-host #col-right {
+		width: 100%;
+		float: none;
+	}
+}
+
+@media (max-width: 960px) {
+	body.bskudo-admin-screen .bskudo-app {
+		height: auto;
+		min-height: calc(100vh - 46px);
+	}
+}

@@ -29,6 +29,13 @@ class BSKudo_Loader {
 	private $admin;
 
 	/**
+	 * Gemeinsame Admin-UI (Assets, Shell, Sidebar).
+	 *
+	 * @var BSKudo_Admin_UI|null
+	 */
+	private $admin_ui;
+
+	/**
 	 * Shortcode-Handler.
 	 *
 	 * @var BSKudo_Shortcode
@@ -94,9 +101,11 @@ class BSKudo_Loader {
 
 		if ( is_admin() ) {
 			require_once BSKUDO_PATH . 'admin/class-bskudo-admin.php';
+			require_once BSKUDO_PATH . 'admin/class-bskudo-admin-ui.php';
 			require_once BSKUDO_PATH . 'admin/class-bskudo-card-meta.php';
 			require_once BSKUDO_PATH . 'admin/class-bskudo-textbaustein-meta.php';
 			$this->admin             = new BSKudo_Admin();
+			$this->admin_ui          = new BSKudo_Admin_UI();
 			$this->card_meta         = new BSKudo_Card_Meta();
 			$this->textbaustein_meta = new BSKudo_Textbaustein_Meta();
 		}
@@ -116,6 +125,10 @@ class BSKudo_Loader {
 		if ( $this->admin ) {
 			add_action( 'admin_menu', array( $this->admin, 'register_menu' ) );
 			add_action( 'admin_init', array( $this->admin, 'register_settings' ) );
+		}
+
+		if ( $this->admin_ui ) {
+			$this->admin_ui->register();
 		}
 
 		if ( $this->card_meta ) {

@@ -331,6 +331,48 @@ $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
 				border: 1px solid #ddd !important; /* light guidelines for cutting */
 				box-sizing: border-box !important;
 			}
+
+			.bskudo-cardview__media {
+				display: grid !important;
+				position: relative !important;
+				width: 14.8cm !important;
+				height: 11.1cm !important;
+				max-width: 14.8cm !important;
+				line-height: 0 !important;
+			}
+
+			.bskudo-cardview__media > img {
+				grid-area: 1 / 1 !important;
+				width: 14.8cm !important;
+				height: 11.1cm !important;
+				max-width: none !important;
+				margin: 0 !important;
+				object-fit: contain !important;
+				object-position: center !important;
+			}
+
+			.bskudo-cardview__media > .bskudo-card__message-zone {
+				grid-area: 1 / 1 !important;
+				position: relative !important;
+				top: auto !important;
+				left: auto !important;
+				transform: none !important;
+				width: 60% !important;
+				height: 40% !important;
+				max-height: 40% !important;
+				place-self: center !important;
+				padding: 0 !important;
+				overflow: hidden !important;
+			}
+
+			.bskudo-cardview__media > .bskudo-card__message-zone > .bskudo-cardview__message {
+				width: 100% !important;
+				max-width: 100% !important;
+				max-height: 100% !important;
+				overflow: hidden !important;
+				overflow-wrap: anywhere !important;
+				word-break: break-word !important;
+			}
 			
 			.bskudo-cardview__message {
 				text-shadow: none !important;

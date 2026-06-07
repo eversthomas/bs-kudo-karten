@@ -71,51 +71,56 @@ class BSKudo_Card_Meta {
 			$icon_pos = 'center';
 		}
 		?>
-		<div style="margin-bottom: 15px;">
-			<label for="bskudo_back_branding_col1"><strong><?php esc_html_e( 'Rückseite: Spalte 1 (links - neben QR-Code)', 'bs-kudo-karten' ); ?></strong></label><br>
-			<?php
-			$editor_settings = array(
-				'textarea_name' => 'bskudo_back_branding_col1',
-				'media_buttons' => false,
-				'textarea_rows' => 3,
-				'teeny'         => true,
-				'quicktags'     => true,
-			);
-			wp_editor( $col1_val, 'bskudo_back_branding_col1', $editor_settings );
-			?>
-			<span class="description"><?php esc_html_e( 'Optionaler Begleittext für die linke Spalte. Leer = Standard-Text / nur QR-Code.', 'bs-kudo-karten' ); ?></span>
+		<div class="bskudo-meta">
+			<div class="fields">
+				<div class="field">
+					<label class="flabel" for="bskudo_back_branding_col1"><?php esc_html_e( 'Rückseite: Spalte 1 (links – neben QR-Code)', 'bs-kudo-karten' ); ?></label>
+					<?php
+					$editor_settings = array(
+						'textarea_name' => 'bskudo_back_branding_col1',
+						'media_buttons' => false,
+						'textarea_rows' => 3,
+						'teeny'         => true,
+						'quicktags'     => true,
+					);
+					wp_editor( $col1_val, 'bskudo_back_branding_col1', $editor_settings );
+					?>
+					<p class="fhint"><?php esc_html_e( 'Optionaler Begleittext für die linke Spalte. Leer = Standard-Text / nur QR-Code.', 'bs-kudo-karten' ); ?></p>
+				</div>
+				<div class="field">
+					<label class="flabel" for="bskudo_back_branding_col2"><?php esc_html_e( 'Rückseite: Spalte 2 (rechts – Branding)', 'bs-kudo-karten' ); ?></label>
+					<?php
+					$editor_settings = array(
+						'textarea_name' => 'bskudo_back_branding_col2',
+						'media_buttons' => false,
+						'textarea_rows' => 3,
+						'teeny'         => true,
+						'quicktags'     => true,
+					);
+					wp_editor( $col2_val, 'bskudo_back_branding_col2', $editor_settings );
+					?>
+					<p class="fhint"><?php esc_html_e( 'Das Haupt-Branding auf der Rückseite dieser Karte. Leer = Globaler Standard.', 'bs-kudo-karten' ); ?></p>
+				</div>
+				<div class="field">
+					<label class="flabel" for="bskudo_accent_color"><?php esc_html_e( 'Akzentfarbe', 'bs-kudo-karten' ); ?></label>
+					<input
+						type="color"
+						class="input color"
+						id="bskudo_accent_color"
+						name="bskudo_accent_color"
+						value="<?php echo esc_attr( $accent ); ?>"
+					>
+				</div>
+				<div class="field">
+					<label class="flabel" for="bskudo_icon_position"><?php esc_html_e( 'Textausrichtung (Vorderseite)', 'bs-kudo-karten' ); ?></label>
+					<select class="select" id="bskudo_icon_position" name="bskudo_icon_position">
+						<option value="left" <?php selected( $icon_pos, 'left' ); ?>><?php esc_html_e( 'Links', 'bs-kudo-karten' ); ?></option>
+						<option value="center" <?php selected( $icon_pos, 'center' ); ?>><?php esc_html_e( 'Mitte', 'bs-kudo-karten' ); ?></option>
+						<option value="right" <?php selected( $icon_pos, 'right' ); ?>><?php esc_html_e( 'Rechts', 'bs-kudo-karten' ); ?></option>
+					</select>
+				</div>
+			</div>
 		</div>
-		<div style="margin-bottom: 15px;">
-			<label for="bskudo_back_branding_col2"><strong><?php esc_html_e( 'Rückseite: Spalte 2 (rechts - Branding)', 'bs-kudo-karten' ); ?></strong></label><br>
-			<?php
-			$editor_settings = array(
-				'textarea_name' => 'bskudo_back_branding_col2',
-				'media_buttons' => false,
-				'textarea_rows' => 3,
-				'teeny'         => true,
-				'quicktags'     => true,
-			);
-			wp_editor( $col2_val, 'bskudo_back_branding_col2', $editor_settings );
-			?>
-			<span class="description"><?php esc_html_e( 'Das Haupt-Branding auf der Rückseite dieser Karte. Leer = Globaler Standard.', 'bs-kudo-karten' ); ?></span>
-		</div>
-		<p>
-			<label for="bskudo_accent_color"><strong><?php esc_html_e( 'Akzentfarbe', 'bs-kudo-karten' ); ?></strong></label><br>
-			<input
-				type="color"
-				id="bskudo_accent_color"
-				name="bskudo_accent_color"
-				value="<?php echo esc_attr( $accent ); ?>"
-			>
-		</p>
-		<p>
-			<label for="bskudo_icon_position"><strong><?php esc_html_e( 'Textausrichtung (Vorderseite)', 'bs-kudo-karten' ); ?></strong></label><br>
-			<select id="bskudo_icon_position" name="bskudo_icon_position">
-				<option value="left" <?php selected( $icon_pos, 'left' ); ?>><?php esc_html_e( 'Links', 'bs-kudo-karten' ); ?></option>
-				<option value="center" <?php selected( $icon_pos, 'center' ); ?>><?php esc_html_e( 'Mitte', 'bs-kudo-karten' ); ?></option>
-				<option value="right" <?php selected( $icon_pos, 'right' ); ?>><?php esc_html_e( 'Rechts', 'bs-kudo-karten' ); ?></option>
-			</select>
-		</p>
 		<?php
 	}
 

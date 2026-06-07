@@ -5,11 +5,36 @@
 	'use strict';
 
 	var config = window.bskudoCardView || { i18n: {} };
+	var printPrepared = false;
 
-	function fitMessages(scope) {
+	function getMedia() {
+		return document.querySelector('.bskudo-cardview__media');
+	}
+
+	function fitMessages(scope, options) {
 		if (window.bskudo && typeof window.bskudo.scheduleFitMessages === 'function') {
-			window.bskudo.scheduleFitMessages(scope || document);
+			window.bskudo.scheduleFitMessages(scope || document, options);
 		}
+	}
+
+	function fitMessagesNow(scope, options) {
+		if (window.bskudo && typeof window.bskudo.fitCardMessagesNow === 'function') {
+			window.bskudo.fitCardMessagesNow(scope || document, options);
+		}
+	}
+
+	function preparePrintFit() {
+		if (printPrepared) {
+			return;
+		}
+
+		printPrepared = true;
+		fitMessagesNow(getMedia(), { print: true });
+	}
+
+	function restoreScreenFit() {
+		printPrepared = false;
+		fitMessages(getMedia(), { print: false });
 	}
 
 	function initToggle() {
@@ -42,16 +67,19 @@
 	function initPrint() {
 		var printBtn = document.querySelector('.bskudo-cardview__print-btn');
 
+		window.addEventListener('beforeprint', preparePrintFit);
+		window.addEventListener('afterprint', restoreScreenFit);
+
 		if (printBtn) {
 			printBtn.addEventListener('click', function () {
-				fitMessages(document.querySelector('.bskudo-cardview__media'));
+				preparePrintFit();
 				window.print();
 			});
 		}
 	}
 
 	function initMessageFit() {
-		var media = document.querySelector('.bskudo-cardview__media');
+		var media = getMedia();
 		var img = media ? media.querySelector('img') : null;
 
 		if (img) {
@@ -72,7 +100,9 @@
 
 		if (typeof ResizeObserver !== 'undefined' && media) {
 			var observer = new ResizeObserver(function () {
-				fitMessages(media);
+				if (!printPrepared) {
+					fitMessages(media);
+				}
 			});
 			observer.observe(media);
 		}

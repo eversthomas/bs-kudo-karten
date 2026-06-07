@@ -1,0 +1,18 @@
+/**
+ * Dashicons für Plugin-Untermenüpunkte in der WP-Admin-Leiste.
+ */
+
+#adminmenu .wp-submenu a .bskudo-menu-icon {
+	display: inline-block;
+	font-size: 16px;
+	width: 18px;
+	height: 18px;
+	line-height: 18px;
+	margin-right: 3px;
+	vertical-align: text-top;
+	opacity: 0.88;
+}
+
+#adminmenu .wp-submenu a:hover .bskudo-menu-icon {
+	opacity: 1;
+}

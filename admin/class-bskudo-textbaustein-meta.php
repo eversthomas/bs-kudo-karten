@@ -77,40 +77,44 @@ class BSKudo_Textbaustein_Meta {
 			$sets = array();
 		}
 		?>
-		<p>
-			<label for="bskudo_linked_card"><strong><?php esc_html_e( 'Kudo-Karte', 'bs-kudo-karten' ); ?></strong></label>
-			<select id="bskudo_linked_card" name="bskudo_linked_card" class="widefat">
-				<option value="0"><?php esc_html_e( '— Keine —', 'bs-kudo-karten' ); ?></option>
-				<?php foreach ( $cards as $card ) : ?>
-					<option value="<?php echo esc_attr( (string) $card->ID ); ?>" <?php selected( $linked_card, $card->ID ); ?>>
-						<?php echo esc_html( get_the_title( $card ) ); ?>
-					</option>
-				<?php endforeach; ?>
-			</select>
-		</p>
-		<p>
-			<strong><?php esc_html_e( 'Kudo-Sets', 'bs-kudo-karten' ); ?></strong><br>
-			<span class="description"><?php esc_html_e( 'Leer = für alle Sets. Ohne Karte/Set = globaler Textbaustein.', 'bs-kudo-karten' ); ?></span>
-		</p>
-		<?php if ( empty( $sets ) ) : ?>
-			<p class="description"><?php esc_html_e( 'Noch keine Sets angelegt.', 'bs-kudo-karten' ); ?></p>
-		<?php else : ?>
-			<ul style="margin: 0; max-height: 12em; overflow: auto;">
-				<?php foreach ( $sets as $set ) : ?>
-					<li>
-						<label>
-							<input
-								type="checkbox"
-								name="bskudo_linked_sets[]"
-								value="<?php echo esc_attr( (string) $set->term_id ); ?>"
-								<?php checked( in_array( (int) $set->term_id, $linked_sets, true ) ); ?>
-							>
-							<?php echo esc_html( $set->name ); ?>
-						</label>
-					</li>
-				<?php endforeach; ?>
-			</ul>
-		<?php endif; ?>
+		<div class="bskudo-meta">
+			<div class="fields">
+				<div class="field">
+					<label class="flabel" for="bskudo_linked_card"><?php esc_html_e( 'Kudo-Karte', 'bs-kudo-karten' ); ?></label>
+					<select id="bskudo_linked_card" name="bskudo_linked_card" class="select">
+						<option value="0"><?php esc_html_e( '— Keine —', 'bs-kudo-karten' ); ?></option>
+						<?php foreach ( $cards as $card ) : ?>
+							<option value="<?php echo esc_attr( (string) $card->ID ); ?>" <?php selected( $linked_card, $card->ID ); ?>>
+								<?php echo esc_html( get_the_title( $card ) ); ?>
+							</option>
+						<?php endforeach; ?>
+					</select>
+				</div>
+				<div class="field">
+					<span class="flabel"><?php esc_html_e( 'Kudo-Sets', 'bs-kudo-karten' ); ?></span>
+					<p class="fhint"><?php esc_html_e( 'Leer = für alle Sets. Ohne Karte/Set = globaler Textbaustein.', 'bs-kudo-karten' ); ?></p>
+					<?php if ( empty( $sets ) ) : ?>
+						<p class="fhint"><?php esc_html_e( 'Noch keine Sets angelegt.', 'bs-kudo-karten' ); ?></p>
+					<?php else : ?>
+						<ul class="check-list">
+							<?php foreach ( $sets as $set ) : ?>
+								<li>
+									<label class="check-row">
+										<input
+											type="checkbox"
+											name="bskudo_linked_sets[]"
+											value="<?php echo esc_attr( (string) $set->term_id ); ?>"
+											<?php checked( in_array( (int) $set->term_id, $linked_sets, true ) ); ?>
+										>
+										<span><?php echo esc_html( $set->name ); ?></span>
+									</label>
+								</li>
+							<?php endforeach; ?>
+						</ul>
+					<?php endif; ?>
+				</div>
+			</div>
+		</div>
 		<?php
 	}
 

@@ -1,0 +1,571 @@
+/**
+ * BS Kudo Karten – Admin Komponenten
+ * @see WordpressPluginDesign.md Abschnitte E, H.4
+ */
+
+.bskudo-app {
+	display: flex;
+	flex-direction: column;
+	height: calc(100vh - 32px);
+	overflow: hidden;
+	background: var(--bg);
+	color: var(--ink);
+	font-family: var(--font-ui);
+	font-size: 14.5px;
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+}
+
+.bskudo-app-shell {
+	margin: 0;
+}
+
+.bskudo-app *,
+.bskudo-app *::before,
+.bskudo-app *::after {
+	box-sizing: border-box;
+}
+
+.bskudo-app .main {
+	flex: 1;
+	width: 100%;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	min-height: calc(100vh - 32px);
+	overflow: hidden;
+}
+
+.bskudo-app .content {
+	flex: 1;
+	overflow-y: auto;
+}
+
+.bskudo-app .page {
+	max-width: 1180px;
+	margin: 0 auto;
+	padding: 26px 26px 80px;
+}
+
+.bskudo-app .page.bskudo-wp-host {
+	max-width: none;
+	padding-top: 18px;
+}
+
+.bskudo-app .page.bskudo-wp-host > .wrap:first-child {
+	margin-top: 0;
+}
+
+.bskudo-app .topbar {
+	height: 60px;
+	display: flex;
+	align-items: center;
+	padding: 0 var(--pad);
+	gap: 12px;
+	border-bottom: 1px solid var(--border);
+	background: var(--surface);
+	flex-shrink: 0;
+}
+
+.bskudo-app .crumbs {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 6px;
+	font-size: 13px;
+}
+
+.bskudo-app .crumbs a {
+	color: var(--muted);
+	text-decoration: none;
+}
+
+.bskudo-app .crumbs a:hover {
+	color: var(--ink);
+}
+
+.bskudo-app .crumbs .sep {
+	color: var(--faint);
+}
+
+.bskudo-app .crumbs .here {
+	color: var(--ink);
+	font-weight: 600;
+}
+
+.bskudo-app .spacer {
+	flex: 1;
+}
+
+/* Page header */
+
+.bskudo-app .page-head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: var(--gap);
+	margin-bottom: 22px;
+}
+
+.bskudo-app .page-head h1 {
+	font-family: var(--font-brand);
+	font-size: 25px;
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	color: var(--ink);
+	margin: 0;
+}
+
+.bskudo-app .page-head .lede {
+	font-size: 14px;
+	color: var(--muted);
+	margin: 4px 0 0;
+}
+
+/* Settings layout H.4 */
+
+.bskudo-app .settings-layout {
+	display: grid;
+	grid-template-columns: 220px 1fr;
+	gap: var(--gap);
+	align-items: start;
+}
+
+.bskudo-app .settings-tabs {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	position: sticky;
+	top: var(--gap);
+}
+
+.bskudo-app .stab {
+	display: block;
+	padding: 9px 14px;
+	border-radius: var(--r);
+	font-size: 13.5px;
+	color: var(--ink-soft);
+	text-decoration: none;
+	transition: background 0.13s, color 0.13s;
+}
+
+.bskudo-app .stab:hover {
+	background: var(--surface-2);
+	color: var(--ink);
+}
+
+.bskudo-app .stab.active {
+	background: var(--accent-soft);
+	color: var(--accent-ink);
+	font-weight: 600;
+}
+
+.bskudo-app .settings-panel {
+	min-width: 0;
+}
+
+/* Alerts */
+
+.bskudo-app .alert {
+	margin-bottom: var(--gap);
+	padding: 14px var(--pad);
+	border: 1px solid var(--border);
+	border-radius: var(--r-lg);
+	background: var(--surface);
+	box-shadow: var(--shadow-sm);
+}
+
+.bskudo-app .alert.ok {
+	border-color: oklch(0.82 0.06 155);
+	background: var(--ok-soft);
+	color: oklch(0.35 0.08 155);
+}
+
+.bskudo-app .alert.info {
+	border-color: var(--accent-soft-bd);
+	background: var(--accent-soft);
+	color: var(--accent-ink);
+}
+
+.bskudo-app .alert.warn {
+	border-color: oklch(0.86 0.08 75);
+	background: var(--warn-soft);
+	color: var(--warn-ink);
+}
+
+.bskudo-app .alert-title {
+	margin: 0 0 0.35rem;
+	font-family: var(--font-brand);
+	font-size: 14px;
+	font-weight: 700;
+}
+
+.bskudo-app .alert p {
+	margin: 0 0 0.5rem;
+}
+
+.bskudo-app .alert p:last-child {
+	margin-bottom: 0;
+}
+
+.bskudo-app .alert ul {
+	margin: 0.35rem 0 0.5rem 1.25rem;
+	padding: 0;
+}
+
+/* Cards */
+
+.bskudo-app .card {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--r-lg);
+	box-shadow: var(--shadow-sm);
+	margin-bottom: var(--gap);
+}
+
+.bskudo-app .card:last-child {
+	margin-bottom: 0;
+}
+
+.bskudo-app .card-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: var(--pad);
+	border-bottom: 1px solid var(--border);
+}
+
+.bskudo-app .card-head h2,
+.bskudo-app .card-head h3 {
+	font-family: var(--font-brand);
+	font-size: 14px;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	margin: 0;
+	color: var(--ink);
+}
+
+.bskudo-app .card-head p {
+	margin: 0.35rem 0 0;
+	font-size: 13.5px;
+	color: var(--muted);
+	line-height: 1.45;
+}
+
+.bskudo-app .card-body {
+	padding: var(--pad);
+}
+
+/* Buttons */
+
+.bskudo-app .btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 7px;
+	height: 38px;
+	padding: 0 16px;
+	border-radius: var(--r);
+	font-family: var(--font-ui);
+	font-size: 13.5px;
+	font-weight: 600;
+	border: 1px solid transparent;
+	cursor: pointer;
+	white-space: nowrap;
+	transition: background 0.13s, border-color 0.13s, box-shadow 0.13s, transform 0.1s;
+}
+
+.bskudo-app .btn:active {
+	transform: translateY(0.5px);
+}
+
+.bskudo-app .btn:disabled {
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+.bskudo-app .btn.primary {
+	background: var(--accent);
+	color: oklch(1 0 0);
+	box-shadow: var(--shadow-sm);
+}
+
+.bskudo-app .btn.primary:hover {
+	background: var(--accent-press);
+}
+
+.bskudo-app .btn.ghost {
+	background: var(--surface);
+	color: var(--ink-soft);
+	border-color: var(--border-strong);
+	box-shadow: var(--shadow-sm);
+}
+
+.bskudo-app .btn.ghost:hover {
+	background: var(--surface-2);
+	border-color: oklch(0.78 0.01 260);
+}
+
+.bskudo-app .btn.sm {
+	height: 32px;
+	padding: 0 12px;
+	font-size: 12.5px;
+}
+
+.bskudo-app .form-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: var(--gap);
+}
+
+.bskudo-app .btn-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+/* Form fields */
+
+.bskudo-app .fields,
+.bskudo-meta .fields {
+	display: grid;
+	gap: 18px;
+}
+
+.bskudo-app .field,
+.bskudo-meta .field {
+	margin-bottom: 0;
+}
+
+.bskudo-app .flabel,
+.bskudo-meta .flabel {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--ink);
+	margin-bottom: 6px;
+}
+
+.bskudo-app .fhint,
+.bskudo-meta .fhint {
+	font-size: 12px;
+	color: var(--muted);
+	margin: 6px 0 0;
+	line-height: 1.4;
+}
+
+.bskudo-app .input,
+.bskudo-app .textarea,
+.bskudo-app .select,
+.bskudo-meta .input,
+.bskudo-meta .textarea,
+.bskudo-meta .select {
+	width: 100%;
+	background: var(--surface);
+	border: 1px solid var(--border-strong);
+	border-radius: var(--r);
+	padding: 9px 12px;
+	font-size: 14px;
+	font-family: var(--font-ui);
+	color: var(--ink);
+	transition: border-color 0.13s, box-shadow 0.13s;
+}
+
+.bskudo-app .input:focus,
+.bskudo-app .textarea:focus,
+.bskudo-app .select:focus,
+.bskudo-meta .input:focus,
+.bskudo-meta .textarea:focus,
+.bskudo-meta .select:focus {
+	outline: none;
+	border-color: var(--accent);
+	box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.bskudo-app .input::placeholder,
+.bskudo-app .textarea::placeholder {
+	color: var(--faint);
+}
+
+.bskudo-app .textarea {
+	min-height: 84px;
+	resize: vertical;
+}
+
+.bskudo-app .input.sm {
+	max-width: 120px;
+}
+
+.bskudo-app .input.color {
+	width: 56px;
+	height: 44px;
+	padding: 4px;
+	cursor: pointer;
+}
+
+.bskudo-app .field-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
+	margin-top: 8px;
+}
+
+.bskudo-app .check-row,
+.bskudo-meta .check-row {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	cursor: pointer;
+	font-size: 14px;
+	color: var(--ink);
+}
+
+.bskudo-app .check-row input[type="checkbox"],
+.bskudo-meta .check-row input[type="checkbox"] {
+	width: 17px;
+	height: 17px;
+	margin: 2px 0 0;
+	flex-shrink: 0;
+	accent-color: var(--accent);
+}
+
+.bskudo-app .check-row span {
+	flex: 1;
+	line-height: 1.45;
+}
+
+/* Code & log */
+
+.bskudo-app .key {
+	font-family: var(--font-mono);
+	font-size: 12px;
+	color: var(--muted);
+	background: var(--surface-sunken);
+	border: 1px solid var(--border);
+	border-radius: var(--r-sm);
+	padding: 1px 6px;
+}
+
+.bskudo-app .log-pre {
+	margin: 0.5rem 0 0;
+	padding: 12px 14px;
+	overflow: auto;
+	max-height: 220px;
+	border: 1px solid var(--border);
+	border-radius: var(--r);
+	background: var(--surface-sunken);
+	font-family: var(--font-mono);
+	font-size: 12px;
+	line-height: 1.5;
+	color: var(--ink-soft);
+}
+
+/* Logo / image placeholder */
+
+.bskudo-app .logo-preview {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	min-height: 80px;
+	margin-bottom: 10px;
+	padding: 12px;
+	border: 1px dashed var(--border-strong);
+	border-radius: var(--r);
+	background: var(--surface-sunken);
+}
+
+.bskudo-app .logo-preview img {
+	display: block;
+	max-width: 200px;
+	height: auto;
+}
+
+.bskudo-app .logo-preview:empty::before {
+	content: attr(data-empty-label);
+	color: var(--faint);
+	font-size: 13px;
+}
+
+.bskudo-meta .check-list {
+	margin: 8px 0 0;
+	padding: 0;
+	list-style: none;
+	max-height: 12em;
+	overflow: auto;
+	border: 1px solid var(--border);
+	border-radius: var(--r);
+	background: var(--surface-sunken);
+}
+
+.bskudo-meta .check-list li {
+	padding: 8px 10px;
+	border-bottom: 1px solid var(--border);
+}
+
+.bskudo-meta .check-list li:last-child {
+	border-bottom: none;
+}
+
+/* WP Editor inside app */
+
+.bskudo-app .wp-editor-wrap,
+.bskudo-meta .wp-editor-wrap {
+	border: 1px solid var(--border-strong);
+	border-radius: var(--r);
+	overflow: hidden;
+}
+
+.bskudo-app .wp-editor-container {
+	border: none;
+}
+
+.bskudo-app .wp-editor-area {
+	font-family: var(--font-ui) !important;
+	font-size: 14px !important;
+}
+
+/* Branding footer */
+
+.bskudo-branding-footer {
+	margin-top: 48px;
+	border-top: 1px solid var(--border);
+	padding-top: 16px;
+	font-size: 12px;
+	color: var(--muted);
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	gap: 8px;
+}
+
+.bskudo-branding-footer a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.bskudo-branding-footer a:hover {
+	color: var(--ink);
+}
+
+/* Responsive */
+
+@media (max-width: 782px) {
+	.bskudo-app .page {
+		padding: 16px 16px 64px;
+	}
+
+	.bskudo-app .settings-layout {
+		grid-template-columns: 1fr;
+	}
+
+	.bskudo-app .settings-tabs {
+		position: static;
+		flex-direction: row;
+		flex-wrap: wrap;
+	}
+}

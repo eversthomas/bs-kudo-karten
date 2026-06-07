@@ -16,80 +16,106 @@ $logo_url = $logo_id ? wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
 ?>
 <form method="post" action="options.php">
 	<?php settings_fields( BSKudo_Admin::OPTION_GROUP ); ?>
-	<h2><?php esc_html_e( 'Branding', 'bs-kudo-karten' ); ?></h2>
-	<p class="description"><?php esc_html_e( 'Logo, Farben und Texte für E-Mail und Karten-Rückseite. Karten werden in E-Mails als fertige JPGs (Vorder- und Rückseite) versendet.', 'bs-kudo-karten' ); ?></p>
-	<table class="form-table" role="presentation">
-		<tr>
-			<th scope="row"><?php esc_html_e( 'Logo', 'bs-kudo-karten' ); ?></th>
-			<td>
-				<input type="hidden" id="bskudo_logo_id" name="bskudo_settings[branding][logo_id]" value="<?php echo esc_attr( (string) $logo_id ); ?>">
-				<div id="bskudo-logo-preview" style="margin-bottom:10px;">
-					<?php if ( $logo_url ) : ?>
-						<img src="<?php echo esc_url( $logo_url ); ?>" alt="" style="max-width:200px;height:auto;">
-					<?php endif; ?>
+
+	<div class="card">
+		<div class="card-head">
+			<h2><?php esc_html_e( 'Logo & Farbe', 'bs-kudo-karten' ); ?></h2>
+			<p><?php esc_html_e( 'Logo, Farben und Texte für E-Mail und Karten-Rückseite. Karten werden in E-Mails als fertige JPGs (Vorder- und Rückseite) versendet.', 'bs-kudo-karten' ); ?></p>
+		</div>
+		<div class="card-body">
+			<div class="fields">
+				<div class="field">
+					<span class="flabel"><?php esc_html_e( 'Logo', 'bs-kudo-karten' ); ?></span>
+					<input type="hidden" id="bskudo_logo_id" name="bskudo_settings[branding][logo_id]" value="<?php echo esc_attr( (string) $logo_id ); ?>">
+					<div
+						id="bskudo-logo-preview"
+						class="logo-preview"
+						data-empty-label="<?php esc_attr_e( 'Noch kein Logo ausgewählt', 'bs-kudo-karten' ); ?>"
+					>
+						<?php if ( $logo_url ) : ?>
+							<img src="<?php echo esc_url( $logo_url ); ?>" alt="">
+						<?php endif; ?>
+					</div>
+					<div class="btn-row">
+						<button type="button" class="btn ghost sm" id="bskudo-logo-select"><?php esc_html_e( 'Logo wählen', 'bs-kudo-karten' ); ?></button>
+						<button type="button" class="btn ghost sm" id="bskudo-logo-remove" <?php echo $logo_id ? '' : 'hidden'; ?>>
+							<?php esc_html_e( 'Entfernen', 'bs-kudo-karten' ); ?>
+						</button>
+					</div>
+					<p class="fhint"><?php esc_html_e( 'Erscheint in E-Mails (Kopf) und auf der Karten-Rückseite.', 'bs-kudo-karten' ); ?></p>
 				</div>
-				<button type="button" class="button" id="bskudo-logo-select"><?php esc_html_e( 'Logo wählen', 'bs-kudo-karten' ); ?></button>
-				<button type="button" class="button" id="bskudo-logo-remove" <?php echo $logo_id ? '' : 'style="display:none;"'; ?>>
-					<?php esc_html_e( 'Entfernen', 'bs-kudo-karten' ); ?>
-				</button>
-				<p class="description"><?php esc_html_e( 'Erscheint in E-Mails (Kopf) und auf der Karten-Rückseite.', 'bs-kudo-karten' ); ?></p>
-			</td>
-		</tr>
-		<tr>
-			<th scope="row"><label for="bskudo_primary_color"><?php esc_html_e( 'Primärfarbe', 'bs-kudo-karten' ); ?></label></th>
-			<td>
-				<input type="color" id="bskudo_primary_color" name="bskudo_settings[branding][primary_color]" value="<?php echo esc_attr( (string) $branding['primary_color'] ); ?>">
-				<p class="description"><?php esc_html_e( 'Buttons in E-Mails und Hintergrund der Rückseite (wenn die Karte keine eigene Akzentfarbe hat).', 'bs-kudo-karten' ); ?></p>
-			</td>
-		</tr>
-		<tr>
-			<th scope="row"><label for="bskudo_branding_text_col1"><?php esc_html_e( 'Standard Rückseite: Spalte 1 (links - neben QR-Code)', 'bs-kudo-karten' ); ?></label></th>
-			<td>
-				<?php
-				$editor_settings = array(
-					'textarea_name' => 'bskudo_settings[branding][branding_text_col1]',
-					'media_buttons' => false,
-					'textarea_rows' => 4,
-					'teeny'         => true,
-					'quicktags'     => true,
-				);
-				wp_editor( $branding['branding_text_col1'] ? $branding['branding_text_col1'] : '', 'bskudo_branding_text_col1', $editor_settings );
-				?>
-				<p class="description"><?php esc_html_e( 'Optionaler Begleittext für die linke Spalte (neben dem QR-Code). Leer = Nur QR-Code.', 'bs-kudo-karten' ); ?></p>
-			</td>
-		</tr>
-		<tr>
-			<th scope="row"><label for="bskudo_branding_text_col2"><?php esc_html_e( 'Standard Rückseite: Spalte 2 (rechts - Branding)', 'bs-kudo-karten' ); ?></label></th>
-			<td>
-				<?php
-				$editor_settings = array(
-					'textarea_name' => 'bskudo_settings[branding][branding_text_col2]',
-					'media_buttons' => false,
-					'textarea_rows' => 4,
-					'teeny'         => true,
-					'quicktags'     => true,
-				);
-				$col2_val = $branding['branding_text_col2'] ? $branding['branding_text_col2'] : $branding['branding_text'];
-				wp_editor( $col2_val, 'bskudo_branding_text_col2', $editor_settings );
-				?>
-				<p class="description"><?php esc_html_e( 'Das Haupt-Branding in der rechten Spalte. Kann pro Karte überschrieben werden.', 'bs-kudo-karten' ); ?></p>
-			</td>
-		</tr>
-		<tr>
-			<th scope="row"><label for="bskudo_mail_footer_text"><?php esc_html_e( 'Zusatz im E-Mail-Footer', 'bs-kudo-karten' ); ?></label></th>
-			<td>
-				<textarea id="bskudo_mail_footer_text" name="bskudo_settings[branding][mail_footer_text]" rows="2" class="large-text"><?php echo esc_textarea( $branding['mail_footer_text'] ); ?></textarea>
-			</td>
-		</tr>
-		<tr>
-			<th scope="row"><?php esc_html_e( 'Footer in E-Mails', 'bs-kudo-karten' ); ?></th>
-			<td>
-				<label>
-					<input type="checkbox" name="bskudo_settings[branding][footer_powered]" value="1" <?php checked( ! empty( $branding['footer_powered'] ) ); ?>>
-					<?php esc_html_e( '„Powered by BS Kudo Karten · bezugssysteme.de“ anzeigen', 'bs-kudo-karten' ); ?>
-				</label>
-			</td>
-		</tr>
-	</table>
-	<?php submit_button(); ?>
+
+				<div class="field">
+					<label class="flabel" for="bskudo_primary_color"><?php esc_html_e( 'Primärfarbe', 'bs-kudo-karten' ); ?></label>
+					<input type="color" id="bskudo_primary_color" name="bskudo_settings[branding][primary_color]" value="<?php echo esc_attr( (string) $branding['primary_color'] ); ?>" class="input color">
+					<p class="fhint"><?php esc_html_e( 'Buttons in E-Mails und Hintergrund der Rückseite (wenn die Karte keine eigene Akzentfarbe hat).', 'bs-kudo-karten' ); ?></p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="card">
+		<div class="card-head">
+			<h2><?php esc_html_e( 'Rückseiten-Texte', 'bs-kudo-karten' ); ?></h2>
+		</div>
+		<div class="card-body">
+			<div class="fields">
+				<div class="field">
+					<label class="flabel" for="bskudo_branding_text_col1"><?php esc_html_e( 'Standard Rückseite: Spalte 1 (links – neben QR-Code)', 'bs-kudo-karten' ); ?></label>
+					<?php
+					$editor_settings = array(
+						'textarea_name' => 'bskudo_settings[branding][branding_text_col1]',
+						'media_buttons' => false,
+						'textarea_rows' => 4,
+						'teeny'         => true,
+						'quicktags'     => true,
+					);
+					wp_editor( $branding['branding_text_col1'] ? $branding['branding_text_col1'] : '', 'bskudo_branding_text_col1', $editor_settings );
+					?>
+					<p class="fhint"><?php esc_html_e( 'Optionaler Begleittext für die linke Spalte (neben dem QR-Code). Leer = nur QR-Code.', 'bs-kudo-karten' ); ?></p>
+				</div>
+
+				<div class="field">
+					<label class="flabel" for="bskudo_branding_text_col2"><?php esc_html_e( 'Standard Rückseite: Spalte 2 (rechts – Branding)', 'bs-kudo-karten' ); ?></label>
+					<?php
+					$editor_settings = array(
+						'textarea_name' => 'bskudo_settings[branding][branding_text_col2]',
+						'media_buttons' => false,
+						'textarea_rows' => 4,
+						'teeny'         => true,
+						'quicktags'     => true,
+					);
+					$col2_val = $branding['branding_text_col2'] ? $branding['branding_text_col2'] : $branding['branding_text'];
+					wp_editor( $col2_val, 'bskudo_branding_text_col2', $editor_settings );
+					?>
+					<p class="fhint"><?php esc_html_e( 'Das Haupt-Branding in der rechten Spalte. Kann pro Karte überschrieben werden.', 'bs-kudo-karten' ); ?></p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="card">
+		<div class="card-head">
+			<h2><?php esc_html_e( 'E-Mail-Footer', 'bs-kudo-karten' ); ?></h2>
+		</div>
+		<div class="card-body">
+			<div class="fields">
+				<div class="field">
+					<label class="flabel" for="bskudo_mail_footer_text"><?php esc_html_e( 'Zusatz im E-Mail-Footer', 'bs-kudo-karten' ); ?></label>
+					<textarea id="bskudo_mail_footer_text" name="bskudo_settings[branding][mail_footer_text]" rows="2" class="textarea"><?php echo esc_textarea( $branding['mail_footer_text'] ); ?></textarea>
+				</div>
+
+				<div class="field">
+					<label class="check-row">
+						<input type="checkbox" name="bskudo_settings[branding][footer_powered]" value="1" <?php checked( ! empty( $branding['footer_powered'] ) ); ?>>
+						<span><?php esc_html_e( '„Powered by BS Kudo Karten · bezugssysteme.de“ anzeigen', 'bs-kudo-karten' ); ?></span>
+					</label>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="form-actions">
+		<button type="submit" class="btn primary"><?php esc_html_e( 'Einstellungen speichern', 'bs-kudo-karten' ); ?></button>
+	</div>
 </form>

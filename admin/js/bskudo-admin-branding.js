@@ -25,8 +25,8 @@
 			var attachment = frame.state().get('selection').first().toJSON();
 			$('#bskudo_logo_id').val(attachment.id);
 			var url = attachment.sizes && attachment.sizes.medium ? attachment.sizes.medium.url : attachment.url;
-			$('#bskudo-logo-preview').html('<img src="' + url + '" alt="" style="max-width:200px;height:auto;">');
-			$('#bskudo-logo-remove').show();
+			$('#bskudo-logo-preview').html('<img src="' + url + '" alt="">');
+			$('#bskudo-logo-remove').prop('hidden', false);
 		});
 
 		frame.open();
@@ -36,6 +36,6 @@
 		e.preventDefault();
 		$('#bskudo_logo_id').val('0');
 		$('#bskudo-logo-preview').empty();
-		$(this).hide();
+		$(this).prop('hidden', true);
 	});
 })(jQuery);
