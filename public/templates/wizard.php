@@ -134,22 +134,24 @@ $enable_delayed_send = ! empty( $enable_delayed_send );
 				</h2>
 
 				<div class="bskudo-card-write-wrap">
-					<div class="bskudo-card-write">
+					<div class="bskudo-card-write bskudo-card--msg-center">
 						<img
 							class="bskudo-card-write__image"
 							src=""
 							alt=""
 							decoding="async"
 						>
-						<div
-							class="bskudo-card-overlay"
-							contenteditable="true"
-							role="textbox"
-							spellcheck="true"
-							aria-multiline="false"
-							aria-label="<?php esc_attr_e( 'Deine Botschaft auf der Karte', 'bs-kudo-karten' ); ?>"
-							data-placeholder="<?php esc_attr_e( 'Schreib hier deine Botschaft …', 'bs-kudo-karten' ); ?>"
-						></div>
+						<div class="bskudo-card__message-zone bskudo-card__message-zone--interactive">
+							<div
+								class="bskudo-card-overlay"
+								contenteditable="true"
+								role="textbox"
+								spellcheck="true"
+								aria-multiline="false"
+								aria-label="<?php esc_attr_e( 'Deine Botschaft auf der Karte', 'bs-kudo-karten' ); ?>"
+								data-placeholder="<?php esc_attr_e( 'Schreib hier deine Botschaft …', 'bs-kudo-karten' ); ?>"
+							></div>
+						</div>
 					</div>
 				</div>
 

@@ -619,20 +619,47 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 68%;
-	height: 45%;
+	box-sizing: border-box;
+	width: 60%;
+	height: 40%;
+	padding: 0;
 	overflow: hidden;
 	transform: translate(-50%, -50%);
 	pointer-events: none;
+	min-height: 0;
+	min-width: 0;
+}
+
+.bskudo-card--msg-left .bskudo-card__message-zone {
+	justify-content: flex-start;
+}
+
+.bskudo-card--msg-right .bskudo-card__message-zone {
+	justify-content: flex-end;
+}
+
+.bskudo-card__message-zone--interactive {
+	pointer-events: auto;
+}
+
+.bskudo-card__message-zone--interactive .bskudo-card-overlay {
+	pointer-events: auto;
 }
 
 .bskudo-card__message {
 	position: static;
 	width: 100%;
-	max-width: none;
+	max-width: 100%;
+	max-height: 100%;
+	min-height: 0;
+	min-width: 0;
+	flex: 0 1 auto;
+	align-self: center;
 	margin: 0;
 	padding: 0;
 	overflow: hidden;
+	overflow-wrap: anywhere;
+	word-break: break-word;
 	color: #2a2a2a;
 	font-family: Georgia, "Times New Roman", serif;
 	font-size: 14px;
@@ -1359,7 +1386,7 @@
 
 .bskudo-card-write {
 	position: relative;
-	display: block;
+	display: grid;
 	width: 100%;
 	line-height: 0;
 	border-radius: var(--bskudo-radius);
@@ -1367,7 +1394,8 @@
 	overflow: hidden;
 }
 
-.bskudo-card-write__image {
+.bskudo-card-write > .bskudo-card-write__image {
+	grid-area: 1 / 1;
 	display: block;
 	width: 100%;
 	height: auto;
@@ -1376,15 +1404,40 @@
 	object-position: center;
 }
 
+.bskudo-card-write > .bskudo-card__message-zone {
+	grid-area: 1 / 1;
+	position: relative;
+	top: auto;
+	left: auto;
+	z-index: 2;
+	width: 60%;
+	height: 40%;
+	max-height: 40%;
+	transform: none;
+	place-self: center;
+	align-self: center;
+	justify-self: center;
+}
+
+.bskudo-card-write > .bskudo-card__message-zone > .bskudo-card-overlay {
+	width: 100%;
+	max-width: 100%;
+	max-height: 100%;
+}
+
 .bskudo-card-overlay {
-	position: absolute;
-	top: 50%;
-	left: 50%;
+	position: relative;
+	top: auto;
+	left: auto;
 	z-index: 2;
 	box-sizing: border-box;
-	width: 68%;
-	max-width: 68%;
-	min-height: 2.5em;
+	width: 100%;
+	max-width: 100%;
+	max-height: 100%;
+	min-height: 0;
+	min-width: 0;
+	flex: 0 1 auto;
+	align-self: center;
 	padding: 0;
 	border: none;
 	border-radius: 4px;
@@ -1396,17 +1449,26 @@
 	font-weight: 600;
 	line-height: 1.25;
 	text-align: center;
+	overflow: hidden;
+	overflow-wrap: anywhere;
 	word-break: break-word;
 	hyphens: auto;
-	overflow: hidden;
 	outline: none;
-	transform: translate(-50%, -50%);
+	transform: none;
 	-webkit-user-select: text;
 	user-select: text;
 	white-space: pre-wrap;
 	text-shadow:
 		0 0 10px rgba(255, 255, 255, 0.95),
 		0 0 4px rgba(255, 255, 255, 0.85);
+}
+
+.bskudo-card-write.bskudo-card--msg-left .bskudo-card-overlay {
+	text-align: left;
+}
+
+.bskudo-card-write.bskudo-card--msg-right .bskudo-card-overlay {
+	text-align: right;
 }
 
 .bskudo-card-overlay:empty::before {

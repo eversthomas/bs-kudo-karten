@@ -108,9 +108,17 @@ class BSKudo_Shortcode {
 		);
 
 		wp_register_script(
+			'bskudo-message-fit',
+			BSKUDO_URL . 'public/js/bskudo-message-fit.js',
+			array(),
+			BSKUDO_VERSION,
+			true
+		);
+
+		wp_register_script(
 			'bskudo-wizard',
 			BSKUDO_URL . 'public/js/bskudo-wizard.js',
-			array(),
+			array( 'bskudo-message-fit' ),
 			BSKUDO_VERSION,
 			true
 		);
@@ -141,6 +149,7 @@ class BSKudo_Shortcode {
 		}
 
 		wp_enqueue_style( 'bskudo-wizard' );
+		wp_enqueue_script( 'bskudo-message-fit' );
 		wp_enqueue_script( 'bskudo-wizard' );
 
 		$this->maybe_hook_footer_styles();

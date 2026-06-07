@@ -3,7 +3,7 @@
  * Plugin Name:  BS Kudo Karten
  * Plugin URI:   https://github.com/eversthomas/bs-kudo-karten
  * Description:  Digitale Kudo-Karten – entwickelt für Marcus Rosik, Systemische Beratung.
- * Version:      0.4.1
+ * Version:      0.4.2
  * Author:       Tom Evers – bezugssysteme.de
  * Author URI:   https://bezugssysteme.de
  * Text Domain:  bs-kudo-karten
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BSKUDO_VERSION', '0.4.1' );
+define( 'BSKUDO_VERSION', '0.4.2' );
 define( 'BSKUDO_CHAR_LIMIT', 240 );
 define( 'BSKUDO_PATH', plugin_dir_path( __FILE__ ) );
 define( 'BSKUDO_URL', plugin_dir_url( __FILE__ ) );

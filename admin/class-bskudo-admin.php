@@ -126,6 +126,8 @@ class BSKudo_Admin {
 				<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Einstellungen gespeichert.', 'bs-kudo-karten' ); ?></p></div>
 			<?php endif; ?>
 
+			<?php $this->render_shortcode_panel(); ?>
+
 			<nav class="nav-tab-wrapper wp-clearfix" aria-label="<?php esc_attr_e( 'Einstellungs-Tabs', 'bs-kudo-karten' ); ?>">
 				<?php foreach ( $tabs as $tab_key => $tab_label ) : ?>
 					<a
@@ -142,6 +144,28 @@ class BSKudo_Admin {
 			<div class="bskudo-admin-tab-content" style="margin-top: 1.5em;">
 				<?php $this->render_tab_content( $active_tab ); ?>
 			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Hinweis zum Frontend-Shortcode.
+	 */
+	private function render_shortcode_panel() {
+		?>
+		<div class="notice notice-info" style="margin-top:1em;">
+			<p><strong><?php esc_html_e( 'Kudo-Karten im Frontend anzeigen', 'bs-kudo-karten' ); ?></strong></p>
+			<p><?php esc_html_e( 'Füge auf einer Seite oder in einem Beitrag den Shortcode ein, damit Besucher Kudo-Karten versenden können:', 'bs-kudo-karten' ); ?></p>
+			<p>
+				<code>[<?php echo esc_html( BSKudo_Shortcode::TAG ); ?>]</code>
+			</p>
+			<p><?php esc_html_e( 'Optional kannst du nur Karten aus einem bestimmten Kudo-Set anzeigen (Slug des Sets):', 'bs-kudo-karten' ); ?></p>
+			<p>
+				<code>[<?php echo esc_html( BSKudo_Shortcode::TAG ); ?> set="dein-set-slug"]</code>
+			</p>
+			<p class="description">
+				<?php esc_html_e( 'Im Block-Editor: Shortcode-Block hinzufügen und den Code einfügen. Bei Divi oder Page Buildern entsprechend ein Shortcode- oder Code-Modul verwenden.', 'bs-kudo-karten' ); ?>
+			</p>
 		</div>
 		<?php
 	}

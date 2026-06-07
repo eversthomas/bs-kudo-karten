@@ -29,6 +29,7 @@ $branding_col1 = (string) ( $card['back_branding_col1'] ?? '' );
 $branding_col2 = (string) ( $card['back_branding_col2'] ?? '' );
 $icon_pos   = isset( $card['icon_position'] ) ? (string) $card['icon_position'] : 'center';
 $msg_align  = in_array( $icon_pos, array( 'left', 'right' ), true ) ? $icon_pos : 'center';
+$msg_zone_class = 'bskudo-card--msg-' . $msg_align;
 
 $logo_id  = (int) BSKudo_Settings::get( 'branding', 'logo_id', 0 );
 $logo_url = $logo_id ? wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
@@ -36,19 +37,6 @@ $logo_url = $logo_id ? wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
 $token = get_query_var( BSKudo_Token::QUERY_VAR );
 $current_url = BSKudo_Token::get_url( $token );
 $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
-
-// Dynamic font scaling for screen and print based on character count
-$char_count = mb_strlen( $message );
-if ( $char_count > 200 ) {
-	$text_size_class = 'bskudo-cardview__message--long';
-	$print_font_size = '12pt';
-} elseif ( $char_count > 120 ) {
-	$text_size_class = 'bskudo-cardview__message--medium';
-	$print_font_size = '14pt';
-} else {
-	$text_size_class = 'bskudo-cardview__message--short';
-	$print_font_size = '16pt';
-}
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -106,11 +94,12 @@ if ( $char_count > 200 ) {
 		}
 		.bskudo-cardview__media {
 			position: relative;
-			display: inline-block;
+			display: grid;
 			max-width: 100%;
 			line-height: 0;
 		}
-		.bskudo-cardview__media img {
+		.bskudo-cardview__media > img {
+			grid-area: 1 / 1;
 			width: 100%;
 			max-width: 800px;
 			height: auto;
@@ -119,14 +108,33 @@ if ( $char_count > 200 ) {
 			margin: 0 auto;
 			box-shadow: 0 8px 32px rgba(51, 92, 112, 0.15);
 		}
+		.bskudo-cardview__media > .bskudo-card__message-zone {
+			grid-area: 1 / 1;
+			position: relative;
+			top: auto;
+			left: auto;
+			transform: none;
+			width: 60%;
+			height: 40%;
+			max-height: 40%;
+			place-self: center;
+		}
+		.bskudo-cardview__media > .bskudo-card__message-zone > .bskudo-cardview__message {
+			width: 100%;
+			max-width: 100%;
+			max-height: 100%;
+		}
 		.bskudo-cardview__message {
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
-			width: 68%;
-			max-height: 45%;
+			position: static;
+			width: 100%;
+			max-width: 100%;
+			max-height: 100%;
+			min-height: 0;
+			flex: 0 1 auto;
+			align-self: center;
 			overflow: hidden;
+			overflow-wrap: anywhere;
+			word-break: break-word;
 			margin: 0;
 			padding: 0;
 			color: #2a2a2a;
@@ -137,15 +145,6 @@ if ( $char_count > 200 ) {
 			text-align: center;
 			word-break: break-word;
 			text-shadow: 0 0 10px rgba(255, 255, 255, 0.95), 0 0 4px rgba(255, 255, 255, 0.85);
-		}
-		.bskudo-cardview__message--short {
-			font-size: clamp(18px, 2.8vw, 26px);
-		}
-		.bskudo-cardview__message--medium {
-			font-size: clamp(15px, 2.3vw, 21px);
-		}
-		.bskudo-cardview__message--long {
-			font-size: clamp(13px, 1.9vw, 17px);
 		}
 		.bskudo-cardview__message--left { text-align: left; }
 		.bskudo-cardview__message--right { text-align: right; }
@@ -334,7 +333,6 @@ if ( $char_count > 200 ) {
 			}
 			
 			.bskudo-cardview__message {
-				font-size: <?php echo $print_font_size; ?> !important;
 				text-shadow: none !important;
 				color: #000000 !important;
 			}
@@ -460,7 +458,7 @@ if ( $char_count > 200 ) {
 			<!-- Vorderseite (initial sichtbar) -->
 			<div class="bskudo-cardview__side bskudo-cardview__side--front bskudo-cardview__side--active">
 				<p class="bskudo-cardview__label"><?php esc_html_e( 'Vorderseite', 'bs-kudo-karten' ); ?></p>
-				<div class="bskudo-cardview__media">
+				<div class="bskudo-cardview__media <?php echo esc_attr( $msg_zone_class ); ?>">
 					<?php if ( $image_url ) : ?>
 						<img src="<?php echo $image_url; ?>" alt="<?php echo esc_attr( sprintf( /* translators: %s: card title */ __( 'Kudo-Karte Vorderseite: %s', 'bs-kudo-karten' ), (string) ( $card['title'] ?? '' ) ) ); ?>">
 					<?php else : ?>
@@ -469,7 +467,9 @@ if ( $char_count > 200 ) {
 						</div>
 					<?php endif; ?>
 					<?php if ( '' !== $message && $image_url ) : ?>
-						<p class="bskudo-cardview__message bskudo-cardview__message--<?php echo esc_attr( $msg_align ); ?> <?php echo esc_attr( $text_size_class ); ?>"><?php echo esc_html( $message ); ?></p>
+						<div class="bskudo-card__message-zone">
+							<p class="bskudo-cardview__message bskudo-cardview__message--<?php echo esc_attr( $msg_align ); ?>"><?php echo esc_html( $message ); ?></p>
+						</div>
 					<?php endif; ?>
 				</div>
 			</div>

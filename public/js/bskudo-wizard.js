@@ -93,69 +93,18 @@
 	}
 
 	/**
-	 * Schriftgröße im Overlay anpassen (Binary Search, max. 2 Zeilen).
+	 * Schriftgröße im Overlay anpassen (delegiert an bskudo-message-fit.js).
 	 *
 	 * @param {HTMLElement} overlay contenteditable-Overlay.
 	 */
 	function fitCardMessage(overlay) {
-		if (!overlay) {
+		if (window.bskudo && typeof window.bskudo.scheduleFitMessages === 'function') {
+			window.bskudo.scheduleFitMessages(overlay ? overlay.closest('.bskudo-wizard') || overlay.parentElement : document);
 			return;
 		}
-
-		var write = overlay.closest('.bskudo-card-write');
-		if (!write) {
-			return;
+		if (window.bskudo && typeof window.bskudo.fitCardMessage === 'function') {
+			window.bskudo.fitCardMessage(overlay);
 		}
-
-		var text = overlay.textContent.replace(/\s+/g, ' ').trim();
-		var placeholder = (overlay.getAttribute('data-placeholder') || '').trim();
-
-		if (!text || text === placeholder) {
-			overlay.style.fontSize = '';
-			return;
-		}
-
-		var writeW = write.clientWidth;
-		var writeH = write.clientHeight;
-		if (writeW < 8 || writeH < 8) {
-			return;
-		}
-
-		var zoneW = writeW * 0.68;
-		var zoneH = writeH * 0.45;
-		var lineHeight = 1.25;
-		var maxLines = 8;
-		var minSize = 10;
-		var maxByHeight = (zoneH / (lineHeight * maxLines)) * 0.9;
-		var maxSize = Math.max(minSize, Math.min(maxByHeight, zoneW * 0.18, 80));
-
-		overlay.style.lineHeight = String(lineHeight);
-		overlay.style.display = 'block';
-		overlay.style.overflow = 'hidden';
-		overlay.style.fontSize = minSize + 'px';
-
-		var fits = function (fontSize) {
-			overlay.style.fontSize = fontSize + 'px';
-			var maxHeight = fontSize * lineHeight * maxLines + 2;
-			return overlay.scrollHeight <= maxHeight + 1 && overlay.scrollWidth <= zoneW + 1;
-		};
-
-		var low = minSize;
-		var high = maxSize;
-		var best = minSize;
-
-		while (low <= high) {
-			var mid = Math.round(((low + high) / 2) * 2) / 2;
-
-			if (fits(mid)) {
-				best = mid;
-				low = mid + 0.5;
-			} else {
-				high = mid - 0.5;
-			}
-		}
-
-		overlay.style.fontSize = best + 'px';
 	}
 
 	function initWizard(root) {
@@ -167,6 +116,7 @@
 		var messageHidden = root.querySelector('.bskudo-wizard__message-hidden');
 		var cardButtons = root.querySelectorAll('.bskudo-card--selectable');
 		var writeImage = root.querySelector('.bskudo-card-write__image');
+		var cardWrite = root.querySelector('.bskudo-card-write');
 		var overlay = root.querySelector('.bskudo-card-overlay');
 		var charCurrent = root.querySelector('.bskudo-char-count__current');
 		var charCountMax = root.querySelector('.bskudo-char-count__max');
@@ -677,10 +627,15 @@
 
 			if (lbMessage) {
 				lbMessage.textContent = displayText;
+				fitCardMessage(lbMessage);
 			}
 
 			if (lbBranding) {
 				lbBranding.textContent = brandingText;
+			}
+
+			if (window.bskudo && typeof window.bskudo.scheduleFitMessages === 'function') {
+				window.bskudo.scheduleFitMessages(lbFrontCard || root);
 			}
 		}
 
@@ -809,6 +764,14 @@
 				}
 			}
 
+			if (cardWrite && state.cardData) {
+				var iconPos = state.cardData.iconPosition || 'center';
+				if (iconPos !== 'left' && iconPos !== 'right') {
+					iconPos = 'center';
+				}
+				cardWrite.className = 'bskudo-card-write bskudo-card--msg-' + iconPos;
+			}
+
 			if (overlay && !state.message) {
 				overlay.textContent = '';
 			}
@@ -853,6 +816,12 @@
 		}
 
 		/* ─── Teil 10: initWizard – Event-Listener ─────────────────── */
+
+		if (writeImage) {
+			writeImage.addEventListener('load', function () {
+				fitCardMessage(overlay);
+			});
+		}
 
 		cardButtons.forEach(function (card) {
 			var thumbW = parseInt(card.getAttribute('data-image-width'), 10);

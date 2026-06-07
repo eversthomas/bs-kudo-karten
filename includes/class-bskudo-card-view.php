@@ -244,9 +244,17 @@ class BSKudo_Card_View {
 		);
 
 		wp_enqueue_script(
+			'bskudo-message-fit',
+			BSKUDO_URL . 'public/js/bskudo-message-fit.js',
+			array(),
+			BSKUDO_VERSION,
+			true
+		);
+
+		wp_enqueue_script(
 			'bskudo-card-view',
 			BSKUDO_URL . 'public/js/bskudo-card-view.js',
-			array(),
+			array( 'bskudo-message-fit' ),
 			BSKUDO_VERSION,
 			true
 		);
@@ -266,6 +274,6 @@ class BSKudo_Card_View {
 		);
 
 		wp_print_styles( array( 'bskudo-wizard', 'bskudo-card-view' ) );
-		wp_print_scripts( array( 'bskudo-card-view' ) );
+		wp_print_scripts( array( 'bskudo-message-fit', 'bskudo-card-view' ) );
 	}
 }
