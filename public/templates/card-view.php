@@ -278,6 +278,7 @@ $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
 				padding: 0 !important;
 				margin: 0 !important;
 				position: relative !important;
+				overflow: visible !important;
 			}
 			.bskudo-card-view-page__header,
 			.bskudo-cardview__label,
@@ -299,6 +300,7 @@ $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
 				border: none !important;
 				margin: 0 !important;
 				padding: 0 !important;
+				overflow: visible !important;
 			}
 			
 			.bskudo-cardview__side {
@@ -411,67 +413,71 @@ $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
 				text-decoration: underline !important;
 			}
 			
-			/* Crop Marks & Fold Mark Container */
+			/* Crop Marks & Fold Mark Container (relativ zum Kartenstapel) */
 			.bskudo-print-marks {
 				display: block !important;
 				position: absolute !important;
-				top: 1.0cm !important;
-				left: 50% !important;
-				transform: translateX(-50%) !important;
-				width: 14.8cm !important;
-				height: 22.2cm !important;
+				top: 0 !important;
+				left: 0 !important;
+				width: 100% !important;
+				height: 100% !important;
+				transform: none !important;
 				pointer-events: none !important;
 				z-index: 99 !important;
+				overflow: visible !important;
 			}
 			.bskudo-print-mark {
 				position: absolute !important;
-				width: 15px !important;
-				height: 15px !important;
-				border: 0 solid #888888 !important;
+				box-sizing: border-box !important;
+				border: 0 solid #666666 !important;
 			}
-			/* Top-Left Crop Mark (offset by 5px so it doesn't touch card) */
+			/* Eck-Schnittmarken: 3 mm außerhalb, L-Form je 3 mm */
 			.bskudo-print-mark--tl {
-				top: -15px !important;
-				left: -15px !important;
-				border-right-width: 1px !important;
-				border-bottom-width: 1px !important;
+				top: -3mm !important;
+				left: -3mm !important;
+				width: 3mm !important;
+				height: 3mm !important;
+				border-right-width: 0.2mm !important;
+				border-bottom-width: 0.2mm !important;
 			}
-			/* Top-Right Crop Mark */
 			.bskudo-print-mark--tr {
-				top: -15px !important;
-				right: -15px !important;
-				border-left-width: 1px !important;
-				border-bottom-width: 1px !important;
+				top: -3mm !important;
+				right: -3mm !important;
+				width: 3mm !important;
+				height: 3mm !important;
+				border-left-width: 0.2mm !important;
+				border-bottom-width: 0.2mm !important;
 			}
-			/* Bottom-Left Crop Mark */
 			.bskudo-print-mark--bl {
-				bottom: -15px !important;
-				left: -15px !important;
-				border-right-width: 1px !important;
-				border-top-width: 1px !important;
+				bottom: -3mm !important;
+				left: -3mm !important;
+				width: 3mm !important;
+				height: 3mm !important;
+				border-right-width: 0.2mm !important;
+				border-top-width: 0.2mm !important;
 			}
-			/* Bottom-Right Crop Mark */
 			.bskudo-print-mark--br {
-				bottom: -15px !important;
-				right: -15px !important;
-				border-left-width: 1px !important;
-				border-top-width: 1px !important;
+				bottom: -3mm !important;
+				right: -3mm !important;
+				width: 3mm !important;
+				height: 3mm !important;
+				border-left-width: 0.2mm !important;
+				border-top-width: 0.2mm !important;
 			}
-			/* Middle-Left (Faltpfalz) Helper Mark */
+			/* Faltpfalz-Hilfsstriche an der Mitte (11,1 cm) */
 			.bskudo-print-mark--ml {
 				top: 11.1cm !important;
-				left: -15px !important;
-				width: 10px !important;
+				left: -5mm !important;
+				width: 5mm !important;
 				height: 0 !important;
-				border-top: 1px dashed #666666 !important;
+				border-top: 0.2mm dashed #666666 !important;
 			}
-			/* Middle-Right (Faltpfalz) Helper Mark */
 			.bskudo-print-mark--mr {
 				top: 11.1cm !important;
-				right: -15px !important;
-				width: 10px !important;
+				right: -5mm !important;
+				width: 5mm !important;
 				height: 0 !important;
-				border-top: 1px dashed #666666 !important;
+				border-top: 0.2mm dashed #666666 !important;
 			}
 		}
 	</style>
