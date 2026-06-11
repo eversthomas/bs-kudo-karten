@@ -120,7 +120,11 @@ class BSKudo_Admin {
 								</div>
 							</div>
 
-							<?php if ( isset( $_GET['settings-updated'] ) ) : ?>
+							<?php
+							// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+							// Read-only Tab-Navigation, ändert keinen Zustand.
+							if ( isset( $_GET['settings-updated'] ) ) :
+								?>
 								<div class="alert ok" role="status">
 									<p class="alert-title"><?php esc_html_e( 'Gespeichert', 'bs-kudo-karten' ); ?></p>
 									<p><?php esc_html_e( 'Einstellungen wurden erfolgreich gespeichert.', 'bs-kudo-karten' ); ?></p>

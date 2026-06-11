@@ -53,8 +53,9 @@ class BSKudo_Card_View {
 		$token = get_query_var( BSKudo_Token::QUERY_VAR );
 
 		if ( '' === $token ) {
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public token URL; the token itself authorizes read-only access.
 			if ( isset( $_GET[ BSKudo_Token::QUERY_VAR ] ) ) {
+				// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				// Öffentlicher Token-Endpunkt – Token autorisiert den Zugriff.
 				$token = sanitize_text_field( wp_unslash( $_GET[ BSKudo_Token::QUERY_VAR ] ) );
 			}
 		}
