@@ -9,6 +9,8 @@
  * @var string               $sender_name  Name des Versenders.
  */
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }

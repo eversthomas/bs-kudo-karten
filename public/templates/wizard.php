@@ -12,6 +12,8 @@
  * @var bool                             $enable_delayed_send
  */
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }

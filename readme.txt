@@ -5,7 +5,7 @@ Tags: kudo, appreciation, cards, email, recognition
 Requires at least: 6.3
 Tested up to: 6.8
 Requires PHP: 8.0
-Stable tag: 0.5.0
+Stable tag: 0.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -137,6 +137,12 @@ The plugin itself stores no personal data. You should mention the card sending f
 6. Backend – Card management and settings
 
 == Changelog ==
+
+= 0.6.0 =
+* Plugin Checker fixes for wordpress.org submission
+* Removed .DS_Store and hidden files
+* Added translators comments
+* Template files marked with phpcs:disable for extract() variable pattern
 
 = 0.5.0 =
 * Plugin prepared for public release

@@ -186,6 +186,7 @@ class BSKudo_Shortcode {
 					'selectCard'      => __( 'Bitte wähle eine Karte aus.', 'bs-kudo-karten' ),
 					'cardSelected'    => __( 'Karte ausgewählt', 'bs-kudo-karten' ),
 					'enterMessage'    => __( 'Bitte schreibe einen kurzen Text für deine Karte.', 'bs-kudo-karten' ),
+					/* translators: %d: maximum number of characters allowed */
 					'charLimit'       => __( 'Maximal %d Zeichen.', 'bs-kudo-karten' ),
 					'fillAllFields'   => __( 'Bitte fülle alle Pflichtfelder aus.', 'bs-kudo-karten' ),
 					'invalidEmail'    => __( 'Bitte gib eine gültige E-Mail-Adresse ein.', 'bs-kudo-karten' ),
@@ -266,6 +267,7 @@ class BSKudo_Shortcode {
 		);
 
 		if ( '' !== $set_slug ) {
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_tax_query
 			$query_args['tax_query'] = array(
 				array(
 					'taxonomy' => 'kudo_set',

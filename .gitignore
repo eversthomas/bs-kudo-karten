@@ -15,6 +15,7 @@ npm-debug.log
 
 # macOS
 .DS_Store
+**/.DS_Store
 .AppleDouble
 
 # WordPress

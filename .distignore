@@ -2,6 +2,8 @@
 .github
 .gitignore
 .distignore
+.DS_Store
+**/.DS_Store
 debug/
 ARCHITECTURE.md
 WordpressPluginDesign.md
