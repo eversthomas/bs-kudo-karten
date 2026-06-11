@@ -124,7 +124,6 @@ class BSKudo_Loader {
 	 * WordPress-Hooks registrieren.
 	 */
 	private function define_hooks() {
-		add_action( 'init', array( $this, 'load_textdomain' ), 0 );
 		add_action( 'init', array( $this->cpt, 'register_post_types' ) );
 		add_action( 'init', array( $this->cpt, 'register_taxonomies' ) );
 		add_action( 'init', array( $this->shortcode, 'register' ) );
@@ -151,17 +150,6 @@ class BSKudo_Loader {
 		if ( $this->card_list ) {
 			$this->card_list->register();
 		}
-	}
-
-	/**
-	 * Textdomain laden (vor allen übersetzten Strings, ab init).
-	 */
-	public function load_textdomain() {
-		load_plugin_textdomain(
-			'bs-kudo-karten',
-			false,
-			dirname( BSKUDO_BASENAME ) . '/languages'
-		);
 	}
 }
 

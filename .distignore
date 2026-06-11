@@ -1,0 +1,13 @@
+.git
+.github
+.gitignore
+.distignore
+debug/
+ARCHITECTURE.md
+WordpressPluginDesign.md
+readme.md
+*.json
+!release.json
+node_modules/
+vendor/
+*.map
