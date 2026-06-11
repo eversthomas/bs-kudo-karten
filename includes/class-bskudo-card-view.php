@@ -50,12 +50,13 @@ class BSKudo_Card_View {
 	 * Bei gültigem Token die Webansicht ausgeben.
 	 */
 	public function maybe_render() {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		// Öffentlicher Token-Endpunkt – der Token selbst autorisiert
+		// den Zugriff. Ein Nonce ist hier konzeptionell nicht anwendbar.
 		$token = get_query_var( BSKudo_Token::QUERY_VAR );
 
 		if ( '' === $token ) {
 			if ( isset( $_GET[ BSKudo_Token::QUERY_VAR ] ) ) {
-				// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				// Öffentlicher Token-Endpunkt – Token autorisiert den Zugriff.
 				$token = sanitize_text_field( wp_unslash( $_GET[ BSKudo_Token::QUERY_VAR ] ) );
 			}
 		}
@@ -90,6 +91,7 @@ class BSKudo_Card_View {
 
 		$this->render_card_page( $card, (string) $payload['message'], $sender_name );
 		exit;
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**

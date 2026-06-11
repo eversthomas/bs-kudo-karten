@@ -79,8 +79,10 @@ class BSKudo_Admin {
 	 * @return string
 	 */
 	private function get_active_tab() {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		// Read-only Tab-Navigation – ändert keinen Zustand,
+		// kein Nonce erforderlich.
 		$tabs = $this->get_tabs();
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only tab navigation; settings forms use options.php nonces on save.
 		$tab  = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'general';
 
 		if ( ! array_key_exists( $tab, $tabs ) ) {
@@ -88,6 +90,7 @@ class BSKudo_Admin {
 		}
 
 		return $tab;
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
