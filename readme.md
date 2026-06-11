@@ -2,7 +2,7 @@
 
 Digitale Kudo-Karten für WordPress – entwickelt von [bezugssysteme.de](https://bezugssysteme.de).
 
-**Version:** 0.4.1
+**Version:** 0.5.0
 
 ---
 
