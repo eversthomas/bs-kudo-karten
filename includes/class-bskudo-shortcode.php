@@ -463,7 +463,7 @@ class BSKudo_Shortcode {
 		$default = (string) BSKudo_Settings::get( 'branding', 'branding_text', '' );
 
 		if ( '' === trim( $default ) ) {
-			$default = __( 'Mit Herz · Systemische Beratung', 'bs-kudo-karten' );
+			$default = (string) get_bloginfo( 'name' );
 		}
 
 		/**

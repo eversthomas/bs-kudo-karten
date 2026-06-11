@@ -280,7 +280,7 @@ class BSKudo_Admin_UI {
 				echo wp_kses(
 					sprintf(
 						/* translators: %s: link to bezugssysteme.de */
-						__( 'Tom Evers · %s · Karten: Marcus Rosik, Systemische Beratung', 'bs-kudo-karten' ),
+						__( 'Tom Evers · %s · BS Kudo Karten', 'bs-kudo-karten' ),
 						'<a href="https://bezugssysteme.de" target="_blank" rel="noopener noreferrer">bezugssysteme.de</a>'
 					),
 					array(

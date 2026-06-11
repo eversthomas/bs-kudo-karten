@@ -1,6 +1,6 @@
 # BS Kudo Karten
 
-Digitale Kudo-Karten für WordPress – entwickelt von [bezugssysteme.de](https://bezugssysteme.de) für Marcus Rosik, Systemische Beratung.
+Digitale Kudo-Karten für WordPress – entwickelt von [bezugssysteme.de](https://bezugssysteme.de).
 
 **Version:** 0.4.1
 
@@ -60,9 +60,7 @@ Ein WordPress-Plugin, das es Besuchern ermöglicht, digitale Wertschätzungskart
 
 ## Kartenbilder
 
-Die Karten (Design: Marcus Rosik – Systemische Beratung) werden als **WebP** oder **JPG/PNG** über den WordPress-Medienmanager hinterlegt. Export aus den Original-PDFs mit mind. 1400px Breite empfohlen.
-
-Urheberrecht: © Marcus Rosik – marcusrosik.de
+Kartenbilder werden als **WebP** oder **JPG/PNG** über den WordPress-Medienmanager hinterlegt. Export mit mind. 1400px Breite empfohlen.
 
 ---
 
@@ -139,7 +137,6 @@ location ~ ^/wp-content/plugins/bs-kudo-karten/debug/ {
 ## Entwicklung
 
 **Entwickler:** Tom Evers – [bezugssysteme.de](https://bezugssysteme.de)  
-**Auftraggeber:** Marcus Rosik – [marcusrosik.de](https://marcusrosik.de)  
 **Lizenz:** GPL-2.0+
 
 Composer-Abhängigkeiten aktualisieren:

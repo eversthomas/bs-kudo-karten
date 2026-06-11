@@ -36,7 +36,7 @@ class BSKudo_Settings {
 			'branding' => array(
 				'logo_id'            => 0,
 				'primary_color'      => '#c45c3e',
-				'branding_text'      => __( 'Mit Herz · Systemische Beratung', 'bs-kudo-karten' ),
+				'branding_text'      => (string) get_bloginfo( 'name' ),
 				'branding_text_col1' => '',
 				'branding_text_col2' => '',
 				'mail_footer_text'   => '',

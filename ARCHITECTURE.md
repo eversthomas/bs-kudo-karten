@@ -2,7 +2,7 @@
 
 ## Projektkontext
 WordPress-Plugin für digitale Kudo-Karten.
-Entwickelt von Tom Evers (bezugssysteme.de) für Marcus Rosik (Systemische Beratung).
+Entwickelt von Tom Evers (bezugssysteme.de).
 Ziel: Nutzer wählen eine Kudo-Karte, schreiben einen kurzen Text (Standard max. 240 Zeichen, konfigurierbar),
 geben Absender und Empfänger an und verschicken die Karte per E-Mail.
 
@@ -104,4 +104,4 @@ Phase 7: ✅ QR-Code (lokal), verzögerter Versand, „An mich selbst“
 
 ## Branding
 Entwickelt von: Tom Evers – bezugssysteme.de
-Urheber Karten: Marcus Rosik – Systemische Beratung
+Karten-Designs: vom Site-Betreiber bereitgestellt.
