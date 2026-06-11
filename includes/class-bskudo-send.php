@@ -53,6 +53,17 @@ class BSKudo_Send {
 	 * Versand-Anfrage verarbeiten.
 	 */
 	public function handle() {
+		$nonce = isset( $_POST['bskudo_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['bskudo_nonce'] ) ) : '';
+
+		if ( ! wp_verify_nonce( $nonce, BSKudo_Security::NONCE_ACTION ) ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Sicherheitsprüfung fehlgeschlagen. Bitte lade die Seite neu.', 'bs-kudo-karten' ),
+				),
+				403
+			);
+		}
+
 		BSKudo_Debug::log(
 			'ajax_request',
 			array(

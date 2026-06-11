@@ -52,8 +52,11 @@ class BSKudo_Card_View {
 	public function maybe_render() {
 		$token = get_query_var( BSKudo_Token::QUERY_VAR );
 
-		if ( '' === $token && isset( $_GET[ BSKudo_Token::QUERY_VAR ] ) ) {
-			$token = sanitize_text_field( wp_unslash( $_GET[ BSKudo_Token::QUERY_VAR ] ) );
+		if ( '' === $token ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public token URL; the token itself authorizes read-only access.
+			if ( isset( $_GET[ BSKudo_Token::QUERY_VAR ] ) ) {
+				$token = sanitize_text_field( wp_unslash( $_GET[ BSKudo_Token::QUERY_VAR ] ) );
+			}
 		}
 
 		if ( '' === $token ) {

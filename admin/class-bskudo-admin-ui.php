@@ -190,6 +190,7 @@ class BSKudo_Admin_UI {
 		);
 
 		if ( self::is_settings_screen() ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only tab switch for asset loading; no state change via GET.
 			$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'general';
 
 			if ( 'branding' === $tab ) {
@@ -322,6 +323,7 @@ class BSKudo_Admin_UI {
 				'branding' => __( 'Branding', 'bs-kudo-karten' ),
 				'security' => __( 'Sicherheit', 'bs-kudo-karten' ),
 			);
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only breadcrumb tab label from URL; admin screen only.
 			$tab     = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'general';
 			$tab_lbl = $tabs[ $tab ] ?? __( 'Einstellungen', 'bs-kudo-karten' );
 

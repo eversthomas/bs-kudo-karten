@@ -510,10 +510,10 @@ $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
 				<p class="bskudo-cardview__label"><?php esc_html_e( 'Vorderseite', 'bs-kudo-karten' ); ?></p>
 				<div class="bskudo-cardview__media <?php echo esc_attr( $msg_zone_class ); ?>">
 					<?php if ( $image_url ) : ?>
-						<img src="<?php echo $image_url; ?>" alt="<?php echo esc_attr( sprintf( /* translators: %s: card title */ __( 'Kudo-Karte Vorderseite: %s', 'bs-kudo-karten' ), (string) ( $card['title'] ?? '' ) ) ); ?>">
+						<img src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( sprintf( /* translators: %s: card title */ __( 'Kudo-Karte Vorderseite: %s', 'bs-kudo-karten' ), (string) ( $card['title'] ?? '' ) ) ); ?>">
 					<?php else : ?>
 						<div class="bskudo-cardview__back-panel" style="background:#f8f8f8;color:#333;">
-							<?php echo $card_title; ?>
+							<?php echo esc_html( $card_title ); ?>
 						</div>
 					<?php endif; ?>
 					<?php if ( '' !== $message && $image_url ) : ?>

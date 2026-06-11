@@ -80,6 +80,7 @@ class BSKudo_Admin {
 	 */
 	private function get_active_tab() {
 		$tabs = $this->get_tabs();
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only tab navigation; settings forms use options.php nonces on save.
 		$tab  = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'general';
 
 		if ( ! array_key_exists( $tab, $tabs ) ) {
