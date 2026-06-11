@@ -1,13 +1,18 @@
 <?php
 /**
- * Plugin Name:  BS Kudo Karten
- * Plugin URI:   https://github.com/eversthomas/bs-kudo-karten
- * Description:  Digitale Kudo-Karten für WordPress – Wertschätzungskarten per E-Mail versenden.
- * Version:      0.5.0
- * Author:       Tom Evers – bezugssysteme.de
- * Author URI:   https://bezugssysteme.de
- * Text Domain:  bs-kudo-karten
- * License:      GPL-2.0+
+ * Plugin Name:       Kudo Cards – Send Digital Appreciation
+ * Plugin URI:        https://github.com/eversthomas/bs-kudo-karten
+ * Description:       Send digital appreciation cards from WordPress. Choose a card, write a message, and deliver it by email with a secure token web view.
+ * Version:           0.5.0
+ * Requires at least: 6.3
+ * Tested up to:      6.8
+ * Requires PHP:       8.0
+ * Author:            Tom Evers
+ * Author URI:        https://bezugssysteme.de
+ * License:           GPL-2.0+
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       bs-kudo-karten
+ * Domain Path:       /languages
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
