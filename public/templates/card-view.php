@@ -193,6 +193,13 @@ $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
 		.bskudo-card-view-page__footer p {
 			margin: 0;
 		}
+		.bskudo-card-view-page__footer a {
+			color: #335C70;
+			text-decoration: underline;
+		}
+		.bskudo-card-view-page__footer a:hover {
+			color: #212121;
+		}
 
 		/* Two columns for card back side */
 		.bskudo-cardview__back-cols {
@@ -583,7 +590,24 @@ $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
 
 		<?php if ( BSKudo_Settings::get( 'branding', 'footer_powered', true ) ) : ?>
 			<footer class="bskudo-card-view-page__footer">
-				<p><?php esc_html_e( 'Ein Projekt von Thomas Evers – bezugssysteme.de', 'bs-kudo-karten' ); ?></p>
+				<p>
+					<?php
+					echo wp_kses(
+						sprintf(
+							/* translators: %s: link to bezugssysteme.de */
+							__( 'Ein Projekt von Thomas Evers – %s', 'bs-kudo-karten' ),
+							'<a href="https://bezugssysteme.de" target="_blank" rel="noopener noreferrer">bezugssysteme.de</a>'
+						),
+						array(
+							'a' => array(
+								'href'   => array(),
+								'target' => array(),
+								'rel'    => array(),
+							),
+						)
+					);
+					?>
+				</p>
 			</footer>
 		<?php endif; ?>
 	</div>
