@@ -536,7 +536,7 @@ $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
 						<div class="bskudo-cardview__back-col bskudo-cardview__back-col--left">
 							<?php if ( $qr_code_data_uri ) : ?>
 								<div class="bskudo-cardview__qr-wrap">
-									<img class="bskudo-cardview__qr-image" src="<?php echo esc_url( $qr_code_data_uri ); ?>" alt="<?php esc_attr_e( 'Kudo-Karte QR-Code', 'bs-kudo-karten' ); ?>">
+									<img class="bskudo-cardview__qr-image" src="<?php echo esc_attr( $qr_code_data_uri ); ?>" alt="<?php esc_attr_e( 'Kudo-Karte QR-Code', 'bs-kudo-karten' ); ?>">
 								</div>
 							<?php endif; ?>
 							<div class="bskudo-cardview__col-content">
@@ -583,7 +583,7 @@ $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
 
 		<?php if ( BSKudo_Settings::get( 'branding', 'footer_powered', true ) ) : ?>
 			<footer class="bskudo-card-view-page__footer">
-				<p><?php esc_html_e( 'Powered by BS Kudo Karten · bezugssysteme.de', 'bs-kudo-karten' ); ?></p>
+				<p><?php esc_html_e( 'Ein Projekt von Thomas Evers – bezugssysteme.de', 'bs-kudo-karten' ); ?></p>
 			</footer>
 		<?php endif; ?>
 	</div>
