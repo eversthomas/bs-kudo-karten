@@ -2,7 +2,7 @@
 
 Digitale Kudo-Karten für WordPress – entwickelt von [bezugssysteme.de](https://bezugssysteme.de).
 
-**Version:** 0.5.0
+**Version:** 0.7.0
 
 ---
 
@@ -23,6 +23,8 @@ Ein WordPress-Plugin, das es Besuchern ermöglicht, digitale Wertschätzungskart
 - **Token-basierte Webansicht** für Empfänger (temporäre URL, Drucklayout)
 - **Honeypot, Formular-Zeitstempel und Rate Limiting** gegen Missbrauch
 - **HTML-Mail** als Teaser mit Link zur Webansicht (+ optional QR-Code, lokal generiert)
+- **QR-Ziel-Link pro Karte** – optional eigene URL statt Standard-Webansicht (Backend-Feld pro Karte)
+- **Konfigurierbares Rückseiten-Layout** – Bausteine (QR, Text, Logo) pro Spalte, Reihenfolge und Sichtbarkeit in der Webansicht
 - **Branding-Tab** im Backend – Logo, Farbe, Mail-Template konfigurierbar
 - **Shortcode** `[kudo_karten]` – auf jeder Seite einsetzbar, Divi-kompatibel
 
@@ -68,7 +70,7 @@ Kartenbilder werden als **WebP** oder **JPG/PNG** über den WordPress-Medienmana
 
 ```
 Kudo Karten
-├── Karten verwalten     – CPT kudo_card (Bild, Rückseiten-Branding, Farbe)
+├── Karten verwalten     – CPT kudo_card (Bild, Rückseiten-Branding, QR-Ziel, Layout, Farbe)
 ├── Textbausteine        – CPT kudo_textbaustein (Karten/Sets zugeordnet)
 └── Einstellungen
     ├── Allgemein        – Absender, Betreff, Kopie, geplanter Versand, QR
@@ -98,7 +100,9 @@ Optional in `wp-config.php`:
 define( 'BSKUDO_MAIL_DEBUG', true );
 ```
 
-Logs landen in `debug/mail.log`. Der Ordner ist per `.htaccess` gegen direkten Zugriff geschützt (Apache).
+Bei aktivem Debug (oder auf lokalen Hosts wie `.local`, `.test`, `localhost`) schreibt das Plugin nach `debug/mail.log` und optional `debug/last-mail.html`. Beim ersten Schreibvorgang legt es den Ordner an und erzeugt `.htaccess` (`Deny from all`) sowie `index.php` automatisch.
+
+Im Git-Repository liegt nur `debug/index.php` als Schutz-Stub. Log-Dateien, HTML-Vorschau und `.htaccess` sind in `.gitignore` und bleiben lokal.
 
 **nginx-Beispiel** (im Server-Block):
 

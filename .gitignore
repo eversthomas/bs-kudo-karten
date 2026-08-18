@@ -35,3 +35,7 @@ dist/
 # Lokale Konfiguration
 .env
 .env.local
+
+# Mail-Debug (lokal generiert; index.php bleibt im Repo)
+debug/*
+!debug/index.php
