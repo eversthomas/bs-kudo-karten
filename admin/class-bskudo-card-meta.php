@@ -20,6 +20,7 @@ class BSKudo_Card_Meta {
 	const META_BACK_BRANDING = '_bskudo_back_branding';
 	const META_ACCENT        = '_bskudo_accent_color';
 	const META_ICON            = '_bskudo_icon_position';
+	const META_QR_TARGET_URL   = '_bskudo_qr_target_url';
 
 	/**
 	 * Hooks registrieren.
@@ -56,6 +57,8 @@ class BSKudo_Card_Meta {
 		$back_branding_col2 = get_post_meta( $post->ID, '_bskudo_back_branding_col2', true );
 		$accent        = get_post_meta( $post->ID, self::META_ACCENT, true );
 		$icon_pos      = get_post_meta( $post->ID, self::META_ICON, true );
+		$qr_target_url = get_post_meta( $post->ID, self::META_QR_TARGET_URL, true );
+		$qr_target_url = is_string( $qr_target_url ) ? $qr_target_url : '';
 
 		if ( ! is_string( $back_branding ) || '' === trim( $back_branding ) ) {
 			$legacy = get_post_meta( $post->ID, '_bskudo_impulse_text', true );
@@ -70,6 +73,9 @@ class BSKudo_Card_Meta {
 		if ( ! in_array( $icon_pos, array( 'left', 'center', 'right' ), true ) ) {
 			$icon_pos = 'center';
 		}
+
+		$back_layout = BSKudo_Card_Back_Layout::get_layout( $post->ID );
+		$block_labels = BSKudo_Card_Back_Layout::get_block_labels();
 		?>
 		<div class="bskudo-meta">
 			<div class="fields">
@@ -102,6 +108,18 @@ class BSKudo_Card_Meta {
 					<p class="fhint"><?php esc_html_e( 'Das Haupt-Branding auf der Rückseite dieser Karte. Leer = Globaler Standard.', 'bs-kudo-karten' ); ?></p>
 				</div>
 				<div class="field">
+					<label class="flabel" for="bskudo_qr_target_url"><?php esc_html_e( 'QR-Code Ziel-Link (optional)', 'bs-kudo-karten' ); ?></label>
+					<input
+						type="url"
+						class="input"
+						id="bskudo_qr_target_url"
+						name="bskudo_qr_target_url"
+						value="<?php echo esc_attr( $qr_target_url ); ?>"
+						placeholder="https://"
+					>
+					<p class="fhint"><?php esc_html_e( 'Der QR-Code auf der Kartenrückseite führt standardmäßig zur digitalen Webansicht dieser Karte. Trage hier eine eigene URL ein, wenn der QR-Code stattdessen z. B. zu einer Spendenseite, einer Veranstaltung oder einer anderen Aktion führen soll. Leer lassen = Standard-Verhalten.', 'bs-kudo-karten' ); ?></p>
+				</div>
+				<div class="field">
 					<label class="flabel" for="bskudo_accent_color"><?php esc_html_e( 'Akzentfarbe', 'bs-kudo-karten' ); ?></label>
 					<input
 						type="color"
@@ -118,6 +136,58 @@ class BSKudo_Card_Meta {
 						<option value="center" <?php selected( $icon_pos, 'center' ); ?>><?php esc_html_e( 'Mitte', 'bs-kudo-karten' ); ?></option>
 						<option value="right" <?php selected( $icon_pos, 'right' ); ?>><?php esc_html_e( 'Rechts', 'bs-kudo-karten' ); ?></option>
 					</select>
+				</div>
+				<div class="field">
+					<label class="flabel"><?php esc_html_e( 'Rückseiten-Layout', 'bs-kudo-karten' ); ?></label>
+					<p class="fhint"><?php esc_html_e( 'Lege fest, welche Bausteine in welcher Spalte und Reihenfolge auf der Kartenrückseite erscheinen. Ohne Anpassung gilt das bisherige Standard-Layout.', 'bs-kudo-karten' ); ?></p>
+					<div class="bskudo-table-scroll">
+						<table class="widefat striped">
+							<thead>
+								<tr>
+									<th scope="col"><?php esc_html_e( 'Baustein', 'bs-kudo-karten' ); ?></th>
+									<th scope="col"><?php esc_html_e( 'Spalte', 'bs-kudo-karten' ); ?></th>
+									<th scope="col"><?php esc_html_e( 'Reihenfolge', 'bs-kudo-karten' ); ?></th>
+									<th scope="col"><?php esc_html_e( 'Sichtbar', 'bs-kudo-karten' ); ?></th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php foreach ( $back_layout as $block_id => $block_config ) : ?>
+									<tr>
+										<td><?php echo esc_html( $block_labels[ $block_id ] ?? $block_id ); ?></td>
+										<td>
+											<select class="select" name="bskudo_back_layout[<?php echo esc_attr( $block_id ); ?>][col]">
+												<option value="1" <?php selected( (int) $block_config['col'], 1 ); ?>><?php esc_html_e( 'Spalte 1 (links)', 'bs-kudo-karten' ); ?></option>
+												<option value="2" <?php selected( (int) $block_config['col'], 2 ); ?>><?php esc_html_e( 'Spalte 2 (rechts)', 'bs-kudo-karten' ); ?></option>
+											</select>
+										</td>
+										<td>
+											<input
+												type="number"
+												class="input"
+												name="bskudo_back_layout[<?php echo esc_attr( $block_id ); ?>][order]"
+												value="<?php echo esc_attr( (string) (int) $block_config['order'] ); ?>"
+												min="1"
+												max="99"
+												step="1"
+												style="max-width: 80px;"
+											>
+										</td>
+										<td>
+											<label>
+												<input
+													type="checkbox"
+													name="bskudo_back_layout[<?php echo esc_attr( $block_id ); ?>][visible]"
+													value="1"
+													<?php checked( ! empty( $block_config['visible'] ) ); ?>
+												>
+												<?php esc_html_e( 'Anzeigen', 'bs-kudo-karten' ); ?>
+											</label>
+										</td>
+									</tr>
+								<?php endforeach; ?>
+							</tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -167,6 +237,17 @@ class BSKudo_Card_Meta {
 			? sanitize_key( wp_unslash( $_POST['bskudo_icon_position'] ) )
 			: 'center';
 
+		$qr_target_url = isset( $_POST['bskudo_qr_target_url'] )
+			? trim( (string) wp_unslash( $_POST['bskudo_qr_target_url'] ) )
+			: '';
+
+		if ( '' !== $qr_target_url ) {
+			$qr_target_url = esc_url_raw( $qr_target_url );
+			if ( '' === $qr_target_url || ! wp_http_validate_url( $qr_target_url ) ) {
+				$qr_target_url = '';
+			}
+		}
+
 		if ( ! in_array( $icon_pos, array( 'left', 'center', 'right' ), true ) ) {
 			$icon_pos = 'center';
 		}
@@ -180,5 +261,10 @@ class BSKudo_Card_Meta {
 		update_post_meta( $post_id, '_bskudo_back_branding_col2', $back_branding_col2 );
 		update_post_meta( $post_id, self::META_ACCENT, $accent );
 		update_post_meta( $post_id, self::META_ICON, $icon_pos );
+		update_post_meta( $post_id, self::META_QR_TARGET_URL, $qr_target_url );
+
+		$layout_input = isset( $_POST['bskudo_back_layout'] ) ? wp_unslash( $_POST['bskudo_back_layout'] ) : array();
+		$back_layout  = BSKudo_Card_Back_Layout::sanitize_for_save( $layout_input );
+		update_post_meta( $post_id, BSKudo_Card_Back_Layout::META_KEY, $back_layout );
 	}
 }

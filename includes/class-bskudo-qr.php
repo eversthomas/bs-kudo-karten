@@ -40,6 +40,29 @@ class BSKudo_QR {
 	}
 
 	/**
+	 * QR-Ziel-URL für eine Karte auflösen (Override oder Fallback).
+	 *
+	 * @param int    $card_id     Kudo-Karten-Post-ID.
+	 * @param string $default_url Fallback (typisch: tokenbasierte Webansicht).
+	 * @return string Bereinigte URL oder leer.
+	 */
+	public static function resolve_target_url( $card_id, $default_url ) {
+		$default_url = esc_url_raw( (string) $default_url );
+
+		$override = get_post_meta( absint( $card_id ), '_bskudo_qr_target_url', true );
+		if ( ! is_string( $override ) || '' === trim( $override ) ) {
+			return $default_url;
+		}
+
+		$override = esc_url_raw( trim( $override ) );
+		if ( '' === $override || ! wp_http_validate_url( $override ) ) {
+			return $default_url;
+		}
+
+		return $override;
+	}
+
+	/**
 	 * PNG-Binary lokal erzeugen (gecacht pro URL).
 	 *
 	 * @param string $url  Ziel-URL.

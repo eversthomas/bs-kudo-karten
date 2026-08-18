@@ -85,7 +85,10 @@ class BSKudo_Mailer {
 
 		$qr_src = '';
 		if ( $view_url && BSKudo_Settings::is_feature_enabled( 'show_qr_in_mail' ) ) {
-			$qr_src = $this->save_qr_png_url( $view_url );
+			$qr_url = BSKudo_QR::resolve_target_url( (int) $data['card_id'], $view_url );
+			if ( '' !== $qr_url ) {
+				$qr_src = $this->save_qr_png_url( $qr_url );
+			}
 		}
 
 		$body = $this->build_body(

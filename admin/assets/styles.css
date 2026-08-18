@@ -38,18 +38,43 @@
 
 .bskudo-app .content {
 	flex: 1;
+	min-width: 0;
+	overflow-x: auto;
 	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
 }
 
 .bskudo-app .page {
 	max-width: 1180px;
 	margin: 0 auto;
 	padding: 26px 26px 80px;
+	min-width: 0;
 }
 
 .bskudo-app .page.bskudo-wp-host {
 	max-width: none;
-	padding-top: 18px;
+	padding: 18px 20px 80px;
+	width: 100%;
+	box-sizing: border-box;
+}
+
+/* Native WP-Seiten (Liste, Editor): Shell nicht am Viewport festklemmen */
+.bskudo-app:has(.page.bskudo-wp-host),
+body.bskudo-wp-host-screen .bskudo-app {
+	height: auto;
+	min-height: calc(100vh - 32px);
+	overflow: visible;
+}
+
+.bskudo-app:has(.page.bskudo-wp-host) .main,
+body.bskudo-wp-host-screen .bskudo-app .main {
+	min-height: auto;
+	overflow: visible;
+}
+
+.bskudo-app:has(.page.bskudo-wp-host) .content,
+body.bskudo-wp-host-screen .bskudo-app .content {
+	overflow: visible;
 }
 
 .bskudo-app .page.bskudo-wp-host > .wrap:first-child {
@@ -162,6 +187,8 @@
 
 .bskudo-app .settings-panel {
 	min-width: 0;
+	max-width: 100%;
+	overflow-x: auto;
 }
 
 /* Alerts */
@@ -510,6 +537,51 @@
 	border-bottom: none;
 }
 
+/* Editoren & breite Tabellen in Meta-Boxen / Einstellungen */
+
+.bskudo-app .wp-editor-wrap,
+.bskudo-meta .wp-editor-wrap {
+	max-width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+.bskudo-app .wp-editor-tools,
+.bskudo-meta .wp-editor-tools {
+	max-width: 100%;
+	overflow-x: auto;
+}
+
+.bskudo-app .wp-editor-container,
+.bskudo-meta .wp-editor-container {
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
+.bskudo-app .wp-editor-area,
+.bskudo-meta .wp-editor-area {
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
+.bskudo-table-scroll {
+	overflow-x: auto;
+	max-width: 100%;
+	margin-top: 8px;
+	-webkit-overflow-scrolling: touch;
+}
+
+.bskudo-table-scroll .widefat {
+	margin-top: 0;
+	min-width: 520px;
+}
+
+.bskudo-table-scroll .widefat select,
+.bskudo-table-scroll .widefat .input {
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
 /* WP Editor inside app */
 
 .bskudo-app .wp-editor-wrap,
@@ -517,6 +589,12 @@
 	border: 1px solid var(--border-strong);
 	border-radius: var(--r);
 	overflow: hidden;
+}
+
+body.bskudo-wp-host-screen .bskudo-wp-host .wp-editor-wrap .mce-tinymce,
+body.bskudo-wp-host-screen .bskudo-wp-host .wp-editor-wrap .wp-editor-container {
+	max-width: 100%;
+	box-sizing: border-box;
 }
 
 .bskudo-app .wp-editor-container {
@@ -816,7 +894,30 @@
 
 /* Responsive */
 
+@media (max-width: 1024px) {
+	.bskudo-app .settings-layout {
+		grid-template-columns: 1fr;
+	}
+
+	.bskudo-app .settings-tabs {
+		position: static;
+		flex-direction: row;
+		flex-wrap: wrap;
+	}
+}
+
 @media (max-width: 782px) {
+	.bskudo-app {
+		height: auto;
+		min-height: calc(100vh - 46px);
+		overflow: visible;
+	}
+
+	.bskudo-app .main {
+		min-height: 0;
+		overflow: visible;
+	}
+
 	.bskudo-app .page {
 		padding: 16px 16px 64px;
 	}
@@ -829,6 +930,11 @@
 		position: static;
 		flex-direction: row;
 		flex-wrap: wrap;
+	}
+
+	.bskudo-app .page-head {
+		flex-direction: column;
+		align-items: stretch;
 	}
 
 	.bskudo-app .dash-grid {

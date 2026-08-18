@@ -192,21 +192,76 @@ body.bskudo-admin-screen .bskudo-wp-host .postbox .inside > .bskudo-meta:last-ch
 	margin-bottom: 0;
 }
 
+/*
+ * Post-Editor: kein WP-Float-Hack (margin-right: -300px) in der App-Shell –
+ * der bricht den Viewport und schneidet Meta-Boxen ab (siehe Karte bearbeiten).
+ *
+ * WP rendert bei columns-2 DREI Geschwister in #post-body: #post-body-content
+ * (Titel/Content-Editor), #postbox-container-2 (normal-context Boxen, z. B.
+ * "Karten-Details") und #postbox-container-1 (side-context Boxen, z. B.
+ * Veröffentlichen/Attribute). Alle drei brauchen einen grid-area, sonst fällt
+ * der eigentliche Meta-Box-Inhalt aus dem Raster (siehe #postbox-container-2).
+ */
 body.bskudo-admin-screen .bskudo-wp-host #poststuff #post-body.columns-2 {
-	margin-right: -300px;
+	margin-right: 0 !important;
+	display: grid !important;
+	grid-template-columns: minmax(0, 1fr) 280px;
+	grid-template-areas:
+		"primary sidebar"
+		"content sidebar";
+	align-items: start;
+	gap: var(--gap, 16px);
 }
 
 body.bskudo-admin-screen .bskudo-wp-host #post-body-content {
-	margin-bottom: var(--gap);
-}
-
-body.bskudo-admin-screen .bskudo-wp-host #post-body.columns-2 #postbox-container-1 {
-	width: 280px;
-	margin-right: var(--gap);
+	float: none !important;
+	min-width: 0;
 }
 
 body.bskudo-admin-screen .bskudo-wp-host #post-body.columns-2 #post-body-content {
-	margin-right: 300px;
+	grid-area: primary;
+	margin-right: 0 !important;
+	padding-right: 0 !important;
+	float: none !important;
+	width: auto !important;
+	min-width: 0;
+	max-width: none;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host #post-body.columns-2 #postbox-container-2 {
+	grid-area: content;
+	float: none !important;
+	width: 100% !important;
+	min-width: 0;
+	margin-right: 0 !important;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host #post-body.columns-2 #postbox-container-1 {
+	grid-area: sidebar;
+	float: none !important;
+	width: 280px !important;
+	max-width: 280px;
+	min-width: 0;
+	margin-right: 0 !important;
+}
+
+/* Kein leerer Block-/Content-Editor bei Kudo-Karten */
+body.post-type-kudo_card #postdivrich,
+body.post-type-kudo_card #wp-content-editor-container,
+body.post-type-kudo_card #wp-content-editor-tools,
+body.post-type-kudo_card .block-editor,
+body.post-type-kudo_card .edit-post-layout,
+body.post-type-kudo_card #post-body-content .postarea,
+body.post-type-kudo_card #post-body-content #post-status-info {
+	display: none !important;
+}
+
+body.bskudo-admin-screen.post-type-kudo_card #post-body-content {
+	margin-bottom: 0;
+}
+
+body.bskudo-admin-screen.post-type-kudo_card #titlediv {
+	margin-bottom: var(--gap, 16px);
 }
 
 body.bskudo-admin-screen .bskudo-wp-host .button-primary {
@@ -314,21 +369,76 @@ body.bskudo-admin-screen .bskudo-wp-host .column-bskudo_thumb img {
 	height: auto;
 }
 
-@media (max-width: 782px) {
-	body.bskudo-admin-screen .bskudo-wp-host #post-body.columns-2 #post-body-content {
-		margin-right: 0;
+body.bskudo-admin-screen .bskudo-wp-host .wrap,
+body.bskudo-admin-screen .bskudo-wp-host .page.bskudo-wp-host {
+	max-width: 100%;
+	min-width: 0;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host form#posts-filter,
+body.bskudo-admin-screen .bskudo-wp-host .wrap > form {
+	max-width: 100%;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host #poststuff {
+	max-width: 100%;
+	min-width: 0;
+	overflow: visible;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host #post-body,
+body.bskudo-admin-screen .bskudo-wp-host #post-body-content,
+body.bskudo-admin-screen .bskudo-wp-host #postbox-container-1,
+body.bskudo-admin-screen .bskudo-wp-host #postbox-container-2 {
+	max-width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .postbox {
+	max-width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host #post-body-content,
+body.bskudo-admin-screen .bskudo-wp-host .postbox .inside {
+	max-width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+body.bskudo-admin-screen .bskudo-wp-host .postbox .inside .bskudo-meta,
+body.bskudo-admin-screen .bskudo-wp-host .postbox .inside .wp-editor-wrap {
+	max-width: 100%;
+	min-width: 0;
+}
+
+@media (max-width: 960px) {
+	body.bskudo-admin-screen .bskudo-wp-host #poststuff #post-body.columns-2 {
+		grid-template-columns: 1fr;
+		grid-template-areas:
+			"primary"
+			"content"
+			"sidebar";
 	}
 
+	body.bskudo-admin-screen .bskudo-wp-host #post-body.columns-2 #postbox-container-1 {
+		width: 100% !important;
+		max-width: 100%;
+	}
+}
+
+@media (max-width: 782px) {
 	body.bskudo-admin-screen .bskudo-wp-host #col-left,
 	body.bskudo-admin-screen .bskudo-wp-host #col-right {
 		width: 100%;
 		float: none;
 	}
-}
 
-@media (max-width: 960px) {
-	body.bskudo-admin-screen .bskudo-app {
-		height: auto;
+	body.bskudo-admin-screen .bskudo-app:has(.page.bskudo-wp-host) {
 		min-height: calc(100vh - 46px);
 	}
 }

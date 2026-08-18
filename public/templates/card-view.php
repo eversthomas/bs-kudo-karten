@@ -37,8 +37,19 @@ $logo_id  = (int) BSKudo_Settings::get( 'branding', 'logo_id', 0 );
 $logo_url = $logo_id ? wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
 
 $token = get_query_var( BSKudo_Token::QUERY_VAR );
-$current_url = BSKudo_Token::get_url( $token );
-$qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
+$current_url      = BSKudo_Token::get_url( $token );
+$card_id          = isset( $card['id'] ) ? (int) $card['id'] : 0;
+$qr_target_url    = BSKudo_QR::resolve_target_url( $card_id, $current_url );
+$qr_code_data_uri = BSKudo_QR::get_data_uri( $qr_target_url, 150 );
+$back_layout      = BSKudo_Card_Back_Layout::get_layout( $card_id );
+$back_blocks_col1 = BSKudo_Card_Back_Layout::get_blocks_for_column( $back_layout, 1 );
+$back_blocks_col2 = BSKudo_Card_Back_Layout::get_blocks_for_column( $back_layout, 2 );
+$back_context     = array(
+	'qr_code_data_uri' => $qr_code_data_uri,
+	'branding_col1'    => $branding_col1,
+	'branding_col2'    => $branding_col2,
+	'logo_url'         => $logo_url ? (string) $logo_url : '',
+);
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -541,28 +552,18 @@ $qr_code_data_uri = BSKudo_QR::get_data_uri( $current_url, 150 );
 				>
 					<div class="bskudo-cardview__back-cols">
 						<div class="bskudo-cardview__back-col bskudo-cardview__back-col--left">
-							<?php if ( $qr_code_data_uri ) : ?>
-								<div class="bskudo-cardview__qr-wrap">
-									<img class="bskudo-cardview__qr-image" src="<?php echo esc_attr( $qr_code_data_uri ); ?>" alt="<?php esc_attr_e( 'Kudo-Karte QR-Code', 'bs-kudo-karten' ); ?>">
-								</div>
-							<?php endif; ?>
-							<div class="bskudo-cardview__col-content">
-								<?php if ( '' !== $branding_col1 ) : ?>
-									<?php echo wp_kses_post( $branding_col1 ); ?>
-								<?php else : ?>
-									<p style="font-size: 11px; margin-top: 8px; opacity: 0.75;"><?php esc_html_e( 'Scanne diesen Code, um die digitale Kudo-Karte online aufzurufen.', 'bs-kudo-karten' ); ?></p>
-								<?php endif; ?>
-							</div>
+							<?php
+							foreach ( $back_blocks_col1 as $block_id ) {
+								BSKudo_Card_Back_Layout::render_block( $block_id, $back_context );
+							}
+							?>
 						</div>
 						<div class="bskudo-cardview__back-col bskudo-cardview__back-col--right">
-							<?php if ( $logo_url ) : ?>
-								<div class="bskudo-cardview__logo-wrap" style="margin-bottom: 15px; text-align: center;">
-									<img src="<?php echo esc_url( $logo_url ); ?>" alt="" style="max-width: 140px; height: auto; display: inline-block;">
-								</div>
-							<?php endif; ?>
-							<div class="bskudo-cardview__col-content">
-								<?php echo wp_kses_post( $branding_col2 ); ?>
-							</div>
+							<?php
+							foreach ( $back_blocks_col2 as $block_id ) {
+								BSKudo_Card_Back_Layout::render_block( $block_id, $back_context );
+							}
+							?>
 						</div>
 					</div>
 				</div>

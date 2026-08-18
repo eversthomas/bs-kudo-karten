@@ -15,6 +15,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 class BSKudo_CPT {
 
 	/**
+	 * Hooks registrieren.
+	 */
+	public function __construct() {
+		add_filter( 'use_block_editor_for_post_type', array( $this, 'disable_block_editor' ), 10, 2 );
+	}
+
+	/**
+	 * Klassischen Meta-Box-Editor für Kudo-Karten erzwingen (kein leerer Block-Editor).
+	 *
+	 * @param bool   $use       Block-Editor aktiv?
+	 * @param string $post_type Post Type.
+	 * @return bool
+	 */
+	public function disable_block_editor( $use, $post_type ) {
+		if ( 'kudo_card' === $post_type ) {
+			return false;
+		}
+
+		return $use;
+	}
+
+	/**
 	 * Post Type: Kudo-Karte.
 	 */
 	public function register_post_types() {

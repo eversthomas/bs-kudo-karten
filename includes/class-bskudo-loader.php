@@ -96,6 +96,7 @@ class BSKudo_Loader {
 		require_once BSKUDO_PATH . 'includes/class-bskudo-token.php';
 		require_once BSKUDO_PATH . 'includes/class-bskudo-mailer.php';
 		require_once BSKUDO_PATH . 'includes/class-bskudo-qr.php';
+		require_once BSKUDO_PATH . 'includes/class-bskudo-card-back-layout.php';
 		require_once BSKUDO_PATH . 'includes/class-bskudo-scheduler.php';
 		require_once BSKUDO_PATH . 'includes/class-bskudo-send.php';
 		require_once BSKUDO_PATH . 'includes/class-bskudo-card-view.php';

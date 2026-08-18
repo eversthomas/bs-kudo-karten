@@ -153,6 +153,10 @@ class BSKudo_Admin_UI {
 	public function admin_body_class( $classes ) {
 		if ( self::is_plugin_screen() ) {
 			$classes .= ' bskudo-admin-screen';
+
+			if ( ! self::is_settings_screen() ) {
+				$classes .= ' bskudo-wp-host-screen';
+			}
 		}
 
 		return $classes;
