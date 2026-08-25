@@ -98,19 +98,52 @@ $logo_url = $logo_id ? wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
 
 	<div class="card">
 		<div class="card-head">
+			<h2><?php esc_html_e( 'Globales Branding', 'bs-kudo-karten' ); ?></h2>
+			<p><?php esc_html_e( 'Erscheint oben in der Benachrichtigungs-E-Mail und unten auf der Online-Kudo-Karte.', 'bs-kudo-karten' ); ?></p>
+		</div>
+		<div class="card-body">
+			<div class="fields">
+				<div class="field">
+					<label class="flabel" for="bskudo_global_branding_text"><?php esc_html_e( 'Branding-Text', 'bs-kudo-karten' ); ?></label>
+					<textarea id="bskudo_global_branding_text" name="bskudo_settings[branding][global_branding_text]" rows="3" class="textarea"><?php echo esc_textarea( $branding['global_branding_text'] ?? '' ); ?></textarea>
+					<p class="fhint">
+						<?php esc_html_e( 'Benannter Link:', 'bs-kudo-karten' ); ?>
+						<code>[<?php esc_html_e( 'Linktext', 'bs-kudo-karten' ); ?>](https://beispiel.de)</code>.
+						<?php esc_html_e( 'Internetadressen ohne Klammern werden automatisch verlinkt.', 'bs-kudo-karten' ); ?>
+					</p>
+					<p class="fhint">
+						<?php esc_html_e( 'Beispiel:', 'bs-kudo-karten' ); ?>
+						<code><?php echo esc_html( 'Ein Projekt von [Thomas Evers](https://bezugssysteme.de)' ); ?></code>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="card">
+		<div class="card-head">
 			<h2><?php esc_html_e( 'E-Mail-Footer', 'bs-kudo-karten' ); ?></h2>
 		</div>
 		<div class="card-body">
 			<div class="fields">
 				<div class="field">
 					<label class="flabel" for="bskudo_mail_footer_text"><?php esc_html_e( 'Zusatz im E-Mail-Footer', 'bs-kudo-karten' ); ?></label>
-					<textarea id="bskudo_mail_footer_text" name="bskudo_settings[branding][mail_footer_text]" rows="2" class="textarea"><?php echo esc_textarea( $branding['mail_footer_text'] ); ?></textarea>
+					<textarea id="bskudo_mail_footer_text" name="bskudo_settings[branding][mail_footer_text]" rows="3" class="textarea"><?php echo esc_textarea( $branding['mail_footer_text'] ); ?></textarea>
+					<p class="fhint">
+						<?php esc_html_e( 'Optionaler Text unter der Karte in der Benachrichtigungs-E-Mail. Benannter Link:', 'bs-kudo-karten' ); ?>
+						<code>[<?php esc_html_e( 'Linktext', 'bs-kudo-karten' ); ?>](https://beispiel.de)</code>.
+						<?php esc_html_e( 'Internetadressen ohne Klammern werden automatisch verlinkt.', 'bs-kudo-karten' ); ?>
+					</p>
+					<p class="fhint">
+						<?php esc_html_e( 'Beispiel:', 'bs-kudo-karten' ); ?>
+						<code><?php echo esc_html( 'Ein Projekt von [Thomas Evers](https://bezugssysteme.de) · https://bezugssysteme.de' ); ?></code>
+					</p>
 				</div>
 
 				<div class="field">
 					<label class="check-row">
 						<input type="checkbox" name="bskudo_settings[branding][footer_powered]" value="1" <?php checked( ! empty( $branding['footer_powered'] ) ); ?>>
-						<span><?php esc_html_e( '„Powered by BS Kudo Karten · bezugssysteme.de“ anzeigen', 'bs-kudo-karten' ); ?></span>
+						<span><?php esc_html_e( '„Powered by BS Kudo Karten · bezugssysteme.de“ in der E-Mail anzeigen', 'bs-kudo-karten' ); ?></span>
 					</label>
 				</div>
 			</div>

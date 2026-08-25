@@ -14,6 +14,7 @@
  * @var string $view_url
  * @var string $logo_src
  * @var string $mail_footer_text
+ * @var string $global_branding_text
  * @var string $qr_src
  * @var string $token_ttl_days
  */
@@ -30,8 +31,9 @@ $sender_display   = isset( $sender_display ) ? $sender_display : '';
 $site_name        = isset( $site_name ) ? $site_name : '';
 $view_url         = isset( $view_url ) ? $view_url : '';
 $logo_src         = isset( $logo_src ) ? $logo_src : '';
-$mail_footer_text = isset( $mail_footer_text ) ? $mail_footer_text : '';
-$qr_src           = isset( $qr_src ) ? $qr_src : '';
+$mail_footer_text     = isset( $mail_footer_text ) ? $mail_footer_text : '';
+$global_branding_text = isset( $global_branding_text ) ? $global_branding_text : '';
+$qr_src               = isset( $qr_src ) ? $qr_src : '';
 $show_powered     = isset( $show_powered ) ? $show_powered : '';
 $powered_text     = isset( $powered_text ) ? $powered_text : '';
 $token_ttl_days   = isset( $token_ttl_days ) ? max( 1, (int) $token_ttl_days ) : 30;
@@ -50,6 +52,15 @@ $header_label = '' !== trim( $sender_display ) ? $sender_display : $site_name;
 	<tr>
 		<td align="center">
 			<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:560px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(51,92,112,0.10);">
+
+				<?php if ( '' !== trim( $global_branding_text ) ) : ?>
+				<!-- Globales Branding -->
+				<tr>
+					<td style="padding:20px 40px 8px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;color:rgba(0,0,0,0.50);text-align:center;font-style:italic;">
+						<?php echo BSKudo_Mailer::format_markdown_html( $global_branding_text ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Safe HTML from format_markdown_html(). ?>
+					</td>
+				</tr>
+				<?php endif; ?>
 
 				<!-- Kopfzeile -->
 				<tr>
@@ -180,7 +191,7 @@ $header_label = '' !== trim( $sender_display ) ? $sender_display : $site_name;
 
 						<?php if ( '' !== trim( $mail_footer_text ) ) : ?>
 						<p style="margin:24px 0 0;font-size:13px;line-height:1.5;color:rgba(0,0,0,0.45);text-align:center;font-style:italic;">
-							<?php echo esc_html( $mail_footer_text ); ?>
+							<?php echo BSKudo_Mailer::format_markdown_html( $mail_footer_text ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Safe HTML from format_markdown_html(). ?>
 						</p>
 						<?php endif; ?>
 

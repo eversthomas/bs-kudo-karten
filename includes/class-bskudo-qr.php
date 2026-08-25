@@ -40,7 +40,10 @@ class BSKudo_QR {
 	}
 
 	/**
-	 * QR-Ziel-URL für eine Karte auflösen (Override oder Fallback).
+	 * QR-Ziel-URL für den QR-Code auf der Kartenrückseite (Webansicht) auflösen.
+	 *
+	 * Gilt nicht für den QR-Code in der Benachrichtigungs-E-Mail – der verweist immer
+	 * auf die tokenbasierte Webansicht der versendeten Karte.
 	 *
 	 * @param int    $card_id     Kudo-Karten-Post-ID.
 	 * @param string $default_url Fallback (typisch: tokenbasierte Webansicht).

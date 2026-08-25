@@ -2,7 +2,7 @@
 
 Digitale Kudo-Karten für WordPress – entwickelt von [bezugssysteme.de](https://bezugssysteme.de).
 
-**Version:** 0.8.0
+**Version:** 0.8.2
 
 ---
 
@@ -22,8 +22,8 @@ Ein WordPress-Plugin, das es Besuchern ermöglicht, digitale Wertschätzungskart
 - **Verzögerter Versand** – Datum und Uhrzeit wählbar
 - **Token-basierte Webansicht** für Empfänger (temporäre URL, Drucklayout)
 - **Honeypot, Formular-Zeitstempel und Rate Limiting** gegen Missbrauch
-- **HTML-Mail** als Teaser mit Link zur Webansicht (+ optional QR-Code, lokal generiert)
-- **QR-Ziel-Link pro Karte** – optional eigene URL statt Standard-Webansicht (Backend-Feld pro Karte)
+- **HTML-Mail** als Teaser mit Link zur Webansicht (+ optional QR-Code zur Online-Karte, lokal generiert)
+- **QR-Ziel-Link pro Karte (Rückseite)** – optional eigene URL nur für den QR auf der Online-Kartenrückseite (nicht für den Mail-QR)
 - **Konfigurierbares Rückseiten-Layout** – Bausteine (QR, Text, Logo) pro Spalte, Reihenfolge und Sichtbarkeit in der Webansicht
 - **Branding-Tab** im Backend – Logo, Farbe, Mail-Template konfigurierbar
 - **Shortcode** `[kudo_karten]` – auf jeder Seite einsetzbar, Divi-kompatibel

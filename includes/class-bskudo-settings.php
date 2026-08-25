@@ -39,6 +39,7 @@ class BSKudo_Settings {
 				'branding_text'      => (string) get_bloginfo( 'name' ),
 				'branding_text_col1' => '',
 				'branding_text_col2' => '',
+				'global_branding_text' => '',
 				'mail_footer_text'   => '',
 				'footer_powered'     => true,
 			),
@@ -205,6 +206,7 @@ class BSKudo_Settings {
 			$clean['branding']['branding_text']      = isset( $b['branding_text'] ) ? wp_kses_post( wp_unslash( $b['branding_text'] ) ) : $defaults['branding']['branding_text'];
 			$clean['branding']['branding_text_col1'] = isset( $b['branding_text_col1'] ) ? wp_kses_post( wp_unslash( $b['branding_text_col1'] ) ) : '';
 			$clean['branding']['branding_text_col2'] = isset( $b['branding_text_col2'] ) ? wp_kses_post( wp_unslash( $b['branding_text_col2'] ) ) : '';
+			$clean['branding']['global_branding_text'] = isset( $b['global_branding_text'] ) ? sanitize_textarea_field( wp_unslash( $b['global_branding_text'] ) ) : '';
 			$clean['branding']['mail_footer_text']   = isset( $b['mail_footer_text'] ) ? sanitize_textarea_field( wp_unslash( $b['mail_footer_text'] ) ) : '';
 			$clean['branding']['footer_powered']     = ! empty( $b['footer_powered'] );
 		}

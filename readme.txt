@@ -5,7 +5,7 @@ Tags: kudo, appreciation, cards, email, recognition
 Requires at least: 6.3
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 0.8.0
+Stable tag: 0.8.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -137,6 +137,14 @@ The plugin itself stores no personal data. You should mention the card sending f
 6. Backend – Card management and settings
 
 == Changelog ==
+
+= 0.8.2 =
+* Mail footer supports Markdown links [text](url) plus auto-linked bare URLs
+* Backend helper text with example for the footer editor
+
+= 0.8.1 =
+* Mail QR code always links to the online card view (separate from configurable back-of-card QR)
+* Backend hint clarifies mail QR vs. card-back QR
 
 = 0.8.0 =
 * Backend layout fix for the card editor (WordPress post screen)

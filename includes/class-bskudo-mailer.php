@@ -85,10 +85,8 @@ class BSKudo_Mailer {
 
 		$qr_src = '';
 		if ( $view_url && BSKudo_Settings::is_feature_enabled( 'show_qr_in_mail' ) ) {
-			$qr_url = BSKudo_QR::resolve_target_url( (int) $data['card_id'], $view_url );
-			if ( '' !== $qr_url ) {
-				$qr_src = $this->save_qr_png_url( $qr_url );
-			}
+			// Mail-QR führt immer zur tokenbasierten Webansicht – unabhängig vom Rückseiten-QR der Karte.
+			$qr_src = $this->save_qr_png_url( $view_url );
 		}
 
 		$body = $this->build_body(
@@ -101,8 +99,9 @@ class BSKudo_Mailer {
 				'card_title'       => $card_title,
 				'img_src'          => $img_src,
 				'logo_src'         => $logo_src,
-				'mail_footer_text' => (string) BSKudo_Settings::get( 'branding', 'mail_footer_text', '' ),
-				'qr_src'           => $qr_src,
+				'mail_footer_text'     => (string) BSKudo_Settings::get( 'branding', 'mail_footer_text', '' ),
+				'global_branding_text' => (string) BSKudo_Settings::get( 'branding', 'global_branding_text', '' ),
+				'qr_src'               => $qr_src,
 				'token_ttl_days'   => (string) BSKudo_Settings::get_token_ttl_days(),
 			)
 		);
@@ -337,15 +336,21 @@ class BSKudo_Mailer {
 	 * @return string
 	 */
 	private function build_plain_body( $data, $card_title, $view_url ) {
-		$lines = array(
-			sprintf(
+		$lines = array();
+
+		$global_branding = trim( (string) BSKudo_Settings::get( 'branding', 'global_branding_text', '' ) );
+		if ( '' !== $global_branding ) {
+			$lines[] = $global_branding;
+			$lines[] = '';
+		}
+
+		$lines[] = sprintf(
 				/* translators: 1: recipient, 2: sender */
 				__( 'Hallo %1$s, %2$s hat dir eine Kudo-Karte geschickt:', 'bs-kudo-karten' ),
 				$data['recipient_name'],
 				$data['sender_name']
-			),
-			'',
 		);
+		$lines[] = '';
 
 		if ( $card_title ) {
 			$lines[] = $card_title;
@@ -437,6 +442,83 @@ class BSKudo_Mailer {
 		wp_schedule_single_event( time() + $ttl, 'bskudo_delete_mail_qr_file', array( $filepath ) );
 
 		return trailingslashit( $upload['baseurl'] ) . 'bskudo-mail-qr/' . $filename;
+	}
+
+	/**
+	 * Markdown-Text: [Text](URL), Auto-Links für bare URLs, sicheres HTML.
+	 *
+	 * @param string $text Roher Text (Footer, globales Branding, …).
+	 * @return string HTML (bereits escaped/validiert).
+	 */
+	public static function format_markdown_html( $text ) {
+		$raw = trim( (string) $text );
+
+		if ( '' === $raw ) {
+			return '';
+		}
+
+		$link_style = 'color:inherit;text-decoration:underline;';
+		$placeholders = array();
+
+		$text = preg_replace_callback(
+			'/\[([^\]]+)\]\(([^)\s]+)\)/',
+			static function ( $matches ) use ( &$placeholders, $link_style ) {
+				$url = esc_url_raw( trim( $matches[2] ) );
+
+				if ( '' === $url || ! wp_http_validate_url( $url ) ) {
+					return $matches[0];
+				}
+
+				$key = '%%BSKUDOFOOTLINK' . count( $placeholders ) . '%%';
+				$placeholders[ $key ] = sprintf(
+					'<a href="%1$s" style="%2$s">%3$s</a>',
+					esc_url( $url ),
+					esc_attr( $link_style ),
+					esc_html( $matches[1] )
+				);
+
+				return $key;
+			},
+			$raw
+		);
+
+		if ( null === $text ) {
+			$text = $raw;
+		}
+
+		$text = esc_html( $text );
+		$text = nl2br( $text, false );
+
+		foreach ( $placeholders as $key => $html ) {
+			$text = str_replace( esc_html( $key ), $html, $text );
+		}
+
+		$text = make_clickable( $text );
+		$text = preg_replace(
+			'/<a (?![^>]*\bstyle=)([^>]+)>/',
+			'<a style="' . esc_attr( $link_style ) . '" $1>',
+			$text
+		);
+
+		return wp_kses(
+			$text,
+			array(
+				'a'  => array(
+					'href'  => array(),
+					'style' => array(),
+				),
+				'br' => array(),
+			)
+		);
+	}
+
+	/**
+	 * @deprecated 0.8.3 Use format_markdown_html().
+	 * @param string $text Roher Text.
+	 * @return string
+	 */
+	public static function format_footer_html( $text ) {
+		return self::format_markdown_html( $text );
 	}
 
 	/**

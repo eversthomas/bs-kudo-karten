@@ -108,7 +108,7 @@ class BSKudo_Card_Meta {
 					<p class="fhint"><?php esc_html_e( 'Das Haupt-Branding auf der Rückseite dieser Karte. Leer = Globaler Standard.', 'bs-kudo-karten' ); ?></p>
 				</div>
 				<div class="field">
-					<label class="flabel" for="bskudo_qr_target_url"><?php esc_html_e( 'QR-Code Ziel-Link (optional)', 'bs-kudo-karten' ); ?></label>
+					<label class="flabel" for="bskudo_qr_target_url"><?php esc_html_e( 'QR-Code auf der Kartenrückseite (Webansicht)', 'bs-kudo-karten' ); ?></label>
 					<input
 						type="url"
 						class="input"
@@ -117,7 +117,7 @@ class BSKudo_Card_Meta {
 						value="<?php echo esc_attr( $qr_target_url ); ?>"
 						placeholder="https://"
 					>
-					<p class="fhint"><?php esc_html_e( 'Der QR-Code auf der Kartenrückseite führt standardmäßig zur digitalen Webansicht dieser Karte. Trage hier eine eigene URL ein, wenn der QR-Code stattdessen z. B. zu einer Spendenseite, einer Veranstaltung oder einer anderen Aktion führen soll. Leer lassen = Standard-Verhalten.', 'bs-kudo-karten' ); ?></p>
+					<p class="fhint"><?php esc_html_e( 'Gilt nur für den QR-Code auf der Rückseite der Online-Kudo-Karte (nach dem Öffnen des E-Mail-Links). Standard: erneut diese Webansicht. Trage eine eigene URL ein, wenn der Rückseiten-QR z. B. zu einer Spendenseite oder Aktion führen soll. Der QR-Code in der Benachrichtigungs-E-Mail führt immer zur Online-Karte und wird hier nicht beeinflusst.', 'bs-kudo-karten' ); ?></p>
 				</div>
 				<div class="field">
 					<label class="flabel" for="bskudo_accent_color"><?php esc_html_e( 'Akzentfarbe', 'bs-kudo-karten' ); ?></label>

@@ -50,6 +50,7 @@ $back_context     = array(
 	'branding_col2'    => $branding_col2,
 	'logo_url'         => $logo_url ? (string) $logo_url : '',
 );
+$global_branding_text = trim( (string) BSKudo_Settings::get( 'branding', 'global_branding_text', '' ) );
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -589,25 +590,10 @@ $back_context     = array(
 			</div>
 		</div>
 
-		<?php if ( BSKudo_Settings::get( 'branding', 'footer_powered', true ) ) : ?>
+		<?php if ( '' !== $global_branding_text ) : ?>
 			<footer class="bskudo-card-view-page__footer">
 				<p>
-					<?php
-					echo wp_kses(
-						sprintf(
-							/* translators: %s: link to bezugssysteme.de */
-							__( 'Ein Projekt von Thomas Evers – %s', 'bs-kudo-karten' ),
-							'<a href="https://bezugssysteme.de" target="_blank" rel="noopener noreferrer">bezugssysteme.de</a>'
-						),
-						array(
-							'a' => array(
-								'href'   => array(),
-								'target' => array(),
-								'rel'    => array(),
-							),
-						)
-					);
-					?>
+					<?php echo BSKudo_Mailer::format_markdown_html( $global_branding_text ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Safe HTML from format_markdown_html(). ?>
 				</p>
 			</footer>
 		<?php endif; ?>

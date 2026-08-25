@@ -3,7 +3,7 @@
  * Plugin Name:       Kudo Cards – Send Digital Appreciation
  * Plugin URI:        https://github.com/eversthomas/bs-kudo-karten
  * Description:       Send digital appreciation cards from WordPress. Choose a card, write a message, and deliver it by email with a secure token web view.
- * Version:           0.8.0
+ * Version:           0.8.2
  * Requires at least: 6.3
  * Tested up to:      7.0
  * Requires PHP:       8.0
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'BSKUDO_VERSION', '0.8.0' );
+define( 'BSKUDO_VERSION', '0.8.2' );
 define( 'BSKUDO_CHAR_LIMIT', 240 );
 define( 'BSKUDO_PATH', plugin_dir_path( __FILE__ ) );
 define( 'BSKUDO_URL', plugin_dir_url( __FILE__ ) );
