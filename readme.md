@@ -2,7 +2,7 @@
 
 Digitale Kudo-Karten für WordPress – entwickelt von [bezugssysteme.de](https://bezugssysteme.de).
 
-**Version:** 0.8.2
+**Version:** 0.8.3
 
 ---
 
@@ -27,6 +27,7 @@ Ein WordPress-Plugin, das es Besuchern ermöglicht, digitale Wertschätzungskart
 - **Konfigurierbares Rückseiten-Layout** – Bausteine (QR, Text, Logo) pro Spalte, Reihenfolge und Sichtbarkeit in der Webansicht
 - **Branding-Tab** im Backend – Logo, Farbe, Mail-Template konfigurierbar
 - **Shortcode** `[kudo_karten]` – auf jeder Seite einsetzbar, Divi-kompatibel
+- **Anpassbare Produktbezeichnung** – Singular/Plural (z. B. „Kudokarte“ / „Kudokarten“) für Wizard, E-Mail und Webansicht; technische Slugs unverändert
 
 ---
 
@@ -60,6 +61,16 @@ Ein WordPress-Plugin, das es Besuchern ermöglicht, digitale Wertschätzungskart
 
 ---
 
+## Produktbezeichnung (z. B. „Kudokarten“)
+
+Unter **Einstellungen → Allgemein → Bezeichnung** kann Singular und Plural frei gesetzt werden (z. B. `Kudokarte` / `Kudokarten`). Damit ändern sich sichtbare Texte in Wizard, E-Mail, Webansicht und Backend-Menü. **Shortcode**, Post-Typ-Slugs und URLs bleiben unverändert.
+
+- **Update ohne Datenverlust:** Gespeicherte Karten, Branding-Texte, Betreff-Vorlage und Datenschutzhinweis in der Datenbank werden beim Plugin-Update **nicht** überschrieben.
+- Leere Felder = bisherige Standardbezeichnung „Kudo-Karte“ / „Kudo-Karten“.
+- Optional im Betreff: Platzhalter `{product}` und `{product_plural}` (bestehende Betreff-Zeile bleibt, bis du sie anpasst).
+
+---
+
 ## Kartenbilder
 
 Kartenbilder werden als **WebP** oder **JPG/PNG** über den WordPress-Medienmanager hinterlegt. Export mit mind. 1400px Breite empfohlen.
@@ -73,7 +84,7 @@ Kudo Karten
 ├── Karten verwalten     – CPT kudo_card (Bild, Rückseiten-Branding, QR-Ziel, Layout, Farbe)
 ├── Textbausteine        – CPT kudo_textbaustein (Karten/Sets zugeordnet)
 └── Einstellungen
-    ├── Allgemein        – Absender, Betreff, Kopie, geplanter Versand, QR
+    ├── Allgemein        – Bezeichnung (Singular/Plural), Absender, Betreff, Kopie, geplanter Versand, QR
     ├── Branding         – Logo, Primärfarbe, Mail-Footer
     └── Sicherheit       – Rate Limit, Zeichenlimit, Datenschutzhinweis
 ```

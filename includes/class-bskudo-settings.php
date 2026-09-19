@@ -24,6 +24,8 @@ class BSKudo_Settings {
 	public static function get_defaults() {
 		return array(
 			'general'  => array(
+				'product_name_singular' => '',
+				'product_name_plural'   => '',
 				'sender_name'         => get_bloginfo( 'name' ),
 				'sender_email'        => get_option( 'admin_email' ),
 				'subject_template'    => __( '{sender} sendet dir eine Kudo-Karte', 'bs-kudo-karten' ),
@@ -97,6 +99,59 @@ class BSKudo_Settings {
 		}
 
 		return $all[ $section ][ $key ];
+	}
+
+	/**
+	 * Anzeigename Singular (leer = bisher „Kudo-Karte“).
+	 *
+	 * Liest die Option direkt, ohne get_all(), um Zirkelbezüge in Defaults zu vermeiden.
+	 *
+	 * @return string
+	 */
+	public static function product_name_singular() {
+		$custom = self::get_stored_product_name( 'product_name_singular' );
+
+		return '' !== $custom ? $custom : 'Kudo-Karte';
+	}
+
+	/**
+	 * Anzeigename Plural (leer = bisher „Kudo-Karten“).
+	 *
+	 * @return string
+	 */
+	public static function product_name_plural() {
+		$custom = self::get_stored_product_name( 'product_name_plural' );
+
+		return '' !== $custom ? $custom : 'Kudo-Karten';
+	}
+
+	/**
+	 * Standard-Datenschutzhinweis mit aktuellem Produktnamen.
+	 *
+	 * @return string
+	 */
+	public static function default_privacy_text() {
+		return sprintf(
+			/* translators: %s: product name (singular), e.g. Kudokarte */
+			__( 'Deine Angaben werden ausschließlich zum Versand dieser %s verwendet. Bei Sofortversand werden sie nicht dauerhaft gespeichert. Bei geplantem Versand werden sie bis zum Versandzeitpunkt temporär auf dem Server zwischengespeichert. Der Link zur Webansicht ist für eine begrenzte Zeit gültig und enthält deinen Karten-Text sowie deinen Namen als Absender.', 'bs-kudo-karten' ),
+			self::product_name_singular()
+		);
+	}
+
+	/**
+	 * Gespeicherten Produktnamen aus der Option lesen.
+	 *
+	 * @param string $key product_name_singular|product_name_plural.
+	 * @return string Getrimmter Wert oder leer.
+	 */
+	private static function get_stored_product_name( $key ) {
+		$stored = get_option( self::OPTION, array() );
+
+		if ( ! is_array( $stored ) || ! isset( $stored['general'][ $key ] ) ) {
+			return '';
+		}
+
+		return trim( (string) $stored['general'][ $key ] );
 	}
 
 	/**
@@ -188,6 +243,8 @@ class BSKudo_Settings {
 
 		if ( isset( $input['general'] ) && is_array( $input['general'] ) ) {
 			$g = $input['general'];
+			$clean['general']['product_name_singular'] = isset( $g['product_name_singular'] ) ? sanitize_text_field( wp_unslash( $g['product_name_singular'] ) ) : '';
+			$clean['general']['product_name_plural']   = isset( $g['product_name_plural'] ) ? sanitize_text_field( wp_unslash( $g['product_name_plural'] ) ) : '';
 			$clean['general']['sender_name']      = isset( $g['sender_name'] ) ? sanitize_text_field( wp_unslash( $g['sender_name'] ) ) : $defaults['general']['sender_name'];
 			$clean['general']['sender_email']     = isset( $g['sender_email'] ) ? sanitize_email( wp_unslash( $g['sender_email'] ) ) : $defaults['general']['sender_email'];
 			$clean['general']['subject_template'] = isset( $g['subject_template'] ) ? sanitize_text_field( wp_unslash( $g['subject_template'] ) ) : $defaults['general']['subject_template'];

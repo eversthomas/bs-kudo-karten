@@ -173,7 +173,14 @@ class BSKudo_Security {
 		$char_limit = BSKudo_Settings::get_char_limit();
 
 		if ( $card_id < 1 || 'kudo_card' !== get_post_type( $card_id ) || 'publish' !== get_post_status( $card_id ) ) {
-			return new WP_Error( 'bskudo_card', __( 'Bitte wähle eine gültige Kudo-Karte.', 'bs-kudo-karten' ) );
+			return new WP_Error(
+				'bskudo_card',
+				sprintf(
+					/* translators: %s: product name singular */
+					__( 'Bitte wähle eine gültige %s.', 'bs-kudo-karten' ),
+					BSKudo_Settings::product_name_singular()
+				)
+			);
 		}
 
 		$message = trim( $message );

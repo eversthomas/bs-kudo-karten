@@ -192,10 +192,23 @@ class BSKudo_Shortcode {
 					'invalidEmail'    => __( 'Bitte gib eine gültige E-Mail-Adresse ein.', 'bs-kudo-karten' ),
 					'next'            => __( 'Weiter', 'bs-kudo-karten' ),
 					'back'            => __( 'Zurück', 'bs-kudo-karten' ),
-					'send'            => __( 'Kudo-Karte senden', 'bs-kudo-karten' ),
+					'send'            => sprintf(
+						/* translators: %s: product name singular */
+						__( '%s senden', 'bs-kudo-karten' ),
+						BSKudo_Settings::product_name_singular()
+					),
 					'sending'         => __( 'Wird gesendet …', 'bs-kudo-karten' ),
 					'sendError'       => __( 'Beim Versand ist ein Fehler aufgetreten. Bitte versuche es erneut.', 'bs-kudo-karten' ),
-					'sendAnother'     => __( 'Weitere Kudo-Karte senden', 'bs-kudo-karten' ),
+					'sendAnother'     => sprintf(
+						/* translators: %s: product name singular */
+						__( 'Weitere %s senden', 'bs-kudo-karten' ),
+						BSKudo_Settings::product_name_singular()
+					),
+					'sendSuccess'     => sprintf(
+						/* translators: %s: product name singular */
+						__( 'Deine %s ist unterwegs. ✨', 'bs-kudo-karten' ),
+						BSKudo_Settings::product_name_singular()
+					),
 					'sendToSelf'      => __( 'Karte an mich selbst senden', 'bs-kudo-karten' ),
 					'scheduleLater'   => __( 'Später senden', 'bs-kudo-karten' ),
 					'scheduleInvalid' => __( 'Bitte wähle ein gültiges Datum in der Zukunft (mindestens 5 Minuten).', 'bs-kudo-karten' ),
@@ -450,7 +463,7 @@ class BSKudo_Shortcode {
 		$text = (string) BSKudo_Settings::get( 'security', 'privacy_text', '' );
 
 		if ( '' === trim( $text ) ) {
-			$text = __( 'Deine Angaben werden ausschließlich zum Versand dieser Kudo-Karte verwendet. Bei Sofortversand werden sie nicht dauerhaft gespeichert. Bei geplantem Versand werden sie bis zum Versandzeitpunkt temporär auf dem Server zwischengespeichert. Der Link zur Webansicht ist für eine begrenzte Zeit gültig und enthält deinen Karten-Text sowie deinen Namen als Absender.', 'bs-kudo-karten' );
+			$text = BSKudo_Settings::default_privacy_text();
 		}
 
 		return $text;

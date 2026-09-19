@@ -136,8 +136,9 @@ class BSKudo_Mailer {
 
 		if ( BSKudo_Settings::get( 'general', 'copy_to_sender', false ) ) {
 			$copy_subject = sprintf(
-				/* translators: %s: recipient name */
-				__( 'Kopie deiner Kudo-Karte an %s', 'bs-kudo-karten' ),
+				/* translators: 1: product name singular, 2: recipient name */
+				__( 'Kopie deiner %1$s an %2$s', 'bs-kudo-karten' ),
+				BSKudo_Settings::product_name_singular(),
 				$data['recipient_name']
 			);
 
@@ -345,10 +346,11 @@ class BSKudo_Mailer {
 		}
 
 		$lines[] = sprintf(
-				/* translators: 1: recipient, 2: sender */
-				__( 'Hallo %1$s, %2$s hat dir eine Kudo-Karte geschickt:', 'bs-kudo-karten' ),
-				$data['recipient_name'],
-				$data['sender_name']
+			/* translators: 1: recipient, 2: sender, 3: product name singular */
+			__( 'Hallo %1$s, %2$s hat dir eine %3$s geschickt:', 'bs-kudo-karten' ),
+			$data['recipient_name'],
+			$data['sender_name'],
+			BSKudo_Settings::product_name_singular()
 		);
 		$lines[] = '';
 
@@ -390,8 +392,14 @@ class BSKudo_Mailer {
 		$template = (string) BSKudo_Settings::get( 'general', 'subject_template', '' );
 
 		$subject = str_replace(
-			array( '{sender}', '{recipient}', '{card}' ),
-			array( $data['sender_name'], $data['recipient_name'], $card_title ),
+			array( '{sender}', '{recipient}', '{card}', '{product}', '{product_plural}' ),
+			array(
+				$data['sender_name'],
+				$data['recipient_name'],
+				$card_title,
+				BSKudo_Settings::product_name_singular(),
+				BSKudo_Settings::product_name_plural(),
+			),
 			$template
 		);
 

@@ -80,7 +80,7 @@ class BSKudo_Textbaustein_Meta {
 		<div class="bskudo-meta">
 			<div class="fields">
 				<div class="field">
-					<label class="flabel" for="bskudo_linked_card"><?php esc_html_e( 'Kudo-Karte', 'bs-kudo-karten' ); ?></label>
+					<label class="flabel" for="bskudo_linked_card"><?php echo esc_html( BSKudo_Settings::product_name_singular() ); ?></label>
 					<select id="bskudo_linked_card" name="bskudo_linked_card" class="select">
 						<option value="0"><?php esc_html_e( '— Keine —', 'bs-kudo-karten' ); ?></option>
 						<?php foreach ( $cards as $card ) : ?>

@@ -100,8 +100,9 @@ $header_label = '' !== trim( $sender_display ) ? $sender_display : $site_name;
 							<?php
 							printf(
 								/* translators: %s: sender name */
-								esc_html__( '%s hat dir etwas Besonderes geschickt – eine persönliche Kudo-Karte.', 'bs-kudo-karten' ),
-								'<strong style="color:#335C70;">' . esc_html( $sender_name ) . '</strong>'
+								esc_html__( '%1$s hat dir etwas Besonderes geschickt – eine persönliche %2$s.', 'bs-kudo-karten' ),
+								'<strong style="color:#335C70;">' . esc_html( $sender_name ) . '</strong>',
+								esc_html( BSKudo_Settings::product_name_singular() )
 							);
 							?>
 						</p>
@@ -135,7 +136,15 @@ $header_label = '' !== trim( $sender_display ) ? $sender_display : $site_name;
 										href="<?php echo esc_url( $view_url ); ?>"
 										style="display:inline-block;padding:16px 40px;background:#FF664D;color:#ffffff;font-size:17px;font-weight:bold;line-height:1.2;text-align:center;text-decoration:none;border-radius:100px;letter-spacing:0.01em;"
 									>
-										<?php esc_html_e( 'Kudo-Karte ansehen →', 'bs-kudo-karten' ); ?>
+										<?php
+										echo esc_html(
+											sprintf(
+												/* translators: %s: product name singular */
+												__( '%s ansehen →', 'bs-kudo-karten' ),
+												BSKudo_Settings::product_name_singular()
+											)
+										);
+										?>
 									</a>
 								</td>
 							</tr>
@@ -175,7 +184,7 @@ $header_label = '' !== trim( $sender_display ) ? $sender_display : $site_name;
 								<td align="center">
 									<img
 										src="<?php echo esc_url( $qr_src ); ?>"
-										alt="<?php esc_attr_e( 'QR-Code zur Kudo-Karte', 'bs-kudo-karten' ); ?>"
+										alt="<?php echo esc_attr( sprintf( /* translators: %s: product name singular */ __( 'QR-Code zur %s', 'bs-kudo-karten' ), BSKudo_Settings::product_name_singular() ) ); ?>"
 										width="100"
 										height="100"
 										style="display:block;width:100px;height:100px;margin:0 auto;border:0;border-radius:8px;"

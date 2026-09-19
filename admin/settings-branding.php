@@ -99,7 +99,7 @@ $logo_url = $logo_id ? wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
 	<div class="card">
 		<div class="card-head">
 			<h2><?php esc_html_e( 'Globales Branding', 'bs-kudo-karten' ); ?></h2>
-			<p><?php esc_html_e( 'Erscheint oben in der Benachrichtigungs-E-Mail und unten auf der Online-Kudo-Karte.', 'bs-kudo-karten' ); ?></p>
+			<p><?php echo esc_html( sprintf( /* translators: %s: product name singular */ __( 'Erscheint oben in der Benachrichtigungs-E-Mail und unten auf der Online-%s.', 'bs-kudo-karten' ), BSKudo_Settings::product_name_singular() ) ); ?></p>
 		</div>
 		<div class="card-body">
 			<div class="fields">

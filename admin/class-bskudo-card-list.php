@@ -42,7 +42,7 @@ class BSKudo_Card_List {
 		<div class="bskudo-list-overview">
 			<div class="page-head bskudo-list-head">
 				<div>
-					<h1><?php esc_html_e( 'Kudo-Karten', 'bs-kudo-karten' ); ?></h1>
+					<h1><?php echo esc_html( BSKudo_Settings::product_name_plural() ); ?></h1>
 					<p class="lede"><?php esc_html_e( 'Übersicht aller Karten, Sets und Textbausteine.', 'bs-kudo-karten' ); ?></p>
 				</div>
 				<div class="btn-row">
@@ -55,7 +55,7 @@ class BSKudo_Card_List {
 			<div class="stat-grid">
 				<a class="card stat-card" href="<?php echo esc_url( admin_url( 'edit.php?post_type=kudo_card' ) ); ?>">
 					<div class="card-body">
-						<div class="stat-label"><?php esc_html_e( 'Kudo-Karten', 'bs-kudo-karten' ); ?></div>
+						<div class="stat-label"><?php echo esc_html( BSKudo_Settings::product_name_plural() ); ?></div>
 						<div class="stat-value"><?php echo esc_html( (string) $stats['cards_publish'] ); ?></div>
 						<div class="stat-sub">
 							<?php

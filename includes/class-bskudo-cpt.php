@@ -40,21 +40,31 @@ class BSKudo_CPT {
 	 * Post Type: Kudo-Karte.
 	 */
 	public function register_post_types() {
+		$product_singular = BSKudo_Settings::product_name_singular();
+		$product_plural   = BSKudo_Settings::product_name_plural();
+
 		register_post_type(
 			'kudo_card',
 			array(
 				'labels'              => array(
-					'name'               => __( 'Kudo-Karten', 'bs-kudo-karten' ),
-					'singular_name'      => __( 'Kudo-Karte', 'bs-kudo-karten' ),
+					'name'               => $product_plural,
+					'singular_name'      => $product_singular,
 					'add_new'            => __( 'Neue Karte', 'bs-kudo-karten' ),
-					'add_new_item'       => __( 'Neue Kudo-Karte hinzufügen', 'bs-kudo-karten' ),
-					'edit_item'          => __( 'Kudo-Karte bearbeiten', 'bs-kudo-karten' ),
-					'new_item'           => __( 'Neue Kudo-Karte', 'bs-kudo-karten' ),
-					'view_item'          => __( 'Kudo-Karte ansehen', 'bs-kudo-karten' ),
-					'search_items'       => __( 'Kudo-Karten suchen', 'bs-kudo-karten' ),
-					'not_found'          => __( 'Keine Kudo-Karten gefunden', 'bs-kudo-karten' ),
-					'not_found_in_trash' => __( 'Keine Kudo-Karten im Papierkorb', 'bs-kudo-karten' ),
-					'menu_name'          => __( 'Kudo Karten', 'bs-kudo-karten' ),
+					/* translators: %s: product name singular */
+					'add_new_item'       => sprintf( __( 'Neue %s hinzufügen', 'bs-kudo-karten' ), $product_singular ),
+					/* translators: %s: product name singular */
+					'edit_item'          => sprintf( __( '%s bearbeiten', 'bs-kudo-karten' ), $product_singular ),
+					/* translators: %s: product name singular */
+					'new_item'           => sprintf( __( 'Neue %s', 'bs-kudo-karten' ), $product_singular ),
+					/* translators: %s: product name singular */
+					'view_item'          => sprintf( __( '%s ansehen', 'bs-kudo-karten' ), $product_singular ),
+					/* translators: %s: product name plural */
+					'search_items'       => sprintf( __( '%s suchen', 'bs-kudo-karten' ), $product_plural ),
+					/* translators: %s: product name plural */
+					'not_found'          => sprintf( __( 'Keine %s gefunden', 'bs-kudo-karten' ), $product_plural ),
+					/* translators: %s: product name plural */
+					'not_found_in_trash' => sprintf( __( 'Keine %s im Papierkorb', 'bs-kudo-karten' ), $product_plural ),
+					'menu_name'          => $product_plural,
 				),
 				'public'              => false,
 				'show_ui'             => true,

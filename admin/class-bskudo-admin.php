@@ -169,8 +169,8 @@ class BSKudo_Admin {
 	public static function render_shortcode_panel() {
 		?>
 		<div class="alert info">
-			<p class="alert-title"><?php esc_html_e( 'Kudo-Karten im Frontend anzeigen', 'bs-kudo-karten' ); ?></p>
-			<p><?php esc_html_e( 'Füge auf einer Seite oder in einem Beitrag den Shortcode ein, damit Besucher Kudo-Karten versenden können:', 'bs-kudo-karten' ); ?></p>
+			<p class="alert-title"><?php echo esc_html( sprintf( /* translators: %s: product name plural */ __( '%s im Frontend anzeigen', 'bs-kudo-karten' ), BSKudo_Settings::product_name_plural() ) ); ?></p>
+			<p><?php echo esc_html( sprintf( /* translators: %s: product name plural */ __( 'Füge auf einer Seite oder in einem Beitrag den Shortcode ein, damit Besucher %s versenden können:', 'bs-kudo-karten' ), BSKudo_Settings::product_name_plural() ) ); ?></p>
 			<p><code class="key">[<?php echo esc_html( BSKudo_Shortcode::TAG ); ?>]</code></p>
 			<p><?php esc_html_e( 'Optional kannst du nur Karten aus einem bestimmten Kudo-Set anzeigen (Slug des Sets):', 'bs-kudo-karten' ); ?></p>
 			<p><code class="key">[<?php echo esc_html( BSKudo_Shortcode::TAG ); ?> set="dein-set-slug"]</code></p>
@@ -210,7 +210,7 @@ class BSKudo_Admin {
 					<p><strong><?php esc_html_e( 'Letzte Log-Einträge:', 'bs-kudo-karten' ); ?></strong></p>
 					<pre class="log-pre"><?php echo esc_html( $tail ); ?></pre>
 				<?php else : ?>
-					<p><?php esc_html_e( 'Noch keine Einträge – bitte einmal eine Kudo-Karte im Frontend senden.', 'bs-kudo-karten' ); ?></p>
+					<p><?php echo esc_html( sprintf( /* translators: %s: product name singular */ __( 'Noch keine Einträge – bitte einmal eine %s im Frontend senden.', 'bs-kudo-karten' ), BSKudo_Settings::product_name_singular() ) ); ?></p>
 				<?php endif; ?>
 			</div>
 		</details>

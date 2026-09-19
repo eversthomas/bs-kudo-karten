@@ -61,11 +61,11 @@ $enable_delayed_send = ! empty( $enable_delayed_send );
 			aria-labelledby="bskudo-section-1-heading"
 		>
 			<h2 id="bskudo-section-1-heading" class="bskudo-section__heading">
-				<?php esc_html_e( 'Wähle deine Kudo-Karte', 'bs-kudo-karten' ); ?>
+				<?php echo esc_html( sprintf( /* translators: %s: product name singular */ __( 'Wähle deine %s', 'bs-kudo-karten' ), BSKudo_Settings::product_name_singular() ) ); ?>
 			</h2>
 			<?php if ( ! $has_cards ) : ?>
 				<p class="bskudo-empty">
-					<?php esc_html_e( 'Aktuell sind keine Karten verfügbar. Bitte lege im Backend Kudo-Karten an und veröffentliche sie.', 'bs-kudo-karten' ); ?>
+					<?php echo esc_html( sprintf( /* translators: %s: product name plural */ __( 'Aktuell sind keine Karten verfügbar. Bitte lege im Backend %s an und veröffentliche sie.', 'bs-kudo-karten' ), BSKudo_Settings::product_name_plural() ) ); ?>
 				</p>
 			<?php else : ?>
 				<p class="bskudo-section__hint">
@@ -278,7 +278,7 @@ $enable_delayed_send = ! empty( $enable_delayed_send );
 						<?php esc_html_e( 'Zurück', 'bs-kudo-karten' ); ?>
 					</button>
 					<button type="submit" class="bskudo-btn bskudo-btn--primary bskudo-btn--submit" disabled>
-						<?php esc_html_e( 'Kudo-Karte senden', 'bs-kudo-karten' ); ?>
+						<?php echo esc_html( sprintf( /* translators: %s: product name singular */ __( '%s senden', 'bs-kudo-karten' ), BSKudo_Settings::product_name_singular() ) ); ?>
 					</button>
 				</div>
 			</section>
@@ -288,7 +288,7 @@ $enable_delayed_send = ! empty( $enable_delayed_send );
 			<div class="bskudo-lightbox__panel">
 				<header class="bskudo-lightbox__header">
 					<h3 id="bskudo-lightbox-title" class="bskudo-lightbox__title">
-						<?php esc_html_e( 'Große Vorschau deiner Kudo-Karte', 'bs-kudo-karten' ); ?>
+						<?php echo esc_html( sprintf( /* translators: %s: product name singular */ __( 'Große Vorschau deiner %s', 'bs-kudo-karten' ), BSKudo_Settings::product_name_singular() ) ); ?>
 					</h3>
 					<button type="button" class="bskudo-lightbox__close">
 						<?php esc_html_e( 'Schließen', 'bs-kudo-karten' ); ?>

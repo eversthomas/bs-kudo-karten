@@ -69,7 +69,11 @@ class BSKudo_Card_View {
 
 		if ( null === $payload ) {
 			$this->render_error_page(
-				__( 'Diese Kudo-Karte ist nicht mehr verfügbar', 'bs-kudo-karten' ),
+				sprintf(
+					/* translators: %s: product name singular */
+					__( 'Diese %s ist nicht mehr verfügbar', 'bs-kudo-karten' ),
+					BSKudo_Settings::product_name_singular()
+				),
 				__( 'Der Link ist abgelaufen oder ungültig.', 'bs-kudo-karten' ),
 				410
 			);
@@ -81,7 +85,11 @@ class BSKudo_Card_View {
 		if ( null === $card ) {
 			$this->render_error_page(
 				__( 'Karte nicht gefunden', 'bs-kudo-karten' ),
-				__( 'Die zugehörige Kudo-Karte existiert nicht mehr.', 'bs-kudo-karten' ),
+				sprintf(
+					/* translators: %s: product name singular */
+					__( 'Die zugehörige %s existiert nicht mehr.', 'bs-kudo-karten' ),
+					BSKudo_Settings::product_name_singular()
+				),
 				404
 			);
 			exit;

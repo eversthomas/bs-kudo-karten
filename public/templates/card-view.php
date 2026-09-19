@@ -25,7 +25,7 @@ if ( ! $accent_color ) {
 $image_url  = esc_url( (string) ( $card['image_url'] ?? '' ) );
 $image_alt  = '' !== (string) ( $card['image_alt'] ?? '' )
 	? esc_attr( (string) $card['image_alt'] )
-	: esc_attr( (string) ( $card['title'] ?? __( 'Kudo-Karte', 'bs-kudo-karten' ) ) );
+	: esc_attr( (string) ( $card['title'] ?? BSKudo_Settings::product_name_singular() ) );
 $card_title = esc_html( (string) ( $card['title'] ?? '' ) );
 $branding_col1 = (string) ( $card['back_branding_col1'] ?? '' );
 $branding_col2 = (string) ( $card['back_branding_col2'] ?? '' );
@@ -58,7 +58,7 @@ $global_branding_text = trim( (string) BSKudo_Settings::get( 'branding', 'global
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="robots" content="noindex,nofollow">
-	<title><?php echo esc_html( sprintf( /* translators: %s: site name */ __( 'Deine Kudo-Karte · %s', 'bs-kudo-karten' ), get_bloginfo( 'name' ) ) ); ?></title>
+	<title><?php echo esc_html( sprintf( /* translators: 1: product name singular, 2: site name */ __( 'Deine %1$s · %2$s', 'bs-kudo-karten' ), BSKudo_Settings::product_name_singular(), get_bloginfo( 'name' ) ) ); ?></title>
 	<style>
 		body.bskudo-card-view-page {
 			margin: 0;
@@ -511,14 +511,23 @@ $global_branding_text = trim( (string) BSKudo_Settings::get( 'branding', 'global
 					<?php
 					printf(
 						/* translators: %s: sender name */
-						esc_html__( '%s hat dir etwas Besonderes geschickt – eine persönliche Kudo-Karte', 'bs-kudo-karten' ),
-						esc_html( $sender_name )
+						esc_html__( '%1$s hat dir etwas Besonderes geschickt – eine persönliche %2$s', 'bs-kudo-karten' ),
+						esc_html( $sender_name ),
+						esc_html( BSKudo_Settings::product_name_singular() )
 					);
 					?>
 				</h1>
 			<?php else : ?>
 				<h1 class="bskudo-card-view-page__title">
-					<?php esc_html_e( 'Du hast eine persönliche Kudo-Karte erhalten', 'bs-kudo-karten' ); ?>
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: %s: product name singular */
+							__( 'Du hast eine persönliche %s erhalten', 'bs-kudo-karten' ),
+							BSKudo_Settings::product_name_singular()
+						)
+					);
+					?>
 				</h1>
 			<?php endif; ?>
 		</header>
@@ -529,7 +538,7 @@ $global_branding_text = trim( (string) BSKudo_Settings::get( 'branding', 'global
 				<p class="bskudo-cardview__label"><?php esc_html_e( 'Vorderseite', 'bs-kudo-karten' ); ?></p>
 				<div class="bskudo-cardview__media <?php echo esc_attr( $msg_zone_class ); ?>">
 					<?php if ( $image_url ) : ?>
-						<img src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( sprintf( /* translators: %s: card title */ __( 'Kudo-Karte Vorderseite: %s', 'bs-kudo-karten' ), (string) ( $card['title'] ?? '' ) ) ); ?>">
+						<img src="<?php echo esc_url( $image_url ); ?>" alt="<?php echo esc_attr( sprintf( /* translators: 1: product name singular, 2: card title */ __( '%1$s Vorderseite: %2$s', 'bs-kudo-karten' ), BSKudo_Settings::product_name_singular(), (string) ( $card['title'] ?? '' ) ) ); ?>">
 					<?php else : ?>
 						<div class="bskudo-cardview__back-panel" style="background:#f8f8f8;color:#333;">
 							<?php echo esc_html( $card_title ); ?>
@@ -549,7 +558,7 @@ $global_branding_text = trim( (string) BSKudo_Settings::get( 'branding', 'global
 				<div
 					class="bskudo-cardview__back-panel"
 					role="img"
-					aria-label="<?php esc_attr_e( 'Kudo-Karte Rückseite', 'bs-kudo-karten' ); ?>"
+					aria-label="<?php echo esc_attr( sprintf( /* translators: %s: product name singular */ __( '%s Rückseite', 'bs-kudo-karten' ), BSKudo_Settings::product_name_singular() ) ); ?>"
 				>
 					<div class="bskudo-cardview__back-cols">
 						<div class="bskudo-cardview__back-col bskudo-cardview__back-col--left">

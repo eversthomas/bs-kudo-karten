@@ -19,6 +19,26 @@ $general  = $settings['general'];
 
 	<div class="card">
 		<div class="card-head">
+			<h2><?php esc_html_e( 'Bezeichnung', 'bs-kudo-karten' ); ?></h2>
+		</div>
+		<div class="card-body">
+			<div class="fields">
+				<div class="field">
+					<label class="flabel" for="bskudo_product_name_singular"><?php esc_html_e( 'Name (Singular)', 'bs-kudo-karten' ); ?></label>
+					<input type="text" id="bskudo_product_name_singular" name="bskudo_settings[general][product_name_singular]" value="<?php echo esc_attr( (string) ( $general['product_name_singular'] ?? '' ) ); ?>" class="input" placeholder="<?php echo esc_attr( BSKudo_Settings::product_name_singular() ); ?>">
+					<p class="fhint"><?php esc_html_e( 'Erscheint in Wizard, E-Mail und Webansicht, z. B. „Kudokarte“. Leer lassen = bisherige Standardbezeichnung „Kudo-Karte“.', 'bs-kudo-karten' ); ?></p>
+				</div>
+				<div class="field">
+					<label class="flabel" for="bskudo_product_name_plural"><?php esc_html_e( 'Name (Plural)', 'bs-kudo-karten' ); ?></label>
+					<input type="text" id="bskudo_product_name_plural" name="bskudo_settings[general][product_name_plural]" value="<?php echo esc_attr( (string) ( $general['product_name_plural'] ?? '' ) ); ?>" class="input" placeholder="<?php echo esc_attr( BSKudo_Settings::product_name_plural() ); ?>">
+					<p class="fhint"><?php esc_html_e( 'Für Mehrzahl-Texte und Backend-Übersicht, z. B. „Kudokarten“. Betreff-Vorlage und gespeicherter Datenschutzhinweis werden beim Update nicht geändert – ggf. einmal anpassen oder Platzhalter {product} im Betreff nutzen.', 'bs-kudo-karten' ); ?></p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="card">
+		<div class="card-head">
 			<h2><?php esc_html_e( 'E-Mail & Versand', 'bs-kudo-karten' ); ?></h2>
 		</div>
 		<div class="card-body">
@@ -36,7 +56,7 @@ $general  = $settings['general'];
 				<div class="field">
 					<label class="flabel" for="bskudo_subject_template"><?php esc_html_e( 'Betreff-Vorlage', 'bs-kudo-karten' ); ?></label>
 					<input type="text" id="bskudo_subject_template" name="bskudo_settings[general][subject_template]" value="<?php echo esc_attr( $general['subject_template'] ); ?>" class="input">
-					<p class="fhint"><?php esc_html_e( 'Platzhalter: {sender}, {recipient}, {card}', 'bs-kudo-karten' ); ?></p>
+					<p class="fhint"><?php esc_html_e( 'Platzhalter: {sender}, {recipient}, {card}, {product}, {product_plural}', 'bs-kudo-karten' ); ?></p>
 				</div>
 			</div>
 		</div>
@@ -51,7 +71,7 @@ $general  = $settings['general'];
 				<div class="field">
 					<label class="check-row">
 						<input type="checkbox" name="bskudo_settings[general][copy_to_sender]" value="1" <?php checked( ! empty( $general['copy_to_sender'] ) ); ?>>
-						<span><?php esc_html_e( 'Absender erhält eine Kopie der Kudo-Karte', 'bs-kudo-karten' ); ?></span>
+						<span><?php echo esc_html( sprintf( /* translators: %s: product name singular */ __( 'Absender erhält eine Kopie der %s', 'bs-kudo-karten' ), BSKudo_Settings::product_name_singular() ) ); ?></span>
 					</label>
 				</div>
 

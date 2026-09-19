@@ -113,7 +113,11 @@ class BSKudo_Send {
 		$this->security->record_send();
 
 		$this->send_success_response(
-			__( 'Deine Kudo-Karte wurde erfolgreich versendet!', 'bs-kudo-karten' ),
+			sprintf(
+				/* translators: %s: product name singular */
+				__( 'Deine %s wurde erfolgreich versendet!', 'bs-kudo-karten' ),
+				BSKudo_Settings::product_name_singular()
+			),
 			false,
 			0
 		);
@@ -141,8 +145,9 @@ class BSKudo_Send {
 		}
 
 		$message = sprintf(
-			/* translators: %s: date/time */
-			__( 'Deine Kudo-Karte wird am %s versendet.', 'bs-kudo-karten' ),
+			/* translators: 1: product name singular, 2: date/time */
+			__( 'Deine %1$s wird am %2$s versendet.', 'bs-kudo-karten' ),
+			BSKudo_Settings::product_name_singular(),
 			BSKudo_Scheduler::format_send_at( $send_at )
 		);
 

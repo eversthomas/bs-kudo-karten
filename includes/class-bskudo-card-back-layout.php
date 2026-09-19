@@ -230,7 +230,7 @@ class BSKudo_Card_Back_Layout {
 		}
 		?>
 		<div class="bskudo-cardview__qr-wrap">
-			<img class="bskudo-cardview__qr-image" src="<?php echo esc_attr( $qr_code_data_uri ); ?>" alt="<?php esc_attr_e( 'Kudo-Karte QR-Code', 'bs-kudo-karten' ); ?>">
+			<img class="bskudo-cardview__qr-image" src="<?php echo esc_attr( $qr_code_data_uri ); ?>" alt="<?php echo esc_attr( sprintf( /* translators: %s: product name singular */ __( '%s QR-Code', 'bs-kudo-karten' ), BSKudo_Settings::product_name_singular() ) ); ?>">
 		</div>
 		<?php
 	}
@@ -247,7 +247,7 @@ class BSKudo_Card_Back_Layout {
 			<?php if ( '' !== $branding_col1 ) : ?>
 				<?php echo wp_kses_post( $branding_col1 ); ?>
 			<?php else : ?>
-				<p style="font-size: 11px; margin-top: 8px; opacity: 0.75;"><?php esc_html_e( 'Scanne diesen Code, um die digitale Kudo-Karte online aufzurufen.', 'bs-kudo-karten' ); ?></p>
+				<p style="font-size: 11px; margin-top: 8px; opacity: 0.75;"><?php echo esc_html( sprintf( /* translators: %s: product name singular */ __( 'Scanne diesen Code, um die digitale %s online aufzurufen.', 'bs-kudo-karten' ), BSKudo_Settings::product_name_singular() ) ); ?></p>
 			<?php endif; ?>
 		</div>
 		<?php

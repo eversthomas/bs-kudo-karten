@@ -357,7 +357,7 @@
 			if (submitBtn && !state.sent) {
 				submitBtn.textContent = modeLater
 					? config.i18n.scheduleLater || 'Später senden'
-					: config.i18n.send || 'Kudo-Karte senden';
+					: config.i18n.send || 'Karte senden';
 			}
 		}
 
@@ -456,7 +456,7 @@
 			}
 
 			if (submitBtn) {
-				submitBtn.textContent = config.i18n.send || 'Kudo-Karte senden';
+				submitBtn.textContent = config.i18n.send || 'Karte senden';
 				submitBtn.disabled = true;
 			}
 
@@ -496,7 +496,7 @@
 				formData.set('bskudo_nonce', config.nonce);
 			}
 
-			var submitLabel = config.i18n.send || 'Kudo-Karte senden';
+			var submitLabel = config.i18n.send || 'Karte senden';
 
 			if (submitBtn) {
 				submitBtn.disabled = true;
@@ -520,13 +520,14 @@
 						state.sent = true;
 						showFeedback(
 							(data.data && data.data.message) ||
-								'Deine Kudo-Karte ist unterwegs. ✨',
+								config.i18n.sendSuccess ||
+								'Deine Karte ist unterwegs. ✨',
 							true
 						);
 
 						if (submitBtn) {
 							submitBtn.disabled = false;
-							submitBtn.textContent = config.i18n.sendAnother || 'Weitere Kudo-Karte senden';
+							submitBtn.textContent = config.i18n.sendAnother || 'Weitere Karte senden';
 						}
 
 						return;

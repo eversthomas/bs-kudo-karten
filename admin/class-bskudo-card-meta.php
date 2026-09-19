@@ -117,7 +117,7 @@ class BSKudo_Card_Meta {
 						value="<?php echo esc_attr( $qr_target_url ); ?>"
 						placeholder="https://"
 					>
-					<p class="fhint"><?php esc_html_e( 'Gilt nur für den QR-Code auf der Rückseite der Online-Kudo-Karte (nach dem Öffnen des E-Mail-Links). Standard: erneut diese Webansicht. Trage eine eigene URL ein, wenn der Rückseiten-QR z. B. zu einer Spendenseite oder Aktion führen soll. Der QR-Code in der Benachrichtigungs-E-Mail führt immer zur Online-Karte und wird hier nicht beeinflusst.', 'bs-kudo-karten' ); ?></p>
+					<p class="fhint"><?php echo esc_html( sprintf( /* translators: %s: product name singular */ __( 'Gilt nur für den QR-Code auf der Rückseite der Online-%s (nach dem Öffnen des E-Mail-Links). Standard: erneut diese Webansicht. Trage eine eigene URL ein, wenn der Rückseiten-QR z. B. zu einer Spendenseite oder Aktion führen soll. Der QR-Code in der Benachrichtigungs-E-Mail führt immer zur Online-Karte und wird hier nicht beeinflusst.', 'bs-kudo-karten' ), BSKudo_Settings::product_name_singular() ) ); ?></p>
 				</div>
 				<div class="field">
 					<label class="flabel" for="bskudo_accent_color"><?php esc_html_e( 'Akzentfarbe', 'bs-kudo-karten' ); ?></label>
