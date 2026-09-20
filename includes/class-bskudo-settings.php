@@ -51,7 +51,8 @@ class BSKudo_Settings {
 				'rate_limit_day'       => 5,
 				'behind_cloudflare'    => false,
 				'turnstile_site_key'   => '',
-				'turnstile_secret_key' => '',
+				'turnstile_secret_key'         => '',
+				'require_sender_confirmation'  => true,
 				'char_limit'      => BSKUDO_CHAR_LIMIT,
 				'privacy_text'    => __( 'Deine Angaben werden ausschließlich zum Versand dieser Kudo-Karte verwendet. Bei Sofortversand werden sie nicht dauerhaft gespeichert. Bei geplantem Versand werden sie bis zum Versandzeitpunkt temporär auf dem Server zwischengespeichert. Der Link zur Webansicht ist für eine begrenzte Zeit gültig und enthält deinen Karten-Text sowie deinen Namen als Absender.', 'bs-kudo-karten' ),
 				'token_ttl_days'  => 30,
@@ -190,6 +191,15 @@ class BSKudo_Settings {
 	}
 
 	/**
+	 * Absender muss Versand per E-Mail-Link bestätigen.
+	 *
+	 * @return bool
+	 */
+	public static function requires_sender_confirmation() {
+		return (bool) self::get( 'security', 'require_sender_confirmation', true );
+	}
+
+	/**
 	 * Rate-Limit pro IP und Tag.
 	 *
 	 * @return int
@@ -296,8 +306,9 @@ class BSKudo_Settings {
 			$clean['security']['rate_limit_day']       = isset( $s['rate_limit_day'] ) ? max( 1, absint( $s['rate_limit_day'] ) ) : $defaults['security']['rate_limit_day'];
 			$clean['security']['behind_cloudflare']    = ! empty( $s['behind_cloudflare'] );
 			$clean['security']['turnstile_site_key']   = isset( $s['turnstile_site_key'] ) ? sanitize_text_field( wp_unslash( $s['turnstile_site_key'] ) ) : '';
-			$clean['security']['turnstile_secret_key'] = isset( $s['turnstile_secret_key'] ) ? sanitize_text_field( wp_unslash( $s['turnstile_secret_key'] ) ) : '';
-			$clean['security']['char_limit']           = isset( $s['char_limit'] ) ? max( 1, absint( $s['char_limit'] ) ) : $defaults['security']['char_limit'];
+			$clean['security']['turnstile_secret_key']        = isset( $s['turnstile_secret_key'] ) ? sanitize_text_field( wp_unslash( $s['turnstile_secret_key'] ) ) : '';
+			$clean['security']['require_sender_confirmation'] = ! empty( $s['require_sender_confirmation'] );
+			$clean['security']['char_limit']                  = isset( $s['char_limit'] ) ? max( 1, absint( $s['char_limit'] ) ) : $defaults['security']['char_limit'];
 			$clean['security']['privacy_text']   = isset( $s['privacy_text'] ) ? sanitize_textarea_field( wp_unslash( $s['privacy_text'] ) ) : $defaults['security']['privacy_text'];
 			$clean['security']['token_ttl_days'] = isset( $s['token_ttl_days'] ) ? max( 1, min( 365, absint( $s['token_ttl_days'] ) ) ) : $defaults['security']['token_ttl_days'];
 		}

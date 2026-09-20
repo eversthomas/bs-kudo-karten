@@ -20,6 +20,10 @@ class BSKudo_Security {
 
 	const TRANSIENT_PREFIX_DAY = 'bskudo_limit_day_';
 
+	const TRANSIENT_PREFIX_CONFIRM_REQ = 'bskudo_confirm_req_';
+
+	const CONFIRM_REQUEST_LIMIT = 10;
+
 	/**
 	 * Mindestzeit zwischen Formular-Laden und Absenden (Sekunden).
 	 */
@@ -147,6 +151,36 @@ class BSKudo_Security {
 		$limit = BSKudo_Settings::get_rate_limit_day();
 
 		return $count >= $limit;
+	}
+
+	/**
+	 * Rate-Limit für Bestätigungs-Mail-Anfragen (Schutz vor E-Mail-Bombing).
+	 *
+	 * @return bool True wenn Limit erreicht.
+	 */
+	public function is_confirm_request_rate_limited() {
+		$count = (int) get_transient( $this->get_confirm_request_key() );
+
+		return $count >= self::CONFIRM_REQUEST_LIMIT;
+	}
+
+	/**
+	 * Bestätigungs-Mail-Anfrage für Rate Limit zählen.
+	 */
+	public function record_confirm_request() {
+		$key   = $this->get_confirm_request_key();
+		$count = (int) get_transient( $key );
+
+		set_transient( $key, $count + 1, DAY_IN_SECONDS );
+	}
+
+	/**
+	 * Transient-Key für Bestätigungs-Anfragen pro IP.
+	 *
+	 * @return string
+	 */
+	private function get_confirm_request_key() {
+		return self::TRANSIENT_PREFIX_CONFIRM_REQ . md5( $this->get_client_ip() );
 	}
 
 	/**

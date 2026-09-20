@@ -534,12 +534,22 @@
 
 					if (result.ok && data && data.success) {
 						state.sent = true;
-						showFeedback(
-							(data.data && data.data.message) ||
+						var payload = data.data || {};
+						var successMessage = payload.message;
+
+						if (payload.requiresConfirmation) {
+							successMessage =
+								successMessage ||
+								config.i18n.confirmPending ||
+								'Bitte bestätige den Versand per E-Mail.';
+						} else {
+							successMessage =
+								successMessage ||
 								config.i18n.sendSuccess ||
-								'Deine Karte ist unterwegs. ✨',
-							true
-						);
+								'Deine Karte ist unterwegs. ✨';
+						}
+
+						showFeedback(successMessage, true);
 
 						if (submitBtn) {
 							submitBtn.disabled = false;

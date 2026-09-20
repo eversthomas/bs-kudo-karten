@@ -233,6 +233,10 @@ class BSKudo_Shortcode {
 						__( 'Deine %s ist unterwegs. ✨', 'bs-kudo-karten' ),
 						BSKudo_Settings::product_name_singular()
 					),
+					'confirmPending'  => __(
+						'Bitte bestätige den Versand über den Link, den wir dir gerade per E-Mail geschickt haben.',
+						'bs-kudo-karten'
+					),
 					'sendToSelf'      => __( 'Karte an mich selbst senden', 'bs-kudo-karten' ),
 					'scheduleLater'   => __( 'Später senden', 'bs-kudo-karten' ),
 					'scheduleInvalid' => __( 'Bitte wähle ein gültiges Datum in der Zukunft (mindestens 5 Minuten).', 'bs-kudo-karten' ),

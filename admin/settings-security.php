@@ -59,6 +59,23 @@ $security = $settings['security'];
 
 	<div class="card">
 		<div class="card-head">
+			<h2><?php esc_html_e( 'Absender-Bestätigung', 'bs-kudo-karten' ); ?></h2>
+		</div>
+		<div class="card-body">
+			<div class="fields">
+				<div class="field">
+					<label class="check-row">
+						<input type="checkbox" name="bskudo_settings[security][require_sender_confirmation]" value="1" <?php checked( ! empty( $security['require_sender_confirmation'] ) ); ?>>
+						<span><?php esc_html_e( 'Versand erst nach Bestätigung per Link an die Absender-E-Mail', 'bs-kudo-karten' ); ?></span>
+					</label>
+					<p class="fhint"><?php esc_html_e( 'Schützt vor falscher Absender-Identität. Deaktivieren nur für vertrauenswürdige/interne Installationen.', 'bs-kudo-karten' ); ?></p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="card">
+		<div class="card-head">
 			<h2><?php esc_html_e( 'Cloudflare Turnstile', 'bs-kudo-karten' ); ?></h2>
 		</div>
 		<div class="card-body">
