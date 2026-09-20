@@ -2,7 +2,7 @@
 
 Digitale Kudo-Karten für WordPress – entwickelt von [bezugssysteme.de](https://bezugssysteme.de).
 
-**Version:** 0.8.3
+**Version:** 0.9.0
 
 ---
 
@@ -21,7 +21,9 @@ Ein WordPress-Plugin, das es Besuchern ermöglicht, digitale Wertschätzungskart
 - **„An mich selbst senden“** – Selbstwertschätzung als explizites Feature
 - **Verzögerter Versand** – Datum und Uhrzeit wählbar
 - **Token-basierte Webansicht** für Empfänger (temporäre URL, Drucklayout)
-- **Honeypot, Formular-Zeitstempel und Rate Limiting** gegen Missbrauch
+- **Honeypot, Formular-Zeitstempel und Rate Limiting** (Stunde + Tag) gegen Missbrauch
+- **Optional Cloudflare Turnstile** und **Absender-Bestätigung per E-Mail-Link** (Double-Opt-In, abschaltbar)
+- **Missbrauchsmeldung** – optionale Kontakt-E-Mail in Benachrichtigung und Webansicht
 - **HTML-Mail** als Teaser mit Link zur Webansicht (+ optional QR-Code zur Online-Karte, lokal generiert)
 - **QR-Ziel-Link pro Karte (Rückseite)** – optional eigene URL nur für den QR auf der Online-Kartenrückseite (nicht für den Mail-QR)
 - **Konfigurierbares Rückseiten-Layout** – Bausteine (QR, Text, Logo) pro Spalte, Reihenfolge und Sichtbarkeit in der Webansicht
@@ -85,8 +87,8 @@ Kudo Karten
 ├── Textbausteine        – CPT kudo_textbaustein (Karten/Sets zugeordnet)
 └── Einstellungen
     ├── Allgemein        – Bezeichnung (Singular/Plural), Absender, Betreff, Kopie, geplanter Versand, QR
-    ├── Branding         – Logo, Primärfarbe, Mail-Footer
-    └── Sicherheit       – Rate Limit, Zeichenlimit, Datenschutzhinweis
+    ├── Branding         – Logo, Primärfarbe, Mail-Footer, Missbrauchskontakt
+    └── Sicherheit       – Rate Limits, Absender-Bestätigung, Turnstile, Cloudflare-IP, Datenschutzhinweis, Mail-Debug-Log
 ```
 
 ---
@@ -94,12 +96,28 @@ Kudo Karten
 ## Datenschutz (Kurzüberblick)
 
 - **Sofortversand:** Name, E-Mail und Nachricht werden nur für den Versand verarbeitet, nicht dauerhaft gespeichert.
+- **Absender-Bestätigung (Standard an):** Vor dem Versand speichert das Plugin die Anfrage kurz als Transient (ca. 30 Min.) und sendet einen Bestätigungslink an die Absender-E-Mail.
 - **Geplanter Versand:** Daten werden bis zum Versandzeitpunkt als WP-Transient zwischengespeichert.
 - **Webansicht:** Token enthält Karten-ID, Nachricht und Absendername (TTL konfigurierbar).
-- **Rate Limit:** IP nur als Hash im Transient-Key, kein Klartext-Logging in Produktion.
+- **Rate Limit:** IP nur als Hash im Transient-Key; optional Turnstile (Cloudflare) – in der Datenschutzerklärung erwähnen, wenn aktiv.
 - **Mail-Debug:** Nur bei `BSKUDO_MAIL_DEBUG` oder lokaler Entwicklungs-URL aktiv.
 
-Den konfigurierbaren Hinweistext im Wizard bitte an die Datenschutzerklärung der Website anpassen.
+Den konfigurierbaren Hinweistext im Wizard bitte an die Datenschutzerklärung der Website anpassen (Transienten, Turnstile, Bestätigungsmail).
+
+---
+
+## Sicherheit (0.9.0)
+
+| Einstellung (Tab **Sicherheit**) | Zweck |
+|----------------------------------|--------|
+| Rate Limit Stunde / Tag | Missbrauch über eine IP eindämmen |
+| Website hinter Cloudflare | Echte Client-IP für Rate Limits (`CF-Connecting-IP`) |
+| Absender-Bestätigung | Double-Opt-In an die Absender-E-Mail (Default **an**) |
+| Turnstile Site-/Secret-Key | Bot-Schutz im Wizard (optional) |
+
+**Branding → Kontakt für Meldungen:** E-Mail für Empfänger:innen bei unangebrachten Karten.
+
+**Rollout-Hinweis:** Nach Update ist die Absender-Bestätigung standardmäßig aktiv. Auf Staging testen oder unter Sicherheit vorübergehend deaktivieren, bis Wizard + Bestätigungsmail geprüft sind.
 
 ---
 

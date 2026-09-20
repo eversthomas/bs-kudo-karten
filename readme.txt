@@ -5,7 +5,7 @@ Tags: kudo, appreciation, cards, email, recognition
 Requires at least: 6.3
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 0.8.3
+Stable tag: 0.9.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -137,6 +137,13 @@ The plugin itself stores no personal data. You should mention the card sending f
 6. Backend – Card management and settings
 
 == Changelog ==
+
+= 0.9.0 =
+* Sender email confirmation (double opt-in) before cards are sent or scheduled; optional disable in Security settings
+* Daily rate limit, optional Cloudflare Turnstile, and CF-Connecting-IP option for sites behind Cloudflare
+* Configurable abuse contact email in mail footer and web view
+* Mail debug logs moved to wp-content/uploads/bskudo-debug-private/ with admin log preview on Security tab
+* Configurable product display name (singular/plural) from 0.8.3
 
 = 0.8.3 =
 * Configurable product display name (singular/plural) for wizard, mail, web view, and admin labels
