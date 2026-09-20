@@ -141,6 +141,7 @@
 		var scheduleFieldWrap = root.querySelector('.bskudo-schedule-field');
 		var sendAtField = root.querySelector('#bskudo-send-at');
 		var formTsField = root.querySelector('.bskudo-wizard__form-ts');
+		var disclaimerCheckbox = root.querySelector('.bskudo-disclaimer__input');
 
 		/* ─── Teil 2: State ───────────────────────────────────────── */
 
@@ -389,6 +390,10 @@
 			}
 
 			if (!isScheduleValid()) {
+				valid = false;
+			}
+
+			if (disclaimerCheckbox && !disclaimerCheckbox.checked) {
 				valid = false;
 			}
 
@@ -976,6 +981,10 @@
 		if (sendAtField) {
 			sendAtField.addEventListener('input', validateForm);
 			sendAtField.addEventListener('change', validateForm);
+		}
+
+		if (disclaimerCheckbox) {
+			disclaimerCheckbox.addEventListener('change', validateForm);
 		}
 
 		if (charCountMax) {

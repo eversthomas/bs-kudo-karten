@@ -1065,6 +1065,34 @@
 	line-height: 1.4;
 }
 
+.bskudo-disclaimer {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.65rem;
+	margin: 0 0 var(--bskudo-space-md);
+	padding: 12px 14px;
+	border-radius: var(--bskudo-radius-sm);
+	border: 1px solid rgba(51, 92, 112, 0.2);
+	background: #fff;
+	font-size: 12px;
+	line-height: 1.5;
+	color: var(--bskudo-text);
+	cursor: pointer;
+}
+
+.bskudo-disclaimer__input {
+	flex-shrink: 0;
+	margin-top: 0.2rem;
+	width: 1.05rem;
+	height: 1.05rem;
+	accent-color: var(--bskudo-petrol);
+	cursor: pointer;
+}
+
+.bskudo-disclaimer__text {
+	flex: 1;
+}
+
 /* Feedback */
 .bskudo-feedback {
 	margin: 0 0 var(--bskudo-space-sm);

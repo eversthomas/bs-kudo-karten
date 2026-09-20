@@ -20,6 +20,19 @@ class BSKudo_Confirm {
 
 	const AJAX_ACTION = 'bskudo_confirm_send';
 
+	const NONCE_ACTION = 'bskudo_confirm_send';
+
+	const LOCK_OPTION_PREFIX = 'bskudo_confirm_lock_';
+
+	const DONE_OPTION_PREFIX = 'bskudo_confirm_done_';
+
+	const CRON_DELETE_OPTION = 'bskudo_delete_confirm_option';
+
+	/**
+	 * Lock-/Done-Optionen nach dieser Frist per Cron aus wp_options entfernen.
+	 */
+	const OPTION_CLEANUP_DELAY = DAY_IN_SECONDS;
+
 	/**
 	 * Token erzeugen und Versanddaten speichern.
 	 *
@@ -77,24 +90,144 @@ class BSKudo_Confirm {
 	}
 
 	/**
-	 * Token auflösen und Transient löschen (Einmalverwendung).
+	 * Token auflösen und Transient löschen (Einmalverwendung, atomar).
 	 *
 	 * @param string $token Roher Token.
-	 * @return array<string, mixed>|null
+	 * @return array<string, mixed>|WP_Error Payload, ungültig/abgelaufen (bskudo_confirm_invalid) oder bereits verarbeitet (bskudo_confirm_already).
 	 */
 	public static function consume( $token ) {
 		$token = self::sanitize_token( $token );
 
 		if ( '' === $token ) {
-			return null;
+			return new WP_Error(
+				'bskudo_confirm_invalid',
+				__( 'Dieser Bestätigungslink ist ungültig, abgelaufen oder wurde bereits verwendet.', 'bs-kudo-karten' )
+			);
+		}
+
+		$lock_option = self::get_lock_option_name( $token );
+		$done_option = self::get_done_option_name( $token );
+
+		if ( false !== get_option( $done_option, false ) ) {
+			return new WP_Error(
+				'bskudo_confirm_already',
+				__( 'Diese Bestätigung wurde bereits verarbeitet.', 'bs-kudo-karten' )
+			);
+		}
+
+		if ( ! self::add_ephemeral_option( $lock_option, time() ) ) {
+			return new WP_Error(
+				'bskudo_confirm_already',
+				__( 'Diese Bestätigung wurde bereits verarbeitet.', 'bs-kudo-karten' )
+			);
 		}
 
 		$key     = self::TRANSIENT_PREFIX . $token;
 		$payload = get_transient( $key );
 
-		delete_transient( $key );
+		if ( ! is_array( $payload ) ) {
+			delete_option( $lock_option );
 
-		return is_array( $payload ) ? self::normalize_payload( $payload ) : null;
+			if ( false !== get_option( $done_option, false ) ) {
+				return new WP_Error(
+					'bskudo_confirm_already',
+					__( 'Diese Bestätigung wurde bereits verarbeitet.', 'bs-kudo-karten' )
+				);
+			}
+
+			return new WP_Error(
+				'bskudo_confirm_invalid',
+				__( 'Dieser Bestätigungslink ist ungültig oder abgelaufen.', 'bs-kudo-karten' )
+			);
+		}
+
+		delete_transient( $key );
+		self::add_ephemeral_option( $done_option, time() );
+
+		delete_option( $lock_option );
+
+		$normalized = self::normalize_payload( $payload );
+
+		if ( null === $normalized ) {
+			return new WP_Error(
+				'bskudo_confirm_invalid',
+				__( 'Dieser Bestätigungslink ist ungültig oder abgelaufen.', 'bs-kudo-karten' )
+			);
+		}
+
+		return $normalized;
+	}
+
+	/**
+	 * Option-Name für Consume-Lock (add_option ist DB-seitig atomar).
+	 *
+	 * @param string $token Bereinigter Token.
+	 * @return string
+	 */
+	private static function get_lock_option_name( $token ) {
+		return self::LOCK_OPTION_PREFIX . md5( $token );
+	}
+
+	/**
+	 * Option-Name: Token wurde verbraucht (Doppel-POST-Schutz).
+	 *
+	 * @param string $token Bereinigter Token.
+	 * @return string
+	 */
+	private static function get_done_option_name( $token ) {
+		return self::DONE_OPTION_PREFIX . md5( $token );
+	}
+
+	/**
+	 * Kurzlebige Option anlegen (autoload = no) und verzögertes Löschen planen.
+	 *
+	 * @param string $option_name Option-Key.
+	 * @param mixed  $value       Wert.
+	 * @return bool True wenn neu angelegt.
+	 */
+	private static function add_ephemeral_option( $option_name, $value ) {
+		// Viertes Argument: autoload „no“ (WP akzeptiert auch false ab 6.6).
+		$added = add_option( $option_name, $value, '', 'no' );
+
+		if ( $added ) {
+			self::schedule_option_cleanup( $option_name );
+		}
+
+		return $added;
+	}
+
+	/**
+	 * Einmaliges Cron-Event zum Entfernen einer Lock-/Done-Option.
+	 *
+	 * @param string $option_name Option-Key.
+	 */
+	private static function schedule_option_cleanup( $option_name ) {
+		if ( ! self::is_managed_option_name( $option_name ) ) {
+			return;
+		}
+
+		wp_schedule_single_event(
+			time() + self::OPTION_CLEANUP_DELAY,
+			self::CRON_DELETE_OPTION,
+			array( $option_name )
+		);
+	}
+
+	/**
+	 * Prüft, ob ein Option-Name zu Lock/Done gehört (Cron-Härtung).
+	 *
+	 * @param string $option_name Option-Key.
+	 * @return bool
+	 */
+	public static function is_managed_option_name( $option_name ) {
+		$option_name = (string) $option_name;
+
+		if ( '' === $option_name ) {
+			return false;
+		}
+
+		return 0 === strpos( $option_name, self::LOCK_OPTION_PREFIX )
+			|| 0 === strpos( $option_name, self::DONE_OPTION_PREFIX );
 	}
 
 	/**
@@ -172,3 +305,20 @@ class BSKudo_Confirm {
 		}
 	}
 }
+
+/**
+ * Lock-/Done-Optionen aus wp_options entfernen (TTL-Cleanup via wp_schedule_single_event).
+ *
+ * @param string $option_name Option-Key.
+ */
+function bskudo_delete_confirm_option( $option_name ) {
+	$option_name = (string) $option_name;
+
+	if ( ! BSKudo_Confirm::is_managed_option_name( $option_name ) ) {
+		return;
+	}
+
+	delete_option( $option_name );
+}
+
+add_action( BSKudo_Confirm::CRON_DELETE_OPTION, 'bskudo_delete_confirm_option' );

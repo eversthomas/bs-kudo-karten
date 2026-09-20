@@ -87,6 +87,7 @@ class BSKudo_Shortcode {
 		$cards               = $this->get_cards( $this->set_slug );
 		$char_limit          = BSKudo_Settings::get_char_limit();
 		$privacy_text        = $this->get_privacy_text();
+		$disclaimer_text     = $this->get_disclaimer_text();
 		$branding_back       = $this->get_default_branding_text();
 		$enable_send_to_self = BSKudo_Settings::is_feature_enabled( 'enable_send_to_self' );
 		$enable_delayed_send = BSKudo_Settings::is_feature_enabled( 'enable_delayed_send' );
@@ -492,6 +493,21 @@ class BSKudo_Shortcode {
 
 		if ( '' === trim( $text ) ) {
 			$text = BSKudo_Settings::default_privacy_text();
+		}
+
+		return $text;
+	}
+
+	/**
+	 * Haftungs-/Missbrauchshinweis für die Pflicht-Checkbox.
+	 *
+	 * @return string
+	 */
+	private function get_disclaimer_text() {
+		$text = (string) BSKudo_Settings::get( 'security', 'disclaimer_text', '' );
+
+		if ( '' === trim( $text ) ) {
+			$text = BSKudo_Settings::default_disclaimer_text();
 		}
 
 		return $text;

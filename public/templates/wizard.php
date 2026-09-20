@@ -6,7 +6,8 @@
  *
  * @var array<int, array<string, mixed>> $cards         Karten-Daten.
  * @var int                              $char_limit    Zeichenlimit.
- * @var string                           $privacy_text  Datenschutzhinweis.
+ * @var string                           $privacy_text     Datenschutzhinweis.
+ * @var string                           $disclaimer_text  Haftungs-/Missbrauchshinweis (Checkbox).
  * @var string                           $branding_back Standard-Branding Rückseite.
  * @var bool                             $enable_send_to_self
  * @var bool                             $enable_delayed_send
@@ -21,6 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 $cards               = isset( $cards ) && is_array( $cards ) ? $cards : array();
 $char_limit          = isset( $char_limit ) ? (int) $char_limit : BSKUDO_CHAR_LIMIT;
 $privacy_text        = isset( $privacy_text ) ? (string) $privacy_text : '';
+$disclaimer_text     = isset( $disclaimer_text ) ? (string) $disclaimer_text : '';
 $branding_back       = isset( $branding_back ) ? (string) $branding_back : '';
 $has_cards           = ! empty( $cards );
 $enable_send_to_self = ! empty( $enable_send_to_self );
@@ -259,6 +261,17 @@ $turnstile_site_key  = trim( (string) BSKudo_Settings::get( 'security', 'turnsti
 					<span class="bskudo-privacy__icon" aria-hidden="true">ℹ️</span>
 					<span class="bskudo-privacy__text"><?php echo esc_html( $privacy_text ); ?></span>
 				</p>
+
+				<label class="bskudo-disclaimer">
+					<input
+						type="checkbox"
+						name="disclaimer_accepted"
+						value="1"
+						class="bskudo-disclaimer__input"
+						required
+					>
+					<span class="bskudo-disclaimer__text"><?php echo esc_html( $disclaimer_text ); ?></span>
+				</label>
 
 				<?php // Honeypot – für Bots unsichtbar. ?>
 				<input

@@ -5,7 +5,7 @@ Tags: kudo, appreciation, cards, email, recognition
 Requires at least: 6.3
 Tested up to: 7.0
 Requires PHP: 8.0
-Stable tag: 0.9.0
+Stable tag: 0.10.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,7 +28,7 @@ The sender picks a card, writes their message **directly on the card** (no separ
 * **Token-based web view** – recipient gets a personal URL (valid for 30 days)
 * **QR code** – included in the email for mobile access
 * **Honeypot + rate limiting** – built-in spam protection
-* **No data storage** – personal data is never persisted
+* **Minimal retention** – no permanent database storage of sender/recipient data; time-limited transients only until send or expiry
 * **Branding tab** – configure logo, colors, and mail template in the backend
 * **Shortcode** `[kudo_karten]` – place the wizard on any page or post
 
@@ -41,7 +41,7 @@ The sender picks a card, writes their message **directly on the card** (no separ
 
 = Privacy =
 
-Kudo Cards is designed with privacy in mind. No personal data (names, email addresses, messages) is stored in the database. Data is only used for sending the card and then discarded.
+Kudo Cards is designed with privacy in mind. No personal data is stored permanently in the database – sender/recipient details and message text exist only temporarily as time-limited transients (WordPress cache entries) until the card is sent, the scheduled send runs, or the confirmation window expires. Token-based web views use separate short-lived transients.
 
 = Shortcode Options =
 
@@ -125,7 +125,7 @@ The plugin includes a honeypot field (always active) and IP-based rate limiting 
 
 = Is the plugin GDPR compliant? =
 
-The plugin itself stores no personal data. You should mention the card sending functionality in your privacy policy. The plugin provides a configurable privacy notice text that is shown to senders before they submit.
+The plugin does not persist personal data in custom database tables. Temporary transients may hold submission data for scheduled sends or sender confirmation. Mention card sending, optional Turnstile, and rate limiting in your privacy policy. Configurable privacy and disclaimer texts are shown in the wizard before submit.
 
 == Screenshots ==
 
@@ -137,6 +137,11 @@ The plugin itself stores no personal data. You should mention the card sending f
 6. Backend – Card management and settings
 
 == Changelog ==
+
+= 0.10.0 =
+* Mandatory disclaimer / acceptable-use checkbox before send (configurable text, server-enforced)
+* Security & privacy release (summary): mail debug logs in wp-content/uploads/bskudo-debug-private/ with admin preview; configurable abuse contact in mail and web view; daily rate limit; optional Cloudflare Turnstile (server check only when site and secret keys are set); optional CF-Connecting-IP for rate limits; sender double opt-in with confirmation landing page (GET read-only, POST to send), atomic consume locking, and 24h cron cleanup of confirm helper options
+* Configurable product display name (from 0.8.3)
 
 = 0.9.0 =
 * Sender email confirmation (double opt-in) before cards are sent or scheduled; optional disable in Security settings

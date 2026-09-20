@@ -84,6 +84,13 @@ class BSKudo_Security {
 			);
 		}
 
+		if ( ! $this->is_disclaimer_accepted( $data ) ) {
+			return new WP_Error(
+				'bskudo_disclaimer_required',
+				__( 'Bitte bestätige den Haftungs- und Missbrauchshinweis, bevor du die Karte versendest.', 'bs-kudo-karten' )
+			);
+		}
+
 		return $this->sanitize_submission( $data );
 	}
 
@@ -109,6 +116,28 @@ class BSKudo_Security {
 		$hp = isset( $data['bskudo_hp'] ) ? trim( (string) $data['bskudo_hp'] ) : '';
 
 		return '' !== $hp;
+	}
+
+	/**
+	 * Pflicht-Zustimmung zum Haftungs-/Missbrauchshinweis.
+	 *
+	 * @param array<string, mixed> $data POST-Daten.
+	 * @return bool
+	 */
+	public function is_disclaimer_accepted( $data ) {
+		if ( ! isset( $data['disclaimer_accepted'] ) ) {
+			return false;
+		}
+
+		$accepted = $data['disclaimer_accepted'];
+
+		if ( true === $accepted || 1 === $accepted ) {
+			return true;
+		}
+
+		$accepted = sanitize_text_field( (string) $accepted );
+
+		return '1' === $accepted || 'on' === $accepted || 'true' === $accepted;
 	}
 
 	/**

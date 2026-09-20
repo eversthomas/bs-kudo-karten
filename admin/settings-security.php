@@ -104,6 +104,11 @@ $security = $settings['security'];
 					<textarea id="bskudo_privacy_text" name="bskudo_settings[security][privacy_text]" rows="4" class="textarea"><?php echo esc_textarea( $security['privacy_text'] ); ?></textarea>
 					<p class="fhint"><?php esc_html_e( 'Wird im Wizard bei Schritt 3 angezeigt. Bereits gespeicherte Installationen behalten ihren bisherigen Text – bitte bei Bedarf manuell anpassen.', 'bs-kudo-karten' ); ?></p>
 				</div>
+				<div class="field">
+					<label class="flabel" for="bskudo_disclaimer_text"><?php esc_html_e( 'Haftungsausschluss / Missbrauchshinweis', 'bs-kudo-karten' ); ?></label>
+					<textarea id="bskudo_disclaimer_text" name="bskudo_settings[security][disclaimer_text]" rows="5" class="textarea"><?php echo esc_textarea( (string) ( $security['disclaimer_text'] ?? '' ) ); ?></textarea>
+					<p class="fhint"><?php esc_html_e( 'Pflicht-Checkbox im Wizard vor dem Versand. Der Text erscheint als Label neben der Checkbox; ohne Aktivierung ist kein Versand möglich.', 'bs-kudo-karten' ); ?></p>
+				</div>
 			</div>
 		</div>
 	</div>

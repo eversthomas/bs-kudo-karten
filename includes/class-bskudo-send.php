@@ -134,25 +134,108 @@ class BSKudo_Send {
 	}
 
 	/**
-	 * Bestätigungslink aus E-Mail verarbeiten.
+	 * Bestätigungslink: GET = Landing (nur resolve), POST = Versand (consume).
 	 */
 	public function handle_confirm() {
 		$raw_token = isset( $_REQUEST['token'] ) ? wp_unslash( $_REQUEST['token'] ) : '';
 		$token     = BSKudo_Confirm::sanitize_token( is_string( $raw_token ) ? $raw_token : '' );
 
+		$method = isset( $_SERVER['REQUEST_METHOD'] ) ? strtoupper( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) ) : 'GET';
+
 		BSKudo_Debug::log(
 			'confirm_request',
 			array(
 				'token_present' => '' !== $token,
+				'method'          => $method,
 			)
 		);
 
-		$data = BSKudo_Confirm::consume( $token );
+		if ( 'POST' === $method ) {
+			$this->handle_confirm_submit( $token );
+			return;
+		}
+
+		$this->handle_confirm_landing( $token );
+	}
+
+	/**
+	 * GET: Bestätigungsseite anzeigen, ohne Token zu verbrauchen.
+	 *
+	 * @param string $token Bereinigter Token.
+	 */
+	private function handle_confirm_landing( $token ) {
+		if ( '' === $token ) {
+			$this->render_confirm_result_page(
+				false,
+				__( 'Dieser Bestätigungslink ist ungültig, abgelaufen oder wurde bereits verwendet.', 'bs-kudo-karten' )
+			);
+			return;
+		}
+
+		$data = BSKudo_Confirm::resolve( $token );
 
 		if ( null === $data ) {
 			$this->render_confirm_result_page(
 				false,
 				__( 'Dieser Bestätigungslink ist ungültig, abgelaufen oder wurde bereits verwendet.', 'bs-kudo-karten' )
+			);
+			return;
+		}
+
+		$send_at = isset( $data['send_at'] ) ? (int) $data['send_at'] : 0;
+
+		if ( $send_at > 0 && $send_at <= time() ) {
+			$this->render_confirm_result_page(
+				false,
+				__( 'Der geplante Versandzeitpunkt liegt in der Vergangenheit. Bitte erstelle die Karte erneut über das Formular.', 'bs-kudo-karten' )
+			);
+			return;
+		}
+
+		$schedule_notice = '';
+
+		if ( $send_at > 0 ) {
+			$schedule_notice = sprintf(
+				/* translators: %s: formatted date/time */
+				__( 'Geplanter Versand: %s', 'bs-kudo-karten' ),
+				BSKudo_Scheduler::format_send_at( $send_at )
+			);
+		}
+
+		$this->render_confirm_landing_page(
+			$token,
+			$data,
+			$schedule_notice
+		);
+	}
+
+	/**
+	 * POST: Nonce prüfen, Token atomar verbrauchen, Versand auslösen.
+	 *
+	 * @param string $token Bereinigter Token.
+	 */
+	private function handle_confirm_submit( $token ) {
+		$nonce = isset( $_POST['bskudo_confirm_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['bskudo_confirm_nonce'] ) ) : '';
+
+		if ( '' === $token || ! wp_verify_nonce( $nonce, BSKudo_Confirm::NONCE_ACTION ) ) {
+			$this->render_confirm_result_page(
+				false,
+				__( 'Sicherheitsprüfung fehlgeschlagen. Bitte öffne den Link aus der E-Mail erneut und bestätige den Versand.', 'bs-kudo-karten' )
+			);
+			return;
+		}
+
+		$data = BSKudo_Confirm::consume( $token );
+
+		if ( is_wp_error( $data ) ) {
+			$already = 'bskudo_confirm_already' === $data->get_error_code();
+
+			$this->render_confirm_result_page(
+				false,
+				$data->get_error_message(),
+				$already
+					? __( 'Bereits bestätigt', 'bs-kudo-karten' )
+					: __( 'Bestätigung fehlgeschlagen', 'bs-kudo-karten' )
 			);
 			return;
 		}
@@ -165,6 +248,15 @@ class BSKudo_Send {
 			)
 		);
 
+		$this->execute_confirmed_send( $data );
+	}
+
+	/**
+	 * Nach erfolgreichem consume() Sofort- oder Geplantversand ausführen.
+	 *
+	 * @param array<string, mixed> $data Versanddaten.
+	 */
+	private function execute_confirmed_send( $data ) {
 		$send_at = isset( $data['send_at'] ) ? (int) $data['send_at'] : 0;
 
 		if ( $send_at > 0 && $send_at <= time() ) {
@@ -270,7 +362,7 @@ class BSKudo_Send {
 		$sent = $this->send_confirmation_mail( $data, $token );
 
 		if ( is_wp_error( $sent ) ) {
-			BSKudo_Confirm::consume( $token );
+			BSKudo_Confirm::consume( $token ); // Token entfernen, wenn Bestätigungsmail fehlschlägt.
 
 			wp_send_json_error(
 				array(
@@ -330,7 +422,7 @@ class BSKudo_Send {
 		);
 		$link_line   = sprintf(
 			/* translators: %s: confirmation URL */
-			__( 'Bitte bestätige den Versand über diesen Link (30 Minuten gültig): %s', 'bs-kudo-karten' ),
+			__( 'Öffne die Bestätigungsseite über diesen Link (30 Minuten gültig) und klicke dort auf den Button zum Versenden: %s', 'bs-kudo-karten' ),
 			$url
 		);
 		$schedule_line = '';
@@ -425,21 +517,35 @@ class BSKudo_Send {
 	}
 
 	/**
-	 * Einfache HTML-Seite nach Klick auf den Bestätigungslink.
+	 * Landing-Seite mit POST-Button (GET aus E-Mail, ohne consume).
+	 *
+	 * @param string               $token           Token.
+	 * @param array<string, mixed> $data            Aufgelöste Daten.
+	 * @param string               $schedule_notice Optionaler Plan-Hinweis.
+	 */
+	private function render_confirm_landing_page( $token, $data, $schedule_notice = '' ) {
+		$form_action = admin_url( 'admin-ajax.php' );
+		$nonce       = wp_create_nonce( BSKudo_Confirm::NONCE_ACTION );
+
+		include BSKUDO_PATH . 'public/templates/confirm-landing.php';
+		exit;
+	}
+
+	/**
+	 * HTML-Seite nach POST-Bestätigung oder bei Fehler.
 	 *
 	 * @param bool   $success Erfolg?
 	 * @param string $message Meldung.
+	 * @param string $title   Optionaler Seitentitel.
 	 */
-	private function render_confirm_result_page( $success, $message ) {
-		$title = $success
-			? __( 'Versand bestätigt', 'bs-kudo-karten' )
-			: __( 'Bestätigung fehlgeschlagen', 'bs-kudo-karten' );
+	private function render_confirm_result_page( $success, $message, $title = '' ) {
+		if ( '' === $title ) {
+			$title = $success
+				? __( 'Versand bestätigt', 'bs-kudo-karten' )
+				: __( 'Bestätigung fehlgeschlagen', 'bs-kudo-karten' );
+		}
 
-		$status_class = $success ? 'success' : 'error';
-
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- statisches HTML mit esc_html/esc_url unten.
-		echo '<!DOCTYPE html><html lang="' . esc_attr( get_bloginfo( 'language' ) ) . '"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>' . esc_html( $title ) . '</title><style>body{font-family:system-ui,sans-serif;background:#f5f5f5;margin:0;padding:2rem;color:#212121}.box{max-width:32rem;margin:0 auto;background:#fff;border-radius:12px;padding:2rem;box-shadow:0 2px 12px rgba(0,0,0,.08)}.success{border-left:4px solid #2e7d32}.error{border-left:4px solid #c62828}a{color:#335C70}</style></head><body><div class="box ' . esc_attr( $status_class ) . '"><h1>' . esc_html( $title ) . '</h1><p>' . esc_html( $message ) . '</p><p><a href="' . esc_url( home_url( '/' ) ) . '">' . esc_html__( 'Zur Startseite', 'bs-kudo-karten' ) . '</a></p></div></body></html>';
-
+		include BSKUDO_PATH . 'public/templates/confirm-result.php';
 		exit;
 	}
 

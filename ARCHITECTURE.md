@@ -81,10 +81,13 @@ Keine Empfänger-E-Mail im Token.
 - Karten-ID muss veröffentlichte `kudo_card` sein
 
 ## Datenschutz
-- Sofortversand: keine dauerhafte Speicherung personenbezogener Daten
-- Geplanter Versand: Versanddaten als Transient bis zum Versandzeitpunkt
-- Token: Nachricht + Absendername temporär (TTL konfigurierbar)
-- Debug-Logging nur bei `BSKUDO_MAIL_DEBUG` oder lokaler URL – nicht automatisch bei `WP_DEBUG`
+- Keine dauerhafte Speicherung personenbezogener Daten in DB-Tabellen; nur TTL-begrenzte WP-Transients (Cache)
+- Sofortversand: keine Persistenz nach erfolgreichem Versand
+- Absender-Bestätigung: Transient bis ca. 30 Min. oder nach Bestätigung/consume
+- Geplanter Versand: Versanddaten als Transient bis zum Versandzeitpunkt (Cron)
+- Token-Webansicht: Nachricht + Absendername temporär (TTL konfigurierbar)
+- Pflicht-Checkbox: Haftungs-/Missbrauchshinweis (`disclaimer_accepted`) serverseitig in `validate_request()`
+- Debug-Logging nur bei `BSKUDO_MAIL_DEBUG` oder lokaler URL – Logs unter `uploads/bskudo-debug-private/`
 - QR-Codes werden lokal erzeugt (kein externer API-Dienst)
 
 ## Mail-Versand

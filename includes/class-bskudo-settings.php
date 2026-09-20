@@ -55,6 +55,7 @@ class BSKudo_Settings {
 				'require_sender_confirmation'  => true,
 				'char_limit'      => BSKUDO_CHAR_LIMIT,
 				'privacy_text'    => __( 'Deine Angaben werden ausschließlich zum Versand dieser Kudo-Karte verwendet. Bei Sofortversand werden sie nicht dauerhaft gespeichert. Bei geplantem Versand werden sie bis zum Versandzeitpunkt temporär auf dem Server zwischengespeichert. Der Link zur Webansicht ist für eine begrenzte Zeit gültig und enthält deinen Karten-Text sowie deinen Namen als Absender.', 'bs-kudo-karten' ),
+				'disclaimer_text' => self::default_disclaimer_text(),
 				'token_ttl_days'  => 30,
 			),
 		);
@@ -141,6 +142,18 @@ class BSKudo_Settings {
 			/* translators: %s: product name (singular), e.g. Kudokarte */
 			__( 'Deine Angaben werden ausschließlich zum Versand dieser %s verwendet. Bei Sofortversand werden sie nicht dauerhaft gespeichert. Bei geplantem Versand werden sie bis zum Versandzeitpunkt temporär auf dem Server zwischengespeichert. Der Link zur Webansicht ist für eine begrenzte Zeit gültig und enthält deinen Karten-Text sowie deinen Namen als Absender.', 'bs-kudo-karten' ),
 			self::product_name_singular()
+		);
+	}
+
+	/**
+	 * Standard-Haftungs-/Missbrauchshinweis (Pflicht-Checkbox im Wizard).
+	 *
+	 * @return string
+	 */
+	public static function default_disclaimer_text() {
+		return __(
+			'Hinweis zur Nutzung: Mit dem Versenden bestätigst du, dass die eingegebenen Angaben zu Absender und Empfänger zutreffend sind. Die Nutzung falscher Identitäten sowie das Versenden beleidigender, bedrohender, werblicher oder sonst missbräuchlicher Inhalte ist nicht gestattet und kann zum Ausschluss von der weiteren Nutzung dieses Angebots führen. Für den Inhalt der von Nutzer:innen verfassten Nachrichten wird keine Haftung übernommen.',
+			'bs-kudo-karten'
 		);
 	}
 
@@ -309,8 +322,9 @@ class BSKudo_Settings {
 			$clean['security']['turnstile_secret_key']        = isset( $s['turnstile_secret_key'] ) ? sanitize_text_field( wp_unslash( $s['turnstile_secret_key'] ) ) : '';
 			$clean['security']['require_sender_confirmation'] = ! empty( $s['require_sender_confirmation'] );
 			$clean['security']['char_limit']                  = isset( $s['char_limit'] ) ? max( 1, absint( $s['char_limit'] ) ) : $defaults['security']['char_limit'];
-			$clean['security']['privacy_text']   = isset( $s['privacy_text'] ) ? sanitize_textarea_field( wp_unslash( $s['privacy_text'] ) ) : $defaults['security']['privacy_text'];
-			$clean['security']['token_ttl_days'] = isset( $s['token_ttl_days'] ) ? max( 1, min( 365, absint( $s['token_ttl_days'] ) ) ) : $defaults['security']['token_ttl_days'];
+			$clean['security']['privacy_text']    = isset( $s['privacy_text'] ) ? sanitize_textarea_field( wp_unslash( $s['privacy_text'] ) ) : $defaults['security']['privacy_text'];
+			$clean['security']['disclaimer_text'] = isset( $s['disclaimer_text'] ) ? sanitize_textarea_field( wp_unslash( $s['disclaimer_text'] ) ) : $defaults['security']['disclaimer_text'];
+			$clean['security']['token_ttl_days']  = isset( $s['token_ttl_days'] ) ? max( 1, min( 365, absint( $s['token_ttl_days'] ) ) ) : $defaults['security']['token_ttl_days'];
 		}
 
 		return $clean;
