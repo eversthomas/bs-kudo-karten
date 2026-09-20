@@ -503,6 +503,22 @@
 				submitBtn.textContent = config.i18n.sending || 'Wird gesendet …';
 			}
 
+			function resetTurnstile() {
+				if (!config.turnstileEnabled || typeof window.turnstile === 'undefined' || !form) {
+					return;
+				}
+
+				var widget = form.querySelector('.cf-turnstile');
+
+				if (widget) {
+					try {
+						turnstile.reset(widget);
+					} catch (err) {
+						// Turnstile nicht bereit – ignorieren.
+					}
+				}
+			}
+
 			fetch(config.ajaxUrl, {
 				method: 'POST',
 				body: formData,
@@ -539,12 +555,14 @@
 							'Beim Versand ist ein Fehler aufgetreten.',
 						false
 					);
+					resetTurnstile();
 				})
 				.catch(function () {
 					showFeedback(
 						config.i18n.sendError || 'Beim Versand ist ein Fehler aufgetreten.',
 						false
 					);
+					resetTurnstile();
 				})
 				.finally(function () {
 					state.sending = false;

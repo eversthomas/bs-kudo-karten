@@ -47,7 +47,11 @@ class BSKudo_Settings {
 				'footer_powered'         => true,
 			),
 			'security' => array(
-				'rate_limit'      => 5,
+				'rate_limit'           => 5,
+				'rate_limit_day'       => 5,
+				'behind_cloudflare'    => false,
+				'turnstile_site_key'   => '',
+				'turnstile_secret_key' => '',
 				'char_limit'      => BSKUDO_CHAR_LIMIT,
 				'privacy_text'    => __( 'Deine Angaben werden ausschließlich zum Versand dieser Kudo-Karte verwendet. Bei Sofortversand werden sie nicht dauerhaft gespeichert. Bei geplantem Versand werden sie bis zum Versandzeitpunkt temporär auf dem Server zwischengespeichert. Der Link zur Webansicht ist für eine begrenzte Zeit gültig und enthält deinen Karten-Text sowie deinen Namen als Absender.', 'bs-kudo-karten' ),
 				'token_ttl_days'  => 30,
@@ -186,6 +190,21 @@ class BSKudo_Settings {
 	}
 
 	/**
+	 * Rate-Limit pro IP und Tag.
+	 *
+	 * @return int
+	 */
+	public static function get_rate_limit_day() {
+		$limit = (int) self::get( 'security', 'rate_limit_day', 5 );
+
+		if ( $limit < 1 ) {
+			$limit = 5;
+		}
+
+		return $limit;
+	}
+
+	/**
 	 * Gültigkeit von Webansicht-Token in Tagen.
 	 *
 	 * @return int
@@ -273,8 +292,12 @@ class BSKudo_Settings {
 
 		if ( isset( $input['security'] ) && is_array( $input['security'] ) ) {
 			$s = $input['security'];
-			$clean['security']['rate_limit']   = isset( $s['rate_limit'] ) ? max( 1, absint( $s['rate_limit'] ) ) : $defaults['security']['rate_limit'];
-			$clean['security']['char_limit']   = isset( $s['char_limit'] ) ? max( 1, absint( $s['char_limit'] ) ) : $defaults['security']['char_limit'];
+			$clean['security']['rate_limit']           = isset( $s['rate_limit'] ) ? max( 1, absint( $s['rate_limit'] ) ) : $defaults['security']['rate_limit'];
+			$clean['security']['rate_limit_day']       = isset( $s['rate_limit_day'] ) ? max( 1, absint( $s['rate_limit_day'] ) ) : $defaults['security']['rate_limit_day'];
+			$clean['security']['behind_cloudflare']    = ! empty( $s['behind_cloudflare'] );
+			$clean['security']['turnstile_site_key']   = isset( $s['turnstile_site_key'] ) ? sanitize_text_field( wp_unslash( $s['turnstile_site_key'] ) ) : '';
+			$clean['security']['turnstile_secret_key'] = isset( $s['turnstile_secret_key'] ) ? sanitize_text_field( wp_unslash( $s['turnstile_secret_key'] ) ) : '';
+			$clean['security']['char_limit']           = isset( $s['char_limit'] ) ? max( 1, absint( $s['char_limit'] ) ) : $defaults['security']['char_limit'];
 			$clean['security']['privacy_text']   = isset( $s['privacy_text'] ) ? sanitize_textarea_field( wp_unslash( $s['privacy_text'] ) ) : $defaults['security']['privacy_text'];
 			$clean['security']['token_ttl_days'] = isset( $s['token_ttl_days'] ) ? max( 1, min( 365, absint( $s['token_ttl_days'] ) ) ) : $defaults['security']['token_ttl_days'];
 		}

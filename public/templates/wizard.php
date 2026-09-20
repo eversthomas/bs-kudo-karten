@@ -25,6 +25,7 @@ $branding_back       = isset( $branding_back ) ? (string) $branding_back : '';
 $has_cards           = ! empty( $cards );
 $enable_send_to_self = ! empty( $enable_send_to_self );
 $enable_delayed_send = ! empty( $enable_delayed_send );
+$turnstile_site_key  = trim( (string) BSKudo_Settings::get( 'security', 'turnstile_site_key', '' ) );
 ?>
 <div class="bskudo-wizard" data-section="1" data-max-chars="<?php echo esc_attr( (string) $char_limit ); ?>">
 	<form class="bskudo-wizard__form" novalidate>
@@ -272,6 +273,16 @@ $enable_delayed_send = ! empty( $enable_delayed_send );
 				<input type="hidden" name="bskudo_form_ts" class="bskudo-wizard__form-ts" value="">
 
 				<div class="bskudo-feedback" hidden aria-live="polite"></div>
+
+				<?php if ( '' !== $turnstile_site_key ) : ?>
+					<div class="bskudo-turnstile">
+						<div
+							class="cf-turnstile"
+							data-sitekey="<?php echo esc_attr( $turnstile_site_key ); ?>"
+							data-theme="light"
+						></div>
+					</div>
+				<?php endif; ?>
 
 				<div class="bskudo-wizard__nav">
 					<button type="button" class="bskudo-btn bskudo-btn--back" data-goto-section="2">

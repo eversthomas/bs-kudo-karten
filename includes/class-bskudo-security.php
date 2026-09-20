@@ -18,6 +18,8 @@ class BSKudo_Security {
 
 	const TRANSIENT_PREFIX = 'bskudo_limit_';
 
+	const TRANSIENT_PREFIX_DAY = 'bskudo_limit_day_';
+
 	/**
 	 * Mindestzeit zwischen Formular-Laden und Absenden (Sekunden).
 	 */
@@ -43,6 +45,11 @@ class BSKudo_Security {
 			return new WP_Error( 'bskudo_nonce', __( 'Sicherheitsprüfung fehlgeschlagen. Bitte lade die Seite neu.', 'bs-kudo-karten' ) );
 		}
 
+		$turnstile = $this->verify_turnstile( $data );
+		if ( is_wp_error( $turnstile ) ) {
+			return $turnstile;
+		}
+
 		if ( $this->is_honeypot_filled( $data ) ) {
 			return new WP_Error( 'bskudo_spam', __( 'Die Anfrage konnte nicht verarbeitet werden.', 'bs-kudo-karten' ) );
 		}
@@ -51,7 +58,18 @@ class BSKudo_Security {
 			return new WP_Error( 'bskudo_spam', __( 'Die Anfrage konnte nicht verarbeitet werden.', 'bs-kudo-karten' ) );
 		}
 
-		if ( $this->is_rate_limited() ) {
+		if ( $this->is_day_rate_limited() ) {
+			return new WP_Error(
+				'bskudo_rate_limit_day',
+				sprintf(
+					/* translators: %d: max sends per day */
+					__( 'Tageslimit erreicht. Bitte versuche es morgen erneut (max. %d pro Tag).', 'bs-kudo-karten' ),
+					BSKudo_Settings::get_rate_limit_day()
+				)
+			);
+		}
+
+		if ( $this->is_hour_rate_limited() ) {
 			return new WP_Error(
 				'bskudo_rate_limit',
 				sprintf(
@@ -108,13 +126,25 @@ class BSKudo_Security {
 	}
 
 	/**
-	 * Rate Limit für aktuelle IP prüfen.
+	 * Stunden-Rate-Limit für aktuelle IP prüfen.
 	 *
 	 * @return bool True wenn Limit erreicht.
 	 */
-	public function is_rate_limited() {
+	public function is_hour_rate_limited() {
 		$count = (int) get_transient( $this->get_rate_limit_key() );
 		$limit = BSKudo_Settings::get_rate_limit();
+
+		return $count >= $limit;
+	}
+
+	/**
+	 * Tages-Rate-Limit für aktuelle IP prüfen.
+	 *
+	 * @return bool True wenn Limit erreicht.
+	 */
+	public function is_day_rate_limited() {
+		$count = (int) get_transient( $this->get_rate_limit_day_key() );
+		$limit = BSKudo_Settings::get_rate_limit_day();
 
 		return $count >= $limit;
 	}
@@ -127,6 +157,11 @@ class BSKudo_Security {
 		$count = (int) get_transient( $key );
 
 		set_transient( $key, $count + 1, HOUR_IN_SECONDS );
+
+		$day_key   = $this->get_rate_limit_day_key();
+		$day_count = (int) get_transient( $day_key );
+
+		set_transient( $day_key, $day_count + 1, DAY_IN_SECONDS );
 	}
 
 	/**
@@ -141,18 +176,96 @@ class BSKudo_Security {
 	}
 
 	/**
+	 * Transient-Key für IP-basiertes Tageslimit.
+	 *
+	 * @return string
+	 */
+	private function get_rate_limit_day_key() {
+		$ip = $this->get_client_ip();
+
+		return self::TRANSIENT_PREFIX_DAY . md5( $ip );
+	}
+
+	/**
+	 * Cloudflare Turnstile serverseitig prüfen (optional).
+	 *
+	 * @param array<string, mixed> $data POST-Daten.
+	 * @return true|WP_Error
+	 */
+	private function verify_turnstile( $data ) {
+		$secret = trim( (string) BSKudo_Settings::get( 'security', 'turnstile_secret_key', '' ) );
+
+		if ( '' === $secret ) {
+			return true;
+		}
+
+		$token = '';
+		if ( isset( $data['cf-turnstile-response'] ) ) {
+			$token = sanitize_text_field( (string) $data['cf-turnstile-response'] );
+		}
+
+		if ( '' === $token ) {
+			return new WP_Error(
+				'bskudo_turnstile',
+				__( 'Sicherheitsprüfung fehlgeschlagen. Bitte bestätige, dass du kein Bot bist, und versuche es erneut.', 'bs-kudo-karten' )
+			);
+		}
+
+		$response = wp_remote_post(
+			'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+			array(
+				'timeout' => 10,
+				'body'    => array(
+					'secret'   => $secret,
+					'response' => $token,
+					'remoteip' => $this->get_client_ip(),
+				),
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			return new WP_Error(
+				'bskudo_turnstile',
+				__( 'Sicherheitsprüfung ist vorübergehend nicht erreichbar. Bitte versuche es in Kürze erneut.', 'bs-kudo-karten' )
+			);
+		}
+
+		$code = (int) wp_remote_retrieve_response_code( $response );
+		$body = json_decode( (string) wp_remote_retrieve_body( $response ), true );
+
+		if ( 200 !== $code || ! is_array( $body ) || empty( $body['success'] ) ) {
+			return new WP_Error(
+				'bskudo_turnstile',
+				__( 'Sicherheitsprüfung fehlgeschlagen. Bitte versuche es erneut.', 'bs-kudo-karten' )
+			);
+		}
+
+		return true;
+	}
+
+	/**
 	 * Client-IP ermitteln (nur für Rate Limit, nicht speichern).
 	 *
 	 * @return string
 	 */
 	private function get_client_ip() {
-		$ip = '';
+		if ( BSKudo_Settings::get( 'security', 'behind_cloudflare', false ) && ! empty( $_SERVER['HTTP_CF_CONNECTING_IP'] ) ) {
+			$cf_ip = sanitize_text_field( wp_unslash( $_SERVER['HTTP_CF_CONNECTING_IP'] ) );
 
-		if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) {
-			$ip = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
+			if ( function_exists( 'rest_is_ip_address' ) && rest_is_ip_address( $cf_ip ) ) {
+				return $cf_ip;
+			}
+
+			if ( filter_var( $cf_ip, FILTER_VALIDATE_IP ) ) {
+				return $cf_ip;
+			}
 		}
 
-		return $ip;
+		if ( ! empty( $_SERVER['REMOTE_ADDR'] ) ) {
+			return sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
+		}
+
+		return '';
 	}
 
 	/**

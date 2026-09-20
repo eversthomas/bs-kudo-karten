@@ -148,6 +148,29 @@ class BSKudo_Shortcode {
 			$this->register_assets();
 		}
 
+		$turnstile_site_key = trim( (string) BSKudo_Settings::get( 'security', 'turnstile_site_key', '' ) );
+
+		if ( '' !== $turnstile_site_key ) {
+			wp_enqueue_script(
+				'cloudflare-turnstile',
+				'https://challenges.cloudflare.com/turnstile/v0/api.js',
+				array(),
+				null,
+				true
+			);
+			wp_script_add_data( 'cloudflare-turnstile', 'async', true );
+			wp_script_add_data( 'cloudflare-turnstile', 'defer', true );
+
+			wp_deregister_script( 'bskudo-wizard' );
+			wp_register_script(
+				'bskudo-wizard',
+				BSKUDO_URL . 'public/js/bskudo-wizard.js',
+				array( 'bskudo-message-fit', 'cloudflare-turnstile' ),
+				BSKUDO_VERSION,
+				true
+			);
+		}
+
 		wp_enqueue_style( 'bskudo-wizard' );
 		wp_enqueue_script( 'bskudo-message-fit' );
 		wp_enqueue_script( 'bskudo-wizard' );
@@ -174,6 +197,7 @@ class BSKudo_Shortcode {
 				'brandingBack'       => $this->get_default_branding_text(),
 				'enableSendToSelf'   => BSKudo_Settings::is_feature_enabled( 'enable_send_to_self' ),
 				'enableDelayedSend'  => BSKudo_Settings::is_feature_enabled( 'enable_delayed_send' ),
+				'turnstileEnabled'   => '' !== trim( (string) BSKudo_Settings::get( 'security', 'turnstile_site_key', '' ) ),
 				'scheduleMinMinutes' => 5,
 				'cards'              => $this->get_cards_for_js(),
 				'textbausteine'      => $this->get_textbausteine_for_js(),
