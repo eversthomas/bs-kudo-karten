@@ -227,9 +227,11 @@ class BSKudo_Security {
 	 * @return true|WP_Error
 	 */
 	private function verify_turnstile( $data ) {
-		$secret = trim( (string) BSKudo_Settings::get( 'security', 'turnstile_secret_key', '' ) );
+		$secret   = trim( (string) BSKudo_Settings::get( 'security', 'turnstile_secret_key', '' ) );
+		$site_key = trim( (string) BSKudo_Settings::get( 'security', 'turnstile_site_key', '' ) );
 
-		if ( '' === $secret ) {
+		// Nur durchsetzen, wenn Widget (Site-Key) und serverseitiger Check (Secret) konfiguriert sind.
+		if ( '' === $secret || '' === $site_key ) {
 			return true;
 		}
 

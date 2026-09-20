@@ -87,7 +87,7 @@ $security = $settings['security'];
 				<div class="field">
 					<label class="flabel" for="bskudo_turnstile_secret_key"><?php esc_html_e( 'Secret-Key', 'bs-kudo-karten' ); ?></label>
 					<input type="password" id="bskudo_turnstile_secret_key" name="bskudo_settings[security][turnstile_secret_key]" value="<?php echo esc_attr( (string) ( $security['turnstile_secret_key'] ?? '' ) ); ?>" class="input" autocomplete="new-password">
-					<p class="fhint"><?php esc_html_e( 'Optional. Widget erscheint im Wizard nur mit Site-Key; serverseitige Prüfung nur mit Secret-Key. Beide leer = Turnstile aus (wie bisher).', 'bs-kudo-karten' ); ?></p>
+					<p class="fhint"><?php esc_html_e( 'Optional. Widget nur mit Site-Key; serverseitige Prüfung nur wenn Site- und Secret-Key gesetzt sind. Beide leer = Turnstile aus.', 'bs-kudo-karten' ); ?></p>
 				</div>
 			</div>
 		</div>
