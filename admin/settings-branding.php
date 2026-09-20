@@ -146,6 +146,12 @@ $logo_url = $logo_id ? wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
 						<span><?php esc_html_e( '„Powered by BS Kudo Karten · bezugssysteme.de“ in der E-Mail anzeigen', 'bs-kudo-karten' ); ?></span>
 					</label>
 				</div>
+
+				<div class="field">
+					<label class="flabel" for="bskudo_abuse_contact_email"><?php esc_html_e( 'Kontakt für Meldungen', 'bs-kudo-karten' ); ?></label>
+					<input type="email" id="bskudo_abuse_contact_email" name="bskudo_settings[branding][abuse_contact_email]" value="<?php echo esc_attr( (string) ( $branding['abuse_contact_email'] ?? '' ) ); ?>" class="input">
+					<p class="fhint"><?php esc_html_e( 'Optional. Erscheint in der Benachrichtigungs-E-Mail und in der Webansicht, damit Empfänger:innen unangebrachte Karten melden können. Leer lassen = kein Hinweis.', 'bs-kudo-karten' ); ?></p>
+				</div>
 			</div>
 		</div>
 	</div>

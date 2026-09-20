@@ -111,14 +111,14 @@ Optional in `wp-config.php`:
 define( 'BSKUDO_MAIL_DEBUG', true );
 ```
 
-Bei aktivem Debug (oder auf lokalen Hosts wie `.local`, `.test`, `localhost`) schreibt das Plugin nach `debug/mail.log` und optional `debug/last-mail.html`. Beim ersten Schreibvorgang legt es den Ordner an und erzeugt `.htaccess` (`Deny from all`) sowie `index.php` automatisch.
+Bei aktivem Debug (oder auf lokalen Hosts wie `.local`, `.test`, `localhost`) schreibt das Plugin nach `wp-content/uploads/bskudo-debug-private/mail.log` und optional `last-mail.html`. Beim ersten Schreibvorgang legt es den Ordner an und erzeugt `.htaccess` (`Deny from all`) sowie `index.php` automatisch. Die letzten Log-Zeilen sind im Backend unter **Einstellungen → Sicherheit** einsehbar.
 
-Im Git-Repository liegt nur `debug/index.php` als Schutz-Stub. Log-Dateien, HTML-Vorschau und `.htaccess` sind in `.gitignore` und bleiben lokal.
+Im Git-Repository liegt nur `debug/index.php` als Schutz-Stub (Legacy-Fallback, falls Uploads nicht beschreibbar sind). Log-Dateien im Plugin-Ordner bleiben in `.gitignore`.
 
 **nginx-Beispiel** (im Server-Block):
 
 ```nginx
-location ~ ^/wp-content/plugins/bs-kudo-karten/debug/ {
+location ~ ^/wp-content/uploads/bskudo-debug-private/ {
     deny all;
     return 404;
 }

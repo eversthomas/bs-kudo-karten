@@ -58,6 +58,8 @@ $security = $settings['security'];
 		</div>
 	</div>
 
+	<?php BSKudo_Debug::render_admin_log_view(); ?>
+
 	<div class="form-actions">
 		<button type="submit" class="btn primary"><?php esc_html_e( 'Einstellungen speichern', 'bs-kudo-karten' ); ?></button>
 	</div>

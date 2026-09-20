@@ -17,6 +17,7 @@
  * @var string $global_branding_text
  * @var string $qr_src
  * @var string $token_ttl_days
+ * @var string $abuse_contact_email
  */
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
@@ -32,7 +33,8 @@ $site_name        = isset( $site_name ) ? $site_name : '';
 $view_url         = isset( $view_url ) ? $view_url : '';
 $logo_src         = isset( $logo_src ) ? $logo_src : '';
 $mail_footer_text     = isset( $mail_footer_text ) ? $mail_footer_text : '';
-$global_branding_text = isset( $global_branding_text ) ? $global_branding_text : '';
+$global_branding_text  = isset( $global_branding_text ) ? $global_branding_text : '';
+$abuse_contact_email   = isset( $abuse_contact_email ) ? sanitize_email( (string) $abuse_contact_email ) : '';
 $qr_src               = isset( $qr_src ) ? $qr_src : '';
 $show_powered     = isset( $show_powered ) ? $show_powered : '';
 $powered_text     = isset( $powered_text ) ? $powered_text : '';
@@ -215,6 +217,17 @@ $header_label = '' !== trim( $sender_display ) ? $sender_display : $site_name;
 							<a href="https://bezugssysteme.de" style="color:#aaaaaa;text-decoration:none;">
 								<?php echo esc_html( $powered_text ); ?>
 							</a>
+						</p>
+					</td>
+				</tr>
+				<?php endif; ?>
+
+				<?php if ( is_email( $abuse_contact_email ) ) : ?>
+				<tr>
+					<td style="background:#f7f7f7;padding:0 40px 16px;text-align:center;">
+						<p style="margin:0;font-size:11px;line-height:1.5;color:#999999;">
+							<?php esc_html_e( 'Diese Karte wirkt unangebracht? Melde dich unter', 'bs-kudo-karten' ); ?>
+							<a href="<?php echo esc_url( 'mailto:' . $abuse_contact_email ); ?>" style="color:#888888;text-decoration:underline;"><?php echo esc_html( $abuse_contact_email ); ?></a>.
 						</p>
 					</td>
 				</tr>

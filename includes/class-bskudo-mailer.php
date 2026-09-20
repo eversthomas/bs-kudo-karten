@@ -101,8 +101,9 @@ class BSKudo_Mailer {
 				'logo_src'         => $logo_src,
 				'mail_footer_text'     => (string) BSKudo_Settings::get( 'branding', 'mail_footer_text', '' ),
 				'global_branding_text' => (string) BSKudo_Settings::get( 'branding', 'global_branding_text', '' ),
-				'qr_src'               => $qr_src,
-				'token_ttl_days'   => (string) BSKudo_Settings::get_token_ttl_days(),
+				'qr_src'                 => $qr_src,
+				'token_ttl_days'         => (string) BSKudo_Settings::get_token_ttl_days(),
+				'abuse_contact_email'    => (string) BSKudo_Settings::get( 'branding', 'abuse_contact_email', '' ),
 			)
 		);
 

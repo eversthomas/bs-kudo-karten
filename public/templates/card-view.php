@@ -50,7 +50,8 @@ $back_context     = array(
 	'branding_col2'    => $branding_col2,
 	'logo_url'         => $logo_url ? (string) $logo_url : '',
 );
-$global_branding_text = trim( (string) BSKudo_Settings::get( 'branding', 'global_branding_text', '' ) );
+$global_branding_text  = trim( (string) BSKudo_Settings::get( 'branding', 'global_branding_text', '' ) );
+$abuse_contact_email   = sanitize_email( (string) BSKudo_Settings::get( 'branding', 'abuse_contact_email', '' ) );
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -599,11 +600,19 @@ $global_branding_text = trim( (string) BSKudo_Settings::get( 'branding', 'global
 			</div>
 		</div>
 
-		<?php if ( '' !== $global_branding_text ) : ?>
+		<?php if ( '' !== $global_branding_text || is_email( $abuse_contact_email ) ) : ?>
 			<footer class="bskudo-card-view-page__footer">
-				<p>
-					<?php echo BSKudo_Mailer::format_markdown_html( $global_branding_text ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Safe HTML from format_markdown_html(). ?>
-				</p>
+				<?php if ( '' !== $global_branding_text ) : ?>
+					<p>
+						<?php echo BSKudo_Mailer::format_markdown_html( $global_branding_text ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Safe HTML from format_markdown_html(). ?>
+					</p>
+				<?php endif; ?>
+				<?php if ( is_email( $abuse_contact_email ) ) : ?>
+					<p class="bskudo-card-view-page__abuse">
+						<?php esc_html_e( 'Diese Karte wirkt unangebracht? Melde dich unter', 'bs-kudo-karten' ); ?>
+						<a href="<?php echo esc_url( 'mailto:' . $abuse_contact_email ); ?>"><?php echo esc_html( $abuse_contact_email ); ?></a>.
+					</p>
+				<?php endif; ?>
 			</footer>
 		<?php endif; ?>
 	</div>

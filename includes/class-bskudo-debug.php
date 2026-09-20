@@ -10,9 +10,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Schreibt Versand-Details nach debug/mail.log im Plugin-Verzeichnis.
+ * Schreibt Versand-Details in ein geschütztes Verzeichnis unter wp-content/uploads.
  */
 class BSKudo_Debug {
+
+	const UPLOAD_SUBDIR = 'bskudo-debug-private';
 
 	const LOG_FILENAME  = 'mail.log';
 
@@ -41,7 +43,13 @@ class BSKudo_Debug {
 	 * @return string Absoluter Pfad mit trailing slash.
 	 */
 	public static function get_dir() {
-		return BSKUDO_PATH . 'debug/';
+		$upload = wp_upload_dir();
+
+		if ( ! empty( $upload['error'] ) || empty( $upload['basedir'] ) ) {
+			return trailingslashit( BSKUDO_PATH ) . 'debug/';
+		}
+
+		return trailingslashit( $upload['basedir'] ) . self::UPLOAD_SUBDIR . '/';
 	}
 
 	/**
@@ -195,6 +203,45 @@ class BSKudo_Debug {
 		$slice = array_slice( $all, -1 * max( 1, $lines ) );
 
 		return implode( "\n", $slice );
+	}
+
+	/**
+	 * Mail-Debug-Log im Admin (Tab Sicherheit) anzeigen.
+	 */
+	public static function render_admin_log_view() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$enabled  = self::is_enabled();
+		$log_path = self::get_log_path();
+		$tail     = $enabled ? self::tail_log( 20 ) : '';
+		?>
+		<div class="card">
+			<div class="card-head">
+				<h2><?php esc_html_e( 'Mail-Debug-Protokoll', 'bs-kudo-karten' ); ?></h2>
+			</div>
+			<div class="card-body">
+				<?php if ( ! $enabled ) : ?>
+					<p class="fhint">
+						<?php esc_html_e( 'Mail-Debug ist derzeit inaktiv. Aktivierung nur über define( \'BSKUDO_MAIL_DEBUG\', true ); in wp-config.php oder auf lokalen Entwicklungs-URLs (.local, .test, localhost).', 'bs-kudo-karten' ); ?>
+					</p>
+				<?php else : ?>
+					<p class="fhint">
+						<?php esc_html_e( 'Enthält personenbezogene Daten (E-Mail-Adressen, Versandkontext). Nur für Administratoren sichtbar – nicht per direkter URL im Browser aufrufen.', 'bs-kudo-karten' ); ?>
+					</p>
+					<p>
+						<code class="key"><?php echo esc_html( $log_path ); ?></code>
+					</p>
+					<?php if ( '' !== $tail ) : ?>
+						<pre class="log-pre"><?php echo esc_html( $tail ); ?></pre>
+					<?php else : ?>
+						<p class="fhint"><?php esc_html_e( 'Noch keine Einträge – bitte einmal eine Karte im Frontend senden.', 'bs-kudo-karten' ); ?></p>
+					<?php endif; ?>
+				<?php endif; ?>
+			</div>
+		</div>
+		<?php
 	}
 
 	/**
