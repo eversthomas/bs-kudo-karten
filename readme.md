@@ -124,6 +124,18 @@ Datenschutz- und Haftungshinweis im Wizard bitte an die Website-DSE anpassen.
 
 ---
 
+## ⚠️ Rechtlicher Hinweis & Haftungsausschluss (Disclaimer für Dritte)
+
+> **Wichtig:** Dieses Plugin wurde für den individuellen, internen Einsatz auf spezifischen Websites entwickelt und ist **nicht** für eine schlüsselfertige, unreflektierte öffentliche Nutzung optimiert. Wer diesen Quellcode von GitHub bezieht und auf eigenen Websites einsetzt, tut dies vollumfänglich auf eigene Verantwortung.
+
+1. **Keine Rechts- oder Datenschutzberatung:** Die Bereitstellung und Nutzung dieses Plugins entbindet den Website-Betreiber nicht von seinen gesetzlichen Pflichten (u. a. DSGVO, TTDSG, UWG). Für die Einhaltung aller Vorgaben (z. B. Datenschutzerklärung, Betroffenenrechte, Dokumentationspflichten, eventuelle AV-Verträge) ist ausschließlich der jeweilige Website-Betreiber verantwortlich.
+2. **E-Card-Versand & Wettbewerbsrecht (§ 7 Abs. 2 Nr. 3 UWG):** Nach deutscher Rechtsprechung (BGH, Az. I ZR 208/12) können Empfehlungs-E-Mails und E-Cards ohne vorherige Einwilligung des Empfängers als unzulässige Belästigung abgemahnt werden. Die integrierte **Absender-Bestätigung (Double-Opt-In)** sollte zwingend aktiv bleiben, um Missbrauch und Haftungsrisiken für den Seitenbetreiber zu minimieren.
+3. **Google Fonts im Backend:** Im Admin-Bereich (`admin/assets/tokens.css`) werden aktuell Google Fonts per CDN eingebunden. Dritte, die dieses Plugin produktiv einsetzen möchten, müssen eigenverantwortlich entscheiden, ob sie diese durch Systemschriften oder lokale Einbindung ersetzen.
+4. **Gewährleistungs- und Haftungsausschluss (GPL-2.0+):** Die Software wird „wie besehen“ (*AS IS*) ohne ausdrückliche oder stillschweigende Gewährleistung jeglicher Art zur Verfügung gestellt. Der Autor und Maintainer übernimmt keinerlei Haftung für direkte oder indirekte Schäden, rechtliche Abmahnungen, Bußgelder, Datenverlust oder Fehlfunktionen, die aus der Installation oder Nutzung dieses Plugins entstehen.
+5. **Checkliste für Veröffentlichung:** Detaillierte Hinweise und eine Schritt-für-Schritt-To-Do-Liste für einen datenschutzkonformen Produktiveinsatz sind in [`PUBLIC_RELEASE_CHECKLIST.md`](PUBLIC_RELEASE_CHECKLIST.md) dokumentiert.
+
+---
+
 ## Mail-Debug (Entwicklung)
 
 Optional in `wp-config.php`:
